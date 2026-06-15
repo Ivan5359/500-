@@ -1,0 +1,2631 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#020611" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="RevenueSprint" />
+  <title>RevenueSprint 48</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <style>
+    :root {
+      --bg: #000207;
+      --bg-2: #020611;
+      --panel: rgba(3, 8, 18, .86);
+      --panel-2: rgba(2, 6, 14, .96);
+      --line: rgba(112, 170, 255, .18);
+      --line-strong: rgba(113, 188, 255, .34);
+      --text: #f4f8ff;
+      --muted: #8998ad;
+      --soft: #b8c7dc;
+      --blue: #4ea4ff;
+      --cyan: #5ff2ff;
+      --good: #69ffbd;
+      --warn: #ffd166;
+      --bad: #ff6b87;
+      --shadow: 0 24px 80px rgba(0, 0, 0, .42);
+      --r: 8px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 78% 12%, rgba(28, 117, 255, .12), transparent 28rem),
+        radial-gradient(circle at 14% 72%, rgba(21, 198, 255, .045), transparent 24rem),
+        linear-gradient(145deg, #000104 0%, #020611 48%, #000103 100%);
+      font-family: var(--font);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(90, 162, 255, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(90, 162, 255, .035) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(circle at 55% 38%, black, transparent 78%);
+      z-index: -2;
+    }
+
+    #starfield {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -3;
+    }
+
+    a { color: inherit; }
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: .52;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .rail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(0, 2, 8, .9);
+      backdrop-filter: blur(22px);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: .02em;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      background:
+        radial-gradient(circle at 62% 28%, rgba(95, 242, 255, .9), transparent 14%),
+        radial-gradient(circle at 38% 70%, rgba(78, 164, 255, .72), transparent 18%),
+        rgba(7, 15, 32, .9);
+      box-shadow: inset 0 0 22px rgba(78, 164, 255, .18), 0 0 28px rgba(78, 164, 255, .14);
+      position: relative;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mark::after {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border: 1px solid rgba(255, 255, 255, .25);
+      border-radius: 50%;
+      transform: rotate(-22deg) scaleX(1.35);
+    }
+
+    .brand b {
+      display: block;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+    }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav a {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-height: 42px;
+      padding: 0 12px;
+      border-radius: var(--r);
+      text-decoration: none;
+      color: var(--soft);
+      border: 1px solid transparent;
+      transition: .2s ease;
+    }
+
+    .nav a::before {
+      content: attr(data-no);
+      width: 22px;
+      height: 22px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: var(--muted);
+      font-size: 11px;
+      border: 1px solid rgba(126, 181, 255, .18);
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .nav a:hover,
+    .nav a.active {
+      color: #fff;
+      border-color: var(--line);
+      background: rgba(63, 129, 255, .08);
+    }
+
+    .nav a.active::before {
+      color: #00101b;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 0 20px rgba(78, 164, 255, .38);
+    }
+
+    .rail-card {
+      margin-top: auto;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(10, 20, 42, .8), rgba(3, 8, 18, .82));
+    }
+
+    .rail-card small {
+      display: block;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      display: inline-block;
+      margin-right: 8px;
+      border-radius: 50%;
+      background: var(--good);
+      box-shadow: 0 0 16px rgba(105, 255, 189, .7);
+    }
+
+    .main {
+      min-width: 0;
+      padding: 24px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 58px;
+      margin: -24px -24px 22px;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0, 3, 10, .82);
+      backdrop-filter: blur(20px);
+    }
+
+    .topbar-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: var(--soft);
+      font-size: 13px;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 18px var(--blue);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(.82); opacity: .55; }
+      50% { transform: scale(1.25); opacity: 1; }
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      min-height: 38px;
+      padding: 0 13px;
+      border-radius: var(--r);
+      border: 1px solid var(--line);
+      background: rgba(10, 20, 42, .78);
+      color: var(--soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease, color .18s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      color: #fff;
+      border-color: var(--line-strong);
+      background: rgba(21, 46, 91, .8);
+    }
+
+    .btn.primary {
+      color: #001426;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      box-shadow: 0 16px 42px rgba(78, 164, 255, .26);
+      font-weight: 800;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn.primary {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn.primary::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.36), transparent);
+      transform: translateX(-130%);
+      transition: transform .55s ease;
+    }
+
+    .btn.primary:hover::after {
+      transform: translateX(130%);
+    }
+
+    .btn.ghost {
+      background: transparent;
+    }
+
+    .btn.danger:hover {
+      border-color: rgba(255, 107, 135, .5);
+      color: #ffdce4;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, .95fr);
+      gap: 18px;
+      align-items: stretch;
+      margin-bottom: 18px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(4, 10, 22, .9), rgba(1, 4, 11, .94));
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, transparent, rgba(95, 242, 255, .045), transparent);
+      transform: translateX(-120%);
+      animation: panelSweep 8s ease-in-out infinite;
+    }
+
+    @keyframes panelSweep {
+      0%, 74% { transform: translateX(-120%); opacity: 0; }
+      82% { opacity: 1; }
+      100% { transform: translateX(120%); opacity: 0; }
+    }
+
+    .panel.pad { padding: 20px; }
+    .panel > * { position: relative; z-index: 1; }
+
+    .hero-copy {
+      position: relative;
+      min-height: 370px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      isolation: isolate;
+    }
+
+    .hero-copy::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background:
+        radial-gradient(circle at 74% 20%, rgba(95, 242, 255, .12), transparent 28%),
+        linear-gradient(120deg, rgba(255, 255, 255, .03), transparent 38%);
+      z-index: -1;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      gap: 8px;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    h1 {
+      margin: 24px 0 14px;
+      max-width: 780px;
+      font-size: clamp(48px, 7vw, 108px);
+      line-height: .86;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 720px;
+      color: var(--soft);
+      font-size: clamp(16px, 2vw, 21px);
+      line-height: 1.48;
+      margin: 0;
+    }
+
+    .hero-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 34px;
+    }
+
+    .micro {
+      min-height: 82px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .micro b {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .micro span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .mission {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mission-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .mission h2,
+    .section-title h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0;
+    }
+
+    .operator-intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      border: 1px solid rgba(95, 242, 255, .2);
+      border-radius: var(--r);
+      background:
+        linear-gradient(135deg, rgba(78, 164, 255, .1), transparent 44%),
+        rgba(0, 0, 0, .28);
+    }
+
+    .operator-intro h3 {
+      margin: 5px 0 6px;
+      font-size: 18px;
+    }
+
+    .operator-intro p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.42;
+      font-size: 13px;
+    }
+
+    .kicker {
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .run-state {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 32px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(0, 0, 0, .24);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .resume-banner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(255, 209, 102, .28);
+      border-radius: var(--r);
+      background: rgba(255, 209, 102, .075);
+    }
+
+    .resume-banner b {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .resume-banner span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .step-card {
+      min-height: 112px;
+      padding: 14px;
+      border-radius: var(--r);
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, .26);
+      color: var(--soft);
+      text-align: left;
+      display: grid;
+      align-content: space-between;
+      gap: 12px;
+      transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    }
+
+    .step-card:hover {
+      transform: translateY(-1px);
+      border-color: var(--line-strong);
+      background: rgba(78, 164, 255, .08);
+    }
+
+    .step-card strong {
+      display: block;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .step-card span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .step-card i {
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(95, 242, 255, .22);
+      border-radius: 50%;
+      color: var(--cyan);
+      font-style: normal;
+      font-weight: 900;
+      background: rgba(95, 242, 255, .06);
+    }
+
+    .session-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .session-cell {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .2);
+    }
+
+    .session-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 5px;
+    }
+
+    .session-cell b {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 8px;
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .timeline-item {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .2);
+    }
+
+    .timeline-item b {
+      display: block;
+      font-size: 13px;
+    }
+
+    .timeline-item span {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .section-title p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 130px 130px;
+      gap: 10px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      padding: 0 12px;
+      color: var(--text);
+      outline: 0;
+      background: rgba(0, 0, 0, .26);
+    }
+
+    textarea {
+      min-height: 112px;
+      resize: vertical;
+      padding: 12px;
+      line-height: 1.45;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .chip {
+      min-height: 34px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, .035);
+      color: var(--soft);
+    }
+
+    .chip.active {
+      color: #001426;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      font-weight: 800;
+    }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(255, 255, 255, .03);
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .metric b {
+      display: block;
+      margin-top: 8px;
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .lead-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .lead-card {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(255, 255, 255, .03);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      transition: .18s ease;
+    }
+
+    .lead-card:hover {
+      border-color: var(--line-strong);
+      background: rgba(255, 255, 255, .045);
+      transform: translateY(-1px);
+    }
+
+    .lead-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .lead-title {
+      min-width: 0;
+    }
+
+    .lead-title b {
+      display: block;
+      font-size: 16px;
+      overflow-wrap: anywhere;
+    }
+
+    .lead-title span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .score {
+      min-width: 58px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--cyan);
+      background: rgba(95, 242, 255, .06);
+      font-weight: 900;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .badge {
+      min-height: 26px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: var(--muted);
+      font-size: 12px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .badge.ready { color: var(--good); border-color: rgba(105, 255, 189, .26); }
+    .badge.need { color: var(--warn); border-color: rgba(255, 209, 102, .26); }
+    .badge.hot { color: var(--cyan); border-color: rgba(95, 242, 255, .28); }
+    .badge.bad { color: var(--bad); border-color: rgba(255, 107, 135, .26); }
+
+    .lead-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .queue-guide {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .guide-step {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .22);
+    }
+
+    .guide-step b {
+      display: block;
+      color: #fff;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .guide-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .lead-card {
+      cursor: pointer;
+    }
+
+    .lead-card:focus-within,
+    .lead-card:focus {
+      outline: 2px solid rgba(95, 242, 255, .42);
+      outline-offset: 2px;
+    }
+
+    .mini-btn {
+      min-height: 32px;
+      padding: 0 10px;
+      border-radius: var(--r);
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, .18);
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .mini-btn.primary-mini {
+      color: #001426;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      font-weight: 900;
+    }
+
+    .mini-btn:hover {
+      color: #fff;
+      border-color: var(--line-strong);
+      background: rgba(78, 164, 255, .12);
+    }
+
+    .console {
+      height: 360px;
+      overflow: auto;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .24);
+      color: #c5d8ef;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    .log-line {
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .045);
+    }
+
+    .log-line strong { color: var(--cyan); }
+
+    .script-box {
+      min-height: 200px;
+      white-space: pre-wrap;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 0, 0, .62);
+      backdrop-filter: blur(16px);
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-box {
+      width: min(780px, 100%);
+      max-height: min(760px, 88vh);
+      overflow: auto;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      background: #050a16;
+      box-shadow: 0 32px 120px rgba(0, 0, 0, .68);
+      padding: 18px;
+    }
+
+    .lead-detail {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .24);
+    }
+
+    .detail-hero h3 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-hero p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.42;
+      overflow-wrap: anywhere;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .detail-cell {
+      min-height: 58px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .2);
+    }
+
+    .detail-cell span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .detail-cell b,
+    .detail-cell a {
+      color: #fff;
+      font-size: 13px;
+      overflow-wrap: anywhere;
+      text-decoration: none;
+    }
+
+    .contact-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .contact-action {
+      min-height: 48px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .24);
+      color: var(--soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      text-decoration: none;
+      transition: .18s ease;
+    }
+
+    .contact-action:hover {
+      color: #fff;
+      border-color: var(--line-strong);
+      background: rgba(78, 164, 255, .1);
+      transform: translateY(-1px);
+    }
+
+    .contact-action.primary-contact {
+      color: #001426;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      font-weight: 900;
+    }
+
+    .detail-note {
+      padding: 12px;
+      border: 1px solid rgba(255, 209, 102, .24);
+      border-radius: var(--r);
+      background: rgba(255, 209, 102, .06);
+      color: var(--soft);
+      line-height: 1.45;
+      font-size: 13px;
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 60;
+      display: grid;
+      gap: 8px;
+    }
+
+    .toast-item {
+      width: min(360px, calc(100vw - 36px));
+      padding: 12px 14px;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--r);
+      background: rgba(4, 10, 22, .94);
+      box-shadow: var(--shadow);
+      color: var(--soft);
+      animation: toastIn .22s ease;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .progress {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .07);
+      border: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    .progress i {
+      display: block;
+      width: var(--w, 0%);
+      height: 100%;
+      background: linear-gradient(90deg, var(--cyan), var(--blue));
+      box-shadow: 0 0 20px rgba(95, 242, 255, .5);
+      transition: width .35s ease;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1120px) {
+      .app { grid-template-columns: 1fr; }
+      .rail {
+        display: none;
+      }
+      .main {
+        padding: 18px 18px 92px;
+      }
+      .topbar {
+        margin: -18px -18px 18px;
+        padding: 10px 18px;
+      }
+      .hero,
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      .btn { width: 100%; }
+      .hero-copy { min-height: 430px; }
+      .hero-strip,
+      .metric-grid,
+      .field-grid,
+      .action-grid,
+      .session-grid,
+      .queue-guide,
+      .detail-grid,
+      .contact-actions,
+      .operator-intro,
+      .resume-banner {
+        grid-template-columns: 1fr;
+      }
+      .detail-hero {
+        grid-template-columns: 1fr;
+      }
+      .operator-intro .btn,
+      .resume-banner .btn {
+        width: 100%;
+      }
+      .section-title {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .lead-top {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .score {
+        width: 58px;
+      }
+      .console {
+        height: 260px;
+      }
+      .toast {
+        right: 10px;
+        bottom: 84px;
+      }
+    }
+
+    .mobile-dock {
+      position: fixed;
+      left: 10px;
+      right: 10px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      z-index: 40;
+      display: none;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(2, 6, 16, .86);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 20px 70px rgba(0, 0, 0, .45);
+    }
+
+    .mobile-dock a {
+      min-height: 48px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 11px;
+    }
+
+    .mobile-dock a.active {
+      color: #fff;
+      background: rgba(78, 164, 255, .12);
+    }
+
+    @media (max-width: 1120px) {
+      .mobile-dock { display: grid; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+  <div class="app">
+    <aside class="rail">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <b>RevenueSprint</b>
+          <span>48 Command</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Навигация">
+        <a href="#control" class="active" data-no="01">Автопилот</a>
+        <a href="#queue" data-no="02">Очередь</a>
+        <a href="#crm" data-no="03">CRM</a>
+        <a href="#scripts" data-no="04">Скрипты</a>
+        <a href="#delivery" data-no="05">Выдача</a>
+      </nav>
+      <div class="rail-card">
+        <small><span class="status-dot"></span><b id="railStatus">Система готова</b></small>
+        <small id="railMeta">Данные сохраняются в этом браузере. Для телефона и Railway нужна серверная база.</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">
+          <span class="pulse"></span>
+          <span id="systemLine">Autopilot idle · local mode</span>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" id="installBtn">Install</button>
+          <button class="btn ghost" id="backupBtn">Backup</button>
+          <button class="btn ghost" id="importBtn">Import</button>
+          <button class="btn primary" id="runAutopilot">Full Auto</button>
+        </div>
+      </header>
+
+      <section class="hero" id="control">
+        <div class="panel pad hero-copy">
+          <div>
+            <span class="eyebrow">Quote Recovery Sprint</span>
+            <h1>RevenueSprint</h1>
+            <p class="lead">Черно-синий command center для поиска подрядчиков, проверки контактов, сборки очереди и подготовки сообщений на услугу возврата старых смет за 48 часов.</p>
+          </div>
+          <div class="hero-strip">
+            <div class="micro">
+              <b>$500</b>
+              <span>первый Sprint как простой входной продукт</span>
+            </div>
+            <div class="micro">
+              <b>48h</b>
+              <span>обещание по delivery без фантазий и лишней магии</span>
+            </div>
+            <div class="micro">
+              <b>Human send</b>
+              <span>поиск автоматический, отправка только после твоего контроля</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel pad mission">
+          <div class="mission-head">
+            <div>
+              <h2>Автопилот</h2>
+              <p style="margin:6px 0 0;color:var(--muted);font-size:13px">Один запуск собирает базу, проверяет контакты и готовит план на сегодня.</p>
+            </div>
+            <span class="run-state" id="runState">Готов к запуску</span>
+          </div>
+          <div class="operator-intro">
+            <div>
+              <span class="kicker">Главная кнопка</span>
+              <h3>Запустить весь процесс</h3>
+              <p>Нажми один раз: сайт найдёт бизнесы, проверит контакты, сохранит историю и соберёт список кому писать.</p>
+            </div>
+            <button class="btn primary" id="runAutopilotHero">Full Auto</button>
+          </div>
+          <div class="resume-banner hidden" id="resumeBanner">
+            <div>
+              <b>Есть незавершённая сессия</b>
+              <span id="resumeText">Можно продолжить с последнего сохранённого этапа.</span>
+            </div>
+            <button class="btn primary" id="resumeAutopilot">Продолжить</button>
+          </div>
+          <div class="mission-head">
+            <h2>Настройки поиска</h2>
+            <button class="btn" id="seedDemo">Demo leads</button>
+          </div>
+          <div class="field-grid">
+            <div class="field">
+              <label for="cityInput">Город</label>
+              <input class="input" id="cityInput" value="Austin, TX" autocomplete="address-level2" />
+            </div>
+            <div class="field">
+              <label for="radiusInput">Радиус</label>
+              <select id="radiusInput">
+                <option value="5000">5 км</option>
+                <option value="10000" selected>10 км</option>
+                <option value="20000">20 км</option>
+                <option value="35000">35 км</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="limitInput">Лимит</label>
+              <select id="limitInput">
+                <option value="30">30</option>
+                <option value="60" selected>60</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Ниши</label>
+            <div class="chips" id="nicheChips"></div>
+          </div>
+          <div class="progress" aria-label="Прогресс"><i id="progressBar"></i></div>
+          <div class="action-grid">
+            <button class="step-card" id="scanBtn">
+              <i>1</i>
+              <span><strong>Найти бизнесы</strong>Сканирует город и ниши, добавляет компании в очередь.</span>
+            </button>
+            <button class="step-card" id="deepCheckBtn">
+              <i>2</i>
+              <span><strong>Проверить контакты</strong>Ищет email, телефон, формы и сигналы quote/estimate.</span>
+            </button>
+            <button class="step-card" id="todayPackBtn">
+              <i>3</i>
+              <span><strong>Собрать план</strong>Даёт список кому писать сегодня и готовые сообщения.</span>
+            </button>
+          </div>
+          <div class="actions">
+            <button class="btn" id="contactHuntBtn">Найти контакты вручную</button>
+          </div>
+          <div class="session-grid">
+            <div class="session-cell"><span>Сессия</span><b id="jobStage">Нет активной</b></div>
+            <div class="session-cell"><span>Последний запуск</span><b id="lastRunCell">Не было</b></div>
+            <div class="session-cell"><span>История</span><b id="historyCount">0 запусков</b></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metric-grid" aria-label="Метрики">
+        <div class="metric"><span>Всего лидов</span><b id="mTotal">0</b></div>
+        <div class="metric"><span>Ready</span><b id="mReady">0</b></div>
+        <div class="metric"><span>Follow-up</span><b id="mFollow">0</b></div>
+        <div class="metric"><span>Won</span><b id="mWon">0</b></div>
+      </section>
+
+      <section class="grid-2">
+        <div class="panel pad" id="queue">
+          <div class="section-title">
+            <div>
+              <h2>Очередь</h2>
+              <p>Нажми на бизнес: откроется профиль, контакт, сообщение и кнопки действий.</p>
+            </div>
+            <button class="btn" id="exportCsvBtn">CSV</button>
+          </div>
+          <div class="queue-guide">
+            <div class="guide-step"><b>1. Открой</b><span>Нажми на карточку бизнеса.</span></div>
+            <div class="guide-step"><b>2. Контакт</b><span>Email/форма сайта лучше, чем звонок.</span></div>
+            <div class="guide-step"><b>3. Отправь</b><span>Скопируй текст и вставь вручную.</span></div>
+            <div class="guide-step"><b>4. Отметь</b><span>Нажми Sent, чтобы не потерять историю.</span></div>
+          </div>
+          <div class="toolbar" id="filters"></div>
+          <div class="lead-list" id="leadList"></div>
+        </div>
+
+        <div class="stack">
+          <div class="panel pad" id="crm">
+            <div class="section-title">
+              <div>
+                <h2>Live Log</h2>
+                <p>Все действия автопилота и проверки.</p>
+              </div>
+              <button class="btn danger" id="clearLogBtn">Clear</button>
+            </div>
+            <div class="console" id="console"></div>
+          </div>
+
+          <div class="panel pad">
+            <div class="section-title">
+              <div>
+                <h2>История</h2>
+                <p>Сохранённые запуски, паузы и результаты.</p>
+              </div>
+              <button class="btn danger" id="clearHistoryBtn">Clear</button>
+            </div>
+            <div class="timeline" id="historyList"></div>
+          </div>
+
+          <div class="panel pad" id="scripts">
+            <div class="section-title">
+              <div>
+                <h2>Скрипт</h2>
+                <p>Выбери лида и копируй сообщение.</p>
+              </div>
+              <button class="btn" id="copyScriptBtn">Copy</button>
+            </div>
+            <textarea id="scriptBox" class="script-box" spellcheck="false"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel pad" id="delivery" style="margin-top:18px">
+        <div class="section-title">
+          <div>
+            <h2>Delivery Pack</h2>
+            <p>Минимальный набор, который продается за $500: board, follow-ups, priority map, next action list.</p>
+          </div>
+          <button class="btn" id="copyDeliveryBtn">Copy delivery</button>
+        </div>
+        <textarea id="deliveryBox" spellcheck="false"></textarea>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-dock" aria-label="Мобильная навигация">
+    <a href="#control" class="active">Auto</a>
+    <a href="#queue">Queue</a>
+    <a href="#crm">CRM</a>
+    <a href="#scripts">Script</a>
+    <a href="#delivery">Pack</a>
+  </nav>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2 id="modalTitle">Pack</h2>
+        <button class="btn" id="closeModal">Close</button>
+      </div>
+      <div id="leadDetail" class="lead-detail hidden"></div>
+      <textarea id="modalText" spellcheck="false"></textarea>
+      <div class="actions" style="margin-top:10px">
+        <button class="btn primary" id="copyModal">Copy</button>
+        <button class="btn hidden" id="modalSentBtn">Mark Sent</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (() => {
+      const STORE = 'revenueSprint48.rescue.v1';
+      const $ = (id) => document.getElementById(id);
+      const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+      const niches = [
+        { id: 'roofing', label: 'Roofing', keywords: ['roof', 'roofing', 'roofer'] },
+        { id: 'hvac', label: 'HVAC', keywords: ['hvac', 'air conditioning', 'heating', 'cooling'] },
+        { id: 'painting', label: 'Painting', keywords: ['paint', 'painting', 'painter'] },
+        { id: 'flooring', label: 'Flooring', keywords: ['floor', 'flooring'] },
+        { id: 'fencing', label: 'Fencing', keywords: ['fence', 'fencing'] },
+        { id: 'landscaping', label: 'Landscaping', keywords: ['landscape', 'landscaping', 'lawn'] },
+        { id: 'remodeling', label: 'Remodeling', keywords: ['remodel', 'renovation', 'contractor'] },
+        { id: 'plumbing', label: 'Plumbing', keywords: ['plumb', 'plumbing', 'plumber'] }
+      ];
+
+      const state = loadState();
+      let deferredInstallPrompt = null;
+
+      function loadState() {
+        const fallback = {
+          leads: [],
+          log: [],
+          selectedNiches: ['roofing', 'hvac', 'painting', 'flooring'],
+          filter: 'ready',
+          selectedLeadId: null,
+          activeJob: null,
+          history: [],
+          running: false,
+          progress: 0,
+          lastRun: null,
+          lastSeen: null,
+          hiddenAt: null
+        };
+        try {
+          return { ...fallback, ...JSON.parse(localStorage.getItem(STORE) || '{}'), running: false, progress: 0 };
+        } catch {
+          return fallback;
+        }
+      }
+
+      function saveState() {
+        state.lastSeen = new Date().toISOString();
+        localStorage.setItem(STORE, JSON.stringify({ ...state, running: false }));
+      }
+
+      function normalize(text) {
+        return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+      }
+
+      function idFor(value) {
+        let h = 2166136261;
+        const text = String(value || '');
+        for (let i = 0; i < text.length; i++) {
+          h ^= text.charCodeAt(i);
+          h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+        }
+        return 'l_' + (h >>> 0).toString(16);
+      }
+
+      function log(message, tone = 'info') {
+        const item = { at: new Date().toLocaleTimeString(), message, tone };
+        state.log.unshift(item);
+        state.log = state.log.slice(0, 120);
+        saveState();
+        renderLog();
+      }
+
+      function toast(message) {
+        const item = document.createElement('div');
+        item.className = 'toast-item';
+        item.textContent = message;
+        $('toast').appendChild(item);
+        setTimeout(() => item.remove(), 3600);
+      }
+
+      function setBusy(isBusy, label = 'Autopilot idle · local mode') {
+        state.running = isBusy;
+        $('runAutopilot').disabled = isBusy;
+        $('runAutopilotHero').disabled = isBusy;
+        $('scanBtn').disabled = isBusy;
+        $('deepCheckBtn').disabled = isBusy;
+        $('systemLine').textContent = label;
+        $('railStatus').textContent = isBusy ? 'Автопилот работает' : 'Система готова';
+        if ($('runState')) $('runState').textContent = isBusy ? 'Работает' : 'Готов к запуску';
+      }
+
+      function setProgress(value) {
+        state.progress = Math.max(0, Math.min(100, value));
+        $('progressBar').style.setProperty('--w', state.progress + '%');
+      }
+
+      function beginJob(kind) {
+        const job = {
+          id: 'job_' + Date.now(),
+          kind,
+          status: 'running',
+          stage: 'starting',
+          message: 'Запуск...',
+          progress: 1,
+          city: $('cityInput') ? $('cityInput').value : '',
+          startedAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        state.activeJob = job;
+        state.progress = 1;
+        saveState();
+        renderJob();
+        return job.id;
+      }
+
+      function ensureJob(kind) {
+        if (!state.activeJob || state.activeJob.status !== 'running') {
+          return beginJob(kind);
+        }
+        return null;
+      }
+
+      function updateJob(stage, progress, message) {
+        if (!state.activeJob) beginJob('manual');
+        state.activeJob.status = 'running';
+        state.activeJob.stage = stage;
+        state.activeJob.progress = Math.max(0, Math.min(100, progress));
+        state.activeJob.message = message || state.activeJob.message;
+        state.activeJob.updatedAt = new Date().toISOString();
+        state.progress = state.activeJob.progress;
+        saveState();
+        setProgress(state.progress);
+        renderJob();
+      }
+
+      function pauseInterruptedJob() {
+        if (state.activeJob && state.activeJob.status === 'running') {
+          state.activeJob.status = 'paused';
+          state.activeJob.message = 'Телефон или браузер остановил страницу. Можно продолжить.';
+          state.activeJob.updatedAt = new Date().toISOString();
+          state.history.unshift({
+            at: new Date().toISOString(),
+            status: 'paused',
+            title: 'Сессия сохранена',
+            detail: state.activeJob.stage + ' · можно продолжить'
+          });
+          state.history = state.history.slice(0, 30);
+          log('Recovered paused session: ' + state.activeJob.stage);
+          saveState();
+        }
+      }
+
+      function finishJob(status, message) {
+        if (!state.activeJob) return;
+        state.activeJob.status = status;
+        state.activeJob.message = message;
+        state.activeJob.progress = status === 'done' ? 100 : state.progress;
+        state.activeJob.updatedAt = new Date().toISOString();
+        state.lastRun = state.activeJob.updatedAt;
+        state.history.unshift({
+          at: state.activeJob.updatedAt,
+          status,
+          title: state.activeJob.kind === 'full-auto' ? 'Full Auto' : state.activeJob.kind,
+          detail: message + ' · ' + state.leads.length + ' leads'
+        });
+        state.history = state.history.slice(0, 30);
+        saveState();
+        renderJob();
+      }
+
+      function renderJob() {
+        const job = state.activeJob;
+        const hasPaused = job && job.status === 'paused';
+        if ($('resumeBanner')) {
+          $('resumeBanner').classList.toggle('hidden', !hasPaused);
+          $('resumeText').textContent = hasPaused ? `${job.stage}: ${job.message}` : '';
+        }
+        if ($('jobStage')) {
+          $('jobStage').textContent = job ? `${job.status} · ${job.stage}` : 'Нет активной';
+        }
+        if ($('lastRunCell')) {
+          $('lastRunCell').textContent = state.lastRun ? new Date(state.lastRun).toLocaleString() : 'Не было';
+        }
+        if ($('historyCount')) {
+          $('historyCount').textContent = `${state.history.length || 0} запусков`;
+        }
+        if ($('runState')) {
+          $('runState').textContent = job && job.status !== 'done' ? `${job.status}: ${job.stage}` : 'Готов к запуску';
+        }
+      }
+
+      function leadScore(lead) {
+        let score = 16;
+        if (lead.website) score += 18;
+        if (lead.phone) score += 12;
+        if (lead.email) score += 16;
+        if (lead.form) score += 14;
+        if (lead.quoteSignal) score += 14;
+        if (lead.social) score += 5;
+        if (lead.status === 'Won') score += 20;
+        if (lead.status === 'Archived') score -= 30;
+        if (lead.source === 'Demo') score -= 8;
+        return Math.max(0, Math.min(99, score));
+      }
+
+      function statusFor(lead) {
+        if (lead.status) return lead.status;
+        if (lead.email || lead.phone || lead.form || lead.social) return 'Ready';
+        if (lead.website) return 'Need Check';
+        return 'Need Contact';
+      }
+
+      function todayIsoPlus(days) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        return d.toISOString().slice(0, 10);
+      }
+
+      function isFollowUpDue(lead) {
+        if (!lead.followUpDue || lead.status === 'Won' || lead.status === 'Archived') return false;
+        return lead.followUpDue <= new Date().toISOString().slice(0, 10);
+      }
+
+      function mergeLead(input) {
+        const key = input.website || input.name + input.city;
+        const id = input.id || idFor(key);
+        const existing = state.leads.find(l => l.id === id || normalize(l.name + l.city) === normalize(input.name + input.city));
+        if (existing) {
+          Object.assign(existing, { ...input, id: existing.id, createdAt: existing.createdAt || new Date().toISOString() });
+          existing.score = leadScore(existing);
+          existing.status = statusFor(existing);
+          return existing;
+        }
+        const lead = {
+          id,
+          name: input.name || 'Unknown business',
+          city: input.city || $('cityInput').value || '',
+          niche: input.niche || 'contractor',
+          website: cleanUrl(input.website),
+          phone: input.phone || '',
+          email: input.email || '',
+          form: input.form || '',
+          social: input.social || '',
+          address: input.address || '',
+          source: input.source || 'OSM',
+          status: input.status || '',
+          notes: input.notes || '',
+          createdAt: new Date().toISOString(),
+          lastCheckedAt: input.lastCheckedAt || '',
+          quoteSignal: !!input.quoteSignal
+        };
+        lead.score = leadScore(lead);
+        lead.status = statusFor(lead);
+        state.leads.unshift(lead);
+        return lead;
+      }
+
+      function cleanUrl(url) {
+        if (!url) return '';
+        let text = String(url).trim();
+        if (!text) return '';
+        if (!/^https?:\/\//i.test(text)) text = 'https://' + text;
+        try {
+          const u = new URL(text);
+          return u.href.replace(/\/$/, '');
+        } catch {
+          return '';
+        }
+      }
+
+      async function copyText(text, message = 'Скопировано') {
+        try {
+          await navigator.clipboard.writeText(text);
+          toast(message);
+        } catch {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+          toast(message);
+        }
+      }
+
+      async function geocode(city) {
+        const url = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(city);
+        const res = await fetch(url, { headers: { Accept: 'application/json' } });
+        if (!res.ok) throw new Error('Nominatim error ' + res.status);
+        const data = await res.json();
+        if (!data.length) throw new Error('Город не найден');
+        return { lat: Number(data[0].lat), lon: Number(data[0].lon), label: data[0].display_name };
+      }
+
+      function overpassQuery(lat, lon, radius, selected) {
+        const selectedNiches = niches.filter(n => selected.includes(n.id));
+        const nameRegex = selectedNiches.flatMap(n => n.keywords).join('|');
+        return `[out:json][timeout:30];
+(
+  nwr["name"~"${nameRegex}",i](around:${radius},${lat},${lon});
+  nwr["craft"~"roofer|plumber|painter|hvac|floor|fence|landscap|contractor",i](around:${radius},${lat},${lon});
+  nwr["office"="company"](around:${radius},${lat},${lon});
+  nwr["shop"~"doityourself|hardware|paint|flooring",i](around:${radius},${lat},${lon});
+);
+out center tags 140;`;
+      }
+
+      async function postOverpass(query) {
+        const endpoints = [
+          'https://overpass-api.de/api/interpreter',
+          'https://overpass.kumi.systems/api/interpreter',
+          'https://overpass.openstreetmap.ru/api/interpreter'
+        ];
+        let lastError = null;
+        for (const endpoint of endpoints) {
+          try {
+            log('Trying Overpass mirror: ' + new URL(endpoint).hostname);
+            const res = await withTimeout(fetch(endpoint, {
+              method: 'POST',
+              body: query,
+              headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+            }), 28000);
+            if (!res.ok) throw new Error(endpoint + ' ' + res.status);
+            return await res.json();
+          } catch (err) {
+            lastError = err;
+            log('Mirror failed: ' + err.message, 'bad');
+          }
+        }
+        throw lastError || new Error('No Overpass mirrors available');
+      }
+
+      function inferNiche(tags, fallback = 'contractor') {
+        const text = normalize(Object.values(tags || {}).join(' '));
+        const found = niches.find(n => n.keywords.some(k => text.includes(normalize(k))));
+        return found ? found.label : fallback;
+      }
+
+      function fromOsmElement(el, city) {
+        const tags = el.tags || {};
+        const name = tags.name || tags.brand || '';
+        if (!name) return null;
+        const website = tags.website || tags['contact:website'] || tags.url || '';
+        const phone = tags.phone || tags['contact:phone'] || '';
+        const email = tags.email || tags['contact:email'] || '';
+        const address = [
+          tags['addr:housenumber'],
+          tags['addr:street'],
+          tags['addr:city'],
+          tags['addr:state']
+        ].filter(Boolean).join(' ');
+        return {
+          name,
+          city,
+          niche: inferNiche(tags),
+          website,
+          phone,
+          email,
+          address,
+          source: 'OSM',
+          notes: tags.description || ''
+        };
+      }
+
+      async function scanLeads(options = {}) {
+        const nested = !!options.nested;
+        const ownedJob = nested ? null : ensureJob('scan');
+        const city = $('cityInput').value.trim();
+        const radius = Number($('radiusInput').value);
+        const limit = Number($('limitInput').value);
+        if (!city) {
+          toast('Введи город');
+          return false;
+        }
+        setBusy(true, 'Scanning businesses · Overpass + OSM');
+        setProgress(4);
+        updateJob('scan', 4, 'Ищу бизнесы в ' + city);
+        log('Scan started for ' + city);
+        try {
+          const geo = await geocode(city);
+          setProgress(18);
+          updateJob('scan', 18, 'Город найден, собираю компании');
+          log('Geo locked: ' + geo.label);
+          const query = overpassQuery(geo.lat, geo.lon, radius, state.selectedNiches);
+          const data = await postOverpass(query);
+          setProgress(58);
+          updateJob('scan', 58, 'Нормализую найденные бизнесы');
+          const before = state.leads.length;
+          const elements = (data.elements || []).slice(0, limit * 3);
+          elements.map(el => fromOsmElement(el, city)).filter(Boolean).slice(0, limit).forEach(mergeLead);
+          const added = state.leads.length - before;
+          state.lastRun = new Date().toISOString();
+          saveState();
+          setProgress(100);
+          updateJob('scan', 100, 'Сканер закончил: +' + added + ' лидов');
+          log('Scan complete: +' + added + ' leads, total ' + state.leads.length, 'ok');
+          toast('Сканер закончил: +' + added + ' лидов');
+          if (ownedJob) finishJob('done', 'Scan complete: +' + added + ' leads');
+          render();
+          return true;
+        } catch (err) {
+          updateJob('scan error', state.progress || 0, err.message);
+          log('Scan failed: ' + err.message, 'bad');
+          toast('Сканер не прошёл. Можно нажать Demo leads или Contact Hunt.');
+          if (ownedJob) finishJob('needs-attention', 'Scan failed: ' + err.message);
+          return false;
+        } finally {
+          if (!nested) {
+            setBusy(false);
+            setTimeout(() => { setProgress(0); saveState(); }, 900);
+          }
+        }
+      }
+
+      function withTimeout(promise, ms) {
+        return Promise.race([
+          promise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms))
+        ]);
+      }
+
+      async function deepCheckLead(lead) {
+        if (!lead.website) {
+          lead.status = lead.phone || lead.email ? 'Ready' : 'Need Contact';
+          lead.score = leadScore(lead);
+          return lead;
+        }
+        const target = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(lead.website);
+        try {
+          const res = await withTimeout(fetch(target), 11000);
+          if (!res.ok) throw new Error('fetch ' + res.status);
+          const html = await res.text();
+          const lower = html.toLowerCase();
+          const email = html.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/ig);
+          const phone = html.match(/(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g);
+          const form = html.match(/href=["']([^"']*(?:contact|quote|estimate|schedule|book|request)[^"']*)["']/i);
+          const social = html.match(/href=["']([^"']*(?:facebook|instagram|linkedin|twitter|x\.com)[^"']*)["']/i);
+          lead.email = lead.email || (email ? email[0] : '');
+          lead.phone = lead.phone || (phone ? phone[0] : '');
+          lead.form = lead.form || absoluteLink(lead.website, form && form[1]);
+          lead.social = lead.social || absoluteLink(lead.website, social && social[1]);
+          lead.quoteSignal = /free estimate|request quote|get a quote|schedule|book now|contact us|estimate/i.test(lower);
+          lead.lastCheckedAt = new Date().toISOString();
+          lead.status = statusFor(lead);
+          lead.score = leadScore(lead);
+          return lead;
+        } catch (err) {
+          lead.notes = [lead.notes, 'Deep check blocked: ' + err.message].filter(Boolean).join(' | ');
+          lead.lastCheckedAt = new Date().toISOString();
+          lead.status = statusFor(lead);
+          lead.score = leadScore(lead);
+          return lead;
+        }
+      }
+
+      function absoluteLink(base, href) {
+        if (!href) return '';
+        try {
+          return new URL(href, base).href;
+        } catch {
+          return href || '';
+        }
+      }
+
+      async function deepCheckAll(options = {}) {
+        const nested = !!options.nested;
+        const ownedJob = nested ? null : ensureJob('deep-check');
+        const targets = state.leads.filter(l => l.website && l.status !== 'Archived').slice(0, 40);
+        if (!targets.length) {
+          toast('Нет сайтов для проверки');
+          if (ownedJob) finishJob('done', 'No websites to check');
+          return false;
+        }
+        setBusy(true, 'Deep checking websites · contact finder');
+        updateJob('deep-check', 5, 'Проверяю сайты и контакты');
+        log('Deep Check started for ' + targets.length + ' websites');
+        for (let i = 0; i < targets.length; i++) {
+          setProgress(Math.round((i / targets.length) * 100));
+          updateJob('deep-check', Math.round((i / targets.length) * 100), 'Проверяю ' + targets[i].name);
+          await deepCheckLead(targets[i]);
+          log('Checked ' + targets[i].name + ' · ' + targets[i].status + ' · ' + targets[i].score);
+          saveState();
+          render();
+        }
+        setProgress(100);
+        updateJob('deep-check', 100, 'Проверка контактов готова');
+        if (ownedJob) finishJob('done', 'Deep Check complete');
+        if (!nested) {
+          setBusy(false);
+          setTimeout(() => { setProgress(0); saveState(); }, 900);
+        }
+        toast('Deep Check готов');
+        return true;
+      }
+
+      async function fullAutopilot(options = {}) {
+        beginJob('full-auto');
+        setBusy(true, 'Full Auto · scan + contact check + today pack');
+        updateJob('full-auto', 2, options.resume ? 'Продолжаю Full Auto' : 'Запускаю полный цикл');
+        const scanOk = await scanLeads({ nested: true });
+        if (!scanOk && !state.leads.length) {
+          updateJob('needs-attention', 100, 'Сканер не нашёл лиды. Проверь город или нажми Demo leads.');
+          finishJob('needs-attention', 'Full Auto stopped: no leads found');
+          setBusy(false);
+          setTimeout(() => { setProgress(0); saveState(); }, 1100);
+          return;
+        }
+        if (state.leads.some(l => l.website && l.status !== 'Archived')) {
+          await deepCheckAll({ nested: true });
+        }
+        updateJob('today-pack', 92, 'Собираю список на сегодня');
+        buildTodayPack();
+        finishJob('done', 'Full Auto complete');
+        setBusy(false);
+        setTimeout(() => { setProgress(0); saveState(); }, 1100);
+      }
+
+      function seedDemoLeads() {
+        const city = $('cityInput').value.trim() || 'Austin, TX';
+        [
+          ['Blue Ridge Roofing', 'Roofing', 'https://example.com', '(512) 555-0148'],
+          ['Northline HVAC', 'HVAC', '', '(512) 555-0192'],
+          ['Prime Coat Painting', 'Painting', 'https://example.org', ''],
+          ['Atlas Flooring Studio', 'Flooring', '', ''],
+          ['Cedar Fence Works', 'Fencing', '', '(512) 555-0177'],
+          ['Luna Remodel Co', 'Remodeling', 'https://example.net', '']
+        ].forEach(([name, niche, website, phone]) => mergeLead({
+          name,
+          niche,
+          city,
+          website,
+          phone,
+          source: 'Demo',
+          status: phone || website ? 'Ready' : 'Need Contact',
+          notes: 'Demo lead for testing UI and workflow'
+        }));
+        saveState();
+        log('Demo leads added');
+        render();
+      }
+
+      function contactHuntPack() {
+        const leads = state.leads.filter(l => !l.email && !l.phone && !l.form && l.status !== 'Archived').slice(0, 20);
+        if (!leads.length) {
+          toast('Нет лидов без контактов');
+          return '';
+        }
+        return leads.map((l, i) => {
+          const q = encodeURIComponent('"' + l.name + '" ' + (l.city || '') + ' email phone quote contact');
+          const form = encodeURIComponent('"' + l.name + '" ' + (l.city || '') + ' contact form estimate');
+          return `${i + 1}. ${l.name} · ${l.niche}
+Google: https://www.google.com/search?q=${q}
+Form: https://www.google.com/search?q=${form}
+Website: ${l.website || 'not found yet'}
+`;
+        }).join('\n');
+      }
+
+      function messageSubject(lead) {
+        return `Quick idea for ${lead.name || 'your estimates'}`;
+      }
+
+      function contactSearchUrl(lead, mode = 'contact') {
+        const query = mode === 'email'
+          ? `"${lead.name}" ${lead.city || ''} email owner contact`
+          : `"${lead.name}" ${lead.city || ''} contact form estimate quote`;
+        return 'https://www.google.com/search?q=' + encodeURIComponent(query);
+      }
+
+      function gmailComposeUrl(lead) {
+        return 'https://mail.google.com/mail/?view=cm&fs=1'
+          + '&to=' + encodeURIComponent(lead.email || '')
+          + '&su=' + encodeURIComponent(messageSubject(lead))
+          + '&body=' + encodeURIComponent(buildMessage(lead));
+      }
+
+      function mailtoUrl(lead) {
+        return 'mailto:' + encodeURIComponent(lead.email || '')
+          + '?subject=' + encodeURIComponent(messageSubject(lead))
+          + '&body=' + encodeURIComponent(buildMessage(lead));
+      }
+
+      function bestChannel(lead) {
+        if (lead.email) return 'Email';
+        if (lead.form) return 'Contact form';
+        if (lead.social) return 'Social';
+        if (lead.website) return 'Website';
+        if (lead.phone) return 'Phone only';
+        return 'Need contact hunt';
+      }
+
+      function openBestContact(lead) {
+        if (lead.email) {
+          window.open(gmailComposeUrl(lead), '_blank', 'noopener');
+          return;
+        }
+        if (lead.form) {
+          window.open(lead.form, '_blank', 'noopener');
+          return;
+        }
+        if (lead.social) {
+          window.open(lead.social, '_blank', 'noopener');
+          return;
+        }
+        if (lead.website) {
+          window.open(lead.website, '_blank', 'noopener');
+          return;
+        }
+        window.open(contactSearchUrl(lead), '_blank', 'noopener');
+      }
+
+      function linkButton(href, label, primary = false) {
+        if (!href) return '';
+        return `<a class="contact-action ${primary ? 'primary-contact' : ''}" href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`;
+      }
+
+      function leadDetailHtml(lead) {
+        const main = lead.email ? gmailComposeUrl(lead) : (lead.form || lead.social || lead.website || contactSearchUrl(lead));
+        return `
+          <div class="detail-hero">
+            <div>
+              <h3>${escapeHtml(lead.name)}</h3>
+              <p>${escapeHtml(lead.niche)} · ${escapeHtml(lead.city || 'city unknown')} · ${escapeHtml(bestChannel(lead))}</p>
+            </div>
+            <div class="score">${leadScore(lead)}</div>
+          </div>
+          <div class="detail-note">
+            Ты в Испании и без US-номера, поэтому основной путь: email или форма на сайте. Телефон показываем как справку, но процесс строим на письмах и формах.
+          </div>
+          <div class="contact-actions">
+            ${linkButton(main, lead.email ? 'Open Gmail draft' : lead.form ? 'Open contact form' : lead.website ? 'Open website' : 'Find contact', true)}
+            ${linkButton(lead.form, 'Open form')}
+            ${linkButton(lead.website, 'Open site')}
+            ${linkButton(lead.email ? mailtoUrl(lead) : '', 'Mail app')}
+            ${linkButton(lead.social, 'Open social')}
+            ${linkButton(contactSearchUrl(lead, 'email'), 'Find email')}
+            ${linkButton(contactSearchUrl(lead, 'contact'), 'Find form')}
+          </div>
+          <div class="detail-grid">
+            <div class="detail-cell"><span>Email</span><b>${escapeHtml(lead.email || 'not found yet')}</b></div>
+            <div class="detail-cell"><span>Phone</span><b>${escapeHtml(lead.phone || 'not needed / not found')}</b></div>
+            <div class="detail-cell"><span>Form</span><a href="${escapeHtml(lead.form || '#')}" target="_blank" rel="noopener">${escapeHtml(lead.form || 'not found yet')}</a></div>
+            <div class="detail-cell"><span>Website</span><a href="${escapeHtml(lead.website || '#')}" target="_blank" rel="noopener">${escapeHtml(lead.website || 'not found yet')}</a></div>
+            <div class="detail-cell"><span>Status</span><b>${escapeHtml(lead.status || 'Ready')}</b></div>
+            <div class="detail-cell"><span>Source</span><b>${escapeHtml(lead.source || 'local')}</b></div>
+          </div>
+          <textarea class="script-box" readonly>${escapeHtml(buildMessage(lead))}</textarea>
+          <div class="actions">
+            <button class="btn primary" data-detail-action="copy-message">Copy message</button>
+            <button class="btn" data-detail-action="open-contact">Open best contact</button>
+            <button class="btn" data-detail-action="add-contact">Add contact</button>
+            <button class="btn" data-detail-action="sent">Mark Sent</button>
+            <button class="btn" data-detail-action="archive">Archive</button>
+          </div>
+        `;
+      }
+
+      function buildMessage(lead) {
+        const name = lead.name || 'there';
+        const niche = lead.niche || 'contractor';
+        return `Hi ${name},
+
+Quick idea: most ${niche} businesses have old estimates that never got a clean second follow-up. I build a 48-hour Quote Recovery Sprint: you send 20-50 old estimates/leads, I sort them by priority, write the follow-ups, and give you a simple callback board.
+
+If it helps you recover even one job, it usually pays for itself. Want me to send the one-page version?`;
+      }
+
+      function buildTodayPack() {
+        const ready = state.leads
+          .filter(l => l.status !== 'Archived' && l.status !== 'Won')
+          .sort((a, b) => leadScore(b) - leadScore(a))
+          .slice(0, 20);
+        const text = [
+          'TODAY PACK · RevenueSprint 48',
+          'City: ' + ($('cityInput').value || 'not set'),
+          'Ready leads: ' + ready.length,
+          'Channel rule: use email/contact form first. Phone is optional, not required.',
+          '',
+          ...ready.map((l, i) => `${i + 1}. ${l.name} · ${l.niche} · score ${leadScore(l)}
+Contact: ${l.email || l.phone || l.form || l.social || 'Need manual hunt'}
+Website: ${l.website || 'not found'}
+Status: ${l.status}
+Message:
+${buildMessage(l)}
+`)
+        ].join('\n');
+        openModal('Today Pack', text);
+        return text;
+      }
+
+      function deliveryPack() {
+        const hot = state.leads.filter(l => l.status !== 'Archived').sort((a, b) => leadScore(b) - leadScore(a)).slice(0, 10);
+        return `QUOTE RECOVERY DELIVERY PACK
+
+Client output:
+1. Recovery Board: Hot / Warm / Cold.
+2. Follow-up scripts for old estimates.
+3. Today action list.
+4. 3-day and 7-day follow-up plan.
+5. Simple tracking sheet.
+
+Top opportunities:
+${hot.map((l, i) => `${i + 1}. ${l.name} · ${l.niche} · ${leadScore(l)} · ${l.status}`).join('\n')}
+
+Upsell:
+Monthly Recovery Autopilot: weekly old-lead cleanup, follow-up queue, reply tracking, and simple reporting.`;
+      }
+
+      function exportCsv() {
+        const rows = [
+          ['name', 'niche', 'city', 'status', 'score', 'email', 'phone', 'form', 'social', 'website', 'source', 'notes'],
+          ...state.leads.map(l => [l.name, l.niche, l.city, l.status, leadScore(l), l.email, l.phone, l.form, l.social, l.website, l.source, l.notes])
+        ];
+        const csv = rows.map(row => row.map(cell => '"' + String(cell || '').replace(/"/g, '""') + '"').join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'revenuesprint-leads.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function backup() {
+        const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'revenuesprint-backup.json';
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function importBackup() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'application/json';
+        input.onchange = async () => {
+          const file = input.files && input.files[0];
+          if (!file) return;
+          try {
+            const data = JSON.parse(await file.text());
+            state.leads = Array.isArray(data.leads) ? data.leads : state.leads;
+            state.log = Array.isArray(data.log) ? data.log : state.log;
+            state.selectedNiches = Array.isArray(data.selectedNiches) ? data.selectedNiches : state.selectedNiches;
+            saveState();
+            render();
+            toast('Backup imported');
+          } catch {
+            toast('Backup не прочитался');
+          }
+        };
+        input.click();
+      }
+
+      function updateLead(id, patch) {
+        const lead = state.leads.find(l => l.id === id);
+        if (!lead) return;
+        Object.assign(lead, patch);
+        if (patch.status === 'Sent') {
+          lead.sentAt = new Date().toISOString();
+          lead.followUpDue = todayIsoPlus(3);
+        }
+        if (patch.status === 'Follow-up') {
+          lead.lastFollowUpAt = new Date().toISOString();
+          lead.followUpDue = todayIsoPlus(5);
+        }
+        lead.score = leadScore(lead);
+        saveState();
+        render();
+      }
+
+      function addContact(id) {
+        const lead = state.leads.find(l => l.id === id);
+        if (!lead) return;
+        const contact = prompt('Вставь email, phone, form или social для ' + lead.name);
+        if (!contact) return;
+        if (contact.includes('@')) lead.email = contact.trim();
+        else if (/https?:\/\//i.test(contact)) {
+          if (/facebook|instagram|linkedin|x\.com|twitter/i.test(contact)) lead.social = contact.trim();
+          else lead.form = contact.trim();
+        } else lead.phone = contact.trim();
+        lead.status = 'Ready';
+        lead.score = leadScore(lead);
+        saveState();
+        render();
+      }
+
+      function leadMatchesFilter(lead) {
+        if (state.filter === 'all') return true;
+        if (state.filter === 'ready') return lead.status === 'Ready' || lead.email || lead.phone || lead.form;
+        if (state.filter === 'contact') return !lead.email && !lead.phone && !lead.form && lead.status !== 'Archived';
+        if (state.filter === 'follow') return isFollowUpDue(lead);
+        if (state.filter === 'won') return lead.status === 'Won';
+        return lead.status === state.filter;
+      }
+
+      function renderNiches() {
+        $('nicheChips').innerHTML = niches.map(n => `<button class="chip ${state.selectedNiches.includes(n.id) ? 'active' : ''}" data-niche="${n.id}">${n.label}</button>`).join('');
+        $$('#nicheChips .chip').forEach(btn => btn.addEventListener('click', () => {
+          const id = btn.dataset.niche;
+          if (state.selectedNiches.includes(id)) {
+            state.selectedNiches = state.selectedNiches.filter(x => x !== id);
+          } else {
+            state.selectedNiches.push(id);
+          }
+          if (!state.selectedNiches.length) state.selectedNiches = [id];
+          saveState();
+          renderNiches();
+        }));
+      }
+
+      function renderFilters() {
+        const filters = [
+          ['ready', 'Ready'],
+          ['contact', 'No contact'],
+          ['follow', 'Follow-up'],
+          ['Sent', 'Sent'],
+          ['won', 'Won'],
+          ['all', 'All']
+        ];
+        $('filters').innerHTML = filters.map(([id, label]) => `<button class="chip ${state.filter === id ? 'active' : ''}" data-filter="${id}">${label}</button>`).join('');
+        $$('#filters .chip').forEach(btn => btn.addEventListener('click', () => {
+          state.filter = btn.dataset.filter;
+          saveState();
+          render();
+        }));
+      }
+
+      function renderMetrics() {
+        $('mTotal').textContent = state.leads.length;
+        $('mReady').textContent = state.leads.filter(l => l.status === 'Ready' || l.email || l.phone || l.form).length;
+        $('mFollow').textContent = state.leads.filter(isFollowUpDue).length;
+        $('mWon').textContent = state.leads.filter(l => l.status === 'Won').length;
+        $('railMeta').textContent = state.leads.length ? `${state.leads.length} leads · ${state.log.length} events` : 'Нажми Scan или Demo leads для проверки.';
+      }
+
+      function renderLeads() {
+        const list = state.leads.filter(leadMatchesFilter).sort((a, b) => leadScore(b) - leadScore(a));
+        if (!list.length) {
+          $('leadList').innerHTML = `<div class="lead-card"><div class="lead-title"><b>Очередь пустая</b><span>Нажми Scan, Full Auto или Demo leads, чтобы проверить весь поток.</span></div></div>`;
+          return;
+        }
+        $('leadList').innerHTML = list.map(lead => {
+          const score = leadScore(lead);
+          const statusClass = lead.status === 'Ready' ? 'ready' : lead.status === 'Need Contact' ? 'need' : lead.status === 'Archived' ? 'bad' : score > 64 ? 'hot' : '';
+          const contact = lead.email || lead.phone || lead.form || lead.social || 'contact needed';
+          return `<article class="lead-card" data-id="${lead.id}">
+            <div class="lead-top">
+              <div class="lead-title">
+                <b>${escapeHtml(lead.name)}</b>
+                <span>${escapeHtml(lead.niche)} · ${escapeHtml(lead.city || '')} · ${escapeHtml(contact)}</span>
+              </div>
+              <div class="score">${score}</div>
+            </div>
+            <div class="badges">
+              <span class="badge ${statusClass}">${escapeHtml(lead.status)}</span>
+              <span class="badge">${escapeHtml(lead.source || 'local')}</span>
+              ${lead.website ? '<span class="badge hot">site</span>' : ''}
+              ${lead.quoteSignal ? '<span class="badge ready">quote signal</span>' : ''}
+              ${isFollowUpDue(lead) ? '<span class="badge need">FU due</span>' : ''}
+            </div>
+            <div class="lead-actions">
+              <button class="mini-btn primary-mini" data-action="open">Open</button>
+              <button class="mini-btn" data-action="select">Script</button>
+              <button class="mini-btn" data-action="copy">Copy</button>
+              <button class="mini-btn" data-action="check">Check</button>
+              <button class="mini-btn" data-action="contact">Add contact</button>
+              <button class="mini-btn" data-action="sent">Sent</button>
+              <button class="mini-btn" data-action="fu">FU</button>
+              <button class="mini-btn" data-action="won">Won</button>
+              <button class="mini-btn" data-action="archive">Archive</button>
+            </div>
+          </article>`;
+        }).join('');
+
+        $$('#leadList .lead-card').forEach(card => {
+          const id = card.dataset.id;
+          card.addEventListener('click', async (event) => {
+            const btn = event.target.closest('button');
+            if (!btn) {
+              openLeadDetail(id);
+              return;
+            }
+            const lead = state.leads.find(l => l.id === id);
+            if (!lead) return;
+            const action = btn.dataset.action;
+            if (action === 'open') openLeadDetail(id);
+            if (action === 'select') selectLead(id);
+            if (action === 'copy') copyText(buildMessage(lead), 'Сообщение скопировано');
+            if (action === 'check') {
+              btn.disabled = true;
+              await deepCheckLead(lead);
+              saveState();
+              render();
+              toast('Проверка готова');
+            }
+            if (action === 'contact') addContact(id);
+            if (action === 'sent') updateLead(id, { status: 'Sent' });
+            if (action === 'fu') updateLead(id, { status: 'Follow-up' });
+            if (action === 'won') updateLead(id, { status: 'Won', wonAt: new Date().toISOString() });
+            if (action === 'archive') updateLead(id, { status: 'Archived' });
+          });
+        });
+      }
+
+      function renderLog() {
+        $('console').innerHTML = state.log.length
+          ? state.log.map(l => `<div class="log-line"><strong>${escapeHtml(l.at)}</strong> ${escapeHtml(l.message)}</div>`).join('')
+          : `<div class="log-line"><strong>ready</strong> waiting for autopilot</div>`;
+      }
+
+      function renderHistory() {
+        if (!$('historyList')) return;
+        $('historyList').innerHTML = state.history.length
+          ? state.history.map(item => `<div class="timeline-item"><b>${escapeHtml(item.title || item.status)} · ${escapeHtml(item.status)}</b><span>${escapeHtml(new Date(item.at).toLocaleString())}<br>${escapeHtml(item.detail || '')}</span></div>`).join('')
+          : `<div class="timeline-item"><b>Истории пока нет</b><span>Запусти Full Auto или Scan, и здесь появится сохранённый след.</span></div>`;
+      }
+
+      function selectLead(id) {
+        state.selectedLeadId = id;
+        const lead = state.leads.find(l => l.id === id);
+        $('scriptBox').value = lead ? buildMessage(lead) : '';
+        saveState();
+      }
+
+      function renderScript() {
+        const lead = state.leads.find(l => l.id === state.selectedLeadId) || state.leads.find(l => l.status === 'Ready') || state.leads[0];
+        $('scriptBox').value = lead ? buildMessage(lead) : 'Сначала добавь или найди лидов. Потом здесь появится готовое сообщение.';
+      }
+
+      function renderDelivery() {
+        $('deliveryBox').value = deliveryPack();
+      }
+
+      function render() {
+        renderNiches();
+        renderFilters();
+        renderMetrics();
+        renderLeads();
+        renderLog();
+        renderHistory();
+        renderJob();
+        renderScript();
+        renderDelivery();
+        setProgress(state.progress || 0);
+        saveState();
+      }
+
+      function escapeHtml(text) {
+        return String(text || '').replace(/[&<>"']/g, ch => ({
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[ch]));
+      }
+
+      function openModal(title, text) {
+        $('modalTitle').textContent = title;
+        $('leadDetail').classList.add('hidden');
+        $('modalText').classList.remove('hidden');
+        $('copyModal').classList.remove('hidden');
+        $('modalSentBtn').classList.add('hidden');
+        $('modalText').value = text;
+        $('modal').classList.add('open');
+      }
+
+      function openLeadDetail(id) {
+        const lead = state.leads.find(l => l.id === id);
+        if (!lead) return;
+        state.selectedLeadId = id;
+        $('modalTitle').textContent = 'Business profile';
+        $('leadDetail').innerHTML = leadDetailHtml(lead);
+        $('leadDetail').classList.remove('hidden');
+        $('modalText').classList.add('hidden');
+        $('copyModal').classList.add('hidden');
+        $('modalSentBtn').classList.remove('hidden');
+        $('modalSentBtn').dataset.leadId = id;
+        $('modal').classList.add('open');
+        saveState();
+      }
+
+      function handleLeadDetailAction(event) {
+        const btn = event.target.closest('[data-detail-action]');
+        if (!btn) return;
+        const lead = state.leads.find(l => l.id === state.selectedLeadId);
+        if (!lead) return;
+        const action = btn.dataset.detailAction;
+        if (action === 'copy-message') copyText(buildMessage(lead), 'Сообщение скопировано');
+        if (action === 'open-contact') openBestContact(lead);
+        if (action === 'add-contact') {
+          addContact(lead.id);
+          openLeadDetail(lead.id);
+        }
+        if (action === 'sent') {
+          updateLead(lead.id, { status: 'Sent' });
+          openLeadDetail(lead.id);
+          toast('Отмечено как Sent');
+        }
+        if (action === 'archive') {
+          updateLead(lead.id, { status: 'Archived' });
+          $('modal').classList.remove('open');
+          toast('Лид отправлен в архив');
+        }
+      }
+
+      function bind() {
+        $('runAutopilot').addEventListener('click', fullAutopilot);
+        $('runAutopilotHero').addEventListener('click', fullAutopilot);
+        $('resumeAutopilot').addEventListener('click', () => fullAutopilot({ resume: true }));
+        $('scanBtn').addEventListener('click', scanLeads);
+        $('deepCheckBtn').addEventListener('click', deepCheckAll);
+        $('todayPackBtn').addEventListener('click', buildTodayPack);
+        $('contactHuntBtn').addEventListener('click', () => openModal('Contact Hunt', contactHuntPack()));
+        $('seedDemo').addEventListener('click', seedDemoLeads);
+        $('exportCsvBtn').addEventListener('click', exportCsv);
+        $('backupBtn').addEventListener('click', backup);
+        $('importBtn').addEventListener('click', importBackup);
+        $('clearLogBtn').addEventListener('click', () => {
+          state.log = [];
+          saveState();
+          renderLog();
+        });
+        $('clearHistoryBtn').addEventListener('click', () => {
+          state.history = [];
+          saveState();
+          render();
+        });
+        $('copyScriptBtn').addEventListener('click', () => copyText($('scriptBox').value, 'Скрипт скопирован'));
+        $('copyDeliveryBtn').addEventListener('click', () => copyText($('deliveryBox').value, 'Delivery pack скопирован'));
+        $('closeModal').addEventListener('click', () => $('modal').classList.remove('open'));
+        $('copyModal').addEventListener('click', () => copyText($('modalText').value, 'Pack скопирован'));
+        $('modalSentBtn').addEventListener('click', () => {
+          const id = $('modalSentBtn').dataset.leadId || state.selectedLeadId;
+          if (!id) return;
+          updateLead(id, { status: 'Sent' });
+          openLeadDetail(id);
+          toast('Отмечено как Sent');
+        });
+        $('leadDetail').addEventListener('click', handleLeadDetailAction);
+        $('installBtn').addEventListener('click', async () => {
+          if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            deferredInstallPrompt = null;
+          } else {
+            toast('На iPhone: Share → Add to Home Screen после HTTPS deploy.');
+          }
+        });
+        window.addEventListener('beforeinstallprompt', event => {
+          event.preventDefault();
+          deferredInstallPrompt = event;
+        });
+        window.addEventListener('pagehide', () => saveState());
+        window.addEventListener('beforeunload', () => saveState());
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            state.hiddenAt = new Date().toISOString();
+            saveState();
+          } else {
+            const hiddenMs = state.hiddenAt ? Date.now() - new Date(state.hiddenAt).getTime() : 0;
+            if (state.activeJob && state.activeJob.status === 'running' && hiddenMs > 45000) {
+              state.activeJob.status = 'paused';
+              state.activeJob.message = 'Браузер был свернут. Продолжи запуск, чтобы не потерять этап.';
+              state.activeJob.updatedAt = new Date().toISOString();
+              state.history.unshift({
+                at: state.activeJob.updatedAt,
+                status: 'paused',
+                title: 'Пауза после возврата',
+                detail: state.activeJob.stage
+              });
+              state.history = state.history.slice(0, 30);
+              setBusy(false);
+              saveState();
+            }
+            state.hiddenAt = null;
+            render();
+          }
+        });
+        setupNavSpy();
+      }
+
+      function setupNavSpy() {
+        const links = $$('.nav a, .mobile-dock a');
+        const sections = ['control', 'queue', 'crm', 'scripts', 'delivery'].map(id => $(id));
+        const observer = new IntersectionObserver(entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id));
+          });
+        }, { rootMargin: '-35% 0px -55% 0px', threshold: 0 });
+        sections.forEach(section => section && observer.observe(section));
+      }
+
+      function bootCanvas() {
+        const canvas = $('starfield');
+        const ctx = canvas.getContext('2d');
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let stars = [];
+
+        function resize() {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.floor(innerWidth * dpr);
+          canvas.height = Math.floor(innerHeight * dpr);
+          canvas.style.width = innerWidth + 'px';
+          canvas.style.height = innerHeight + 'px';
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          const count = Math.min(180, Math.floor((innerWidth * innerHeight) / 8500));
+          stars = Array.from({ length: count }, () => ({
+            x: Math.random() * innerWidth,
+            y: Math.random() * innerHeight,
+            z: Math.random() * .8 + .2,
+            vx: (Math.random() - .5) * .12,
+            vy: (Math.random() - .5) * .08
+          }));
+        }
+
+        function frame() {
+          ctx.clearRect(0, 0, innerWidth, innerHeight);
+          ctx.fillStyle = 'rgba(120,180,255,.55)';
+          stars.forEach(s => {
+            if (!reduce) {
+              s.x += s.vx * s.z;
+              s.y += s.vy * s.z;
+              if (s.x < 0) s.x = innerWidth;
+              if (s.x > innerWidth) s.x = 0;
+              if (s.y < 0) s.y = innerHeight;
+              if (s.y > innerHeight) s.y = 0;
+            }
+            ctx.globalAlpha = .25 + s.z * .55;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, 1.15 * s.z, 0, Math.PI * 2);
+            ctx.fill();
+          });
+          ctx.globalAlpha = .12;
+          ctx.strokeStyle = '#5ff2ff';
+          for (let i = 0; i < stars.length; i += 9) {
+            const a = stars[i];
+            const b = stars[(i + 7) % stars.length];
+            const dx = a.x - b.x;
+            const dy = a.y - b.y;
+            if (dx * dx + dy * dy < 18000) {
+              ctx.beginPath();
+              ctx.moveTo(a.x, a.y);
+              ctx.lineTo(b.x, b.y);
+              ctx.stroke();
+            }
+          }
+          ctx.globalAlpha = 1;
+          requestAnimationFrame(frame);
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+        frame();
+      }
+
+      if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+      }
+
+      pauseInterruptedJob();
+      bind();
+      bootCanvas();
+      render();
+    })();
+  </script>
+</body>
+</html>
