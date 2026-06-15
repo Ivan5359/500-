@@ -1,0 +1,4943 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050913">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RevenueSprint">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>RevenueSprint 48</title>
+  <style>
+    :root {
+      --ink: #17201d;
+      --muted: #5d6863;
+      --line: #d9dfdc;
+      --panel: #ffffff;
+      --bg: #f5f7f3;
+      --accent: #087f5b;
+      --accent-2: #d9480f;
+      --accent-3: #1864ab;
+      --soft: #e7f4ee;
+      --soft-2: #fff1e8;
+      --shadow: 0 16px 40px rgba(23, 32, 29, 0.10);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(8, 127, 91, 0.08), rgba(245, 247, 243, 0) 380px),
+        var(--bg);
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      padding: 24px 18px;
+      background: #ffffffcc;
+      border-right: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: conic-gradient(from 220deg, var(--accent), #0ca678, var(--accent-3), var(--accent));
+      border-radius: 8px;
+      box-shadow: 0 10px 24px rgba(8, 127, 91, 0.22);
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.1;
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    .nav button {
+      min-height: 42px;
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr);
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 8px;
+      padding: 9px 11px;
+      text-align: left;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      color: var(--ink);
+      background: var(--soft);
+    }
+
+    .sidebar-foot {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 20px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .sidebar-foot span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    main {
+      min-width: 0;
+      padding: 34px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin: 0 auto 22px;
+      max-width: 1180px;
+    }
+
+    .topbar h1 {
+      margin: 0;
+      font-size: clamp(28px, 4.3vw, 58px);
+      line-height: 0.98;
+      letter-spacing: 0;
+      max-width: 780px;
+    }
+
+    .topbar p {
+      margin: 10px 0 0;
+      max-width: 690px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+
+    .status {
+      min-width: 230px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .status b {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 9px;
+    }
+
+    .meter {
+      height: 10px;
+      background: #ebefed;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .meter i {
+      display: block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #0ca678);
+      transition: width 180ms ease;
+    }
+
+    .stage {
+      display: none;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .stage.active {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: 24px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    p {
+      line-height: 1.55;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .tagline {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .hero-card {
+      min-height: 340px;
+      position: relative;
+      overflow: hidden;
+      color: #fff;
+      background:
+        linear-gradient(135deg, rgba(10, 52, 38, 0.96), rgba(8, 127, 91, 0.82)),
+        radial-gradient(circle at 78% 25%, rgba(255, 255, 255, 0.2), transparent 28%),
+        #0b3d2e;
+      border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .hero-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 20px 20px auto;
+      width: min(42%, 260px);
+      aspect-ratio: 1;
+      background:
+        linear-gradient(135deg, transparent 45%, rgba(255,255,255,.36) 45% 48%, transparent 48%),
+        linear-gradient(45deg, transparent 50%, rgba(255,255,255,.28) 50% 53%, transparent 53%);
+      opacity: 0.45;
+    }
+
+    .hero-card h2 {
+      position: relative;
+      z-index: 1;
+      max-width: 650px;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1;
+    }
+
+    .hero-card p,
+    .hero-card .tagline {
+      position: relative;
+      z-index: 1;
+      max-width: 620px;
+    }
+
+    .hero-card .pill {
+      color: #e7fff5;
+      border-color: rgba(255,255,255,.3);
+      background: rgba(255,255,255,.1);
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .kpi {
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.24);
+      background: rgba(255,255,255,.11);
+    }
+
+    .kpi strong {
+      display: block;
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .kpi span {
+      color: #d9fff0;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .offer-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .offer-list li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      min-height: 42px;
+    }
+
+    .check {
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--accent);
+      font-size: 15px;
+      font-weight: 700;
+      flex: none;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 7px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 10px 12px;
+      min-height: 42px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 118px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: rgba(8, 127, 91, .75);
+      box-shadow: 0 0 0 4px rgba(8, 127, 91, .12);
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 42px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: #fff;
+      background: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn.secondary {
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+    }
+
+    .btn.warning {
+      background: var(--accent-2);
+    }
+
+    .btn:disabled {
+      opacity: .52;
+      cursor: not-allowed;
+    }
+
+    .copybox {
+      position: relative;
+      border: 1px solid var(--line);
+      background: #fbfcfb;
+      border-radius: 8px;
+      padding: 14px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      min-height: 118px;
+      overflow-wrap: anywhere;
+    }
+
+    .copybox.small {
+      min-height: 64px;
+    }
+
+    .price-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .price {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .price strong {
+      display: block;
+      font-size: 30px;
+      margin: 8px 0;
+    }
+
+    .price ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .task input {
+      width: 22px;
+      min-height: 22px;
+      padding: 0;
+    }
+
+    .task b {
+      display: block;
+      font-size: 14px;
+    }
+
+    .task span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .task time {
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 8px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--muted);
+      background: #f0f3f1;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .crm-row button {
+      color: var(--accent-2);
+      background: transparent;
+      font-weight: 700;
+      padding: 0;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      min-height: 36px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: var(--muted);
+      background: #fff;
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+
+    .tab.active {
+      color: #fff;
+      background: var(--accent-3);
+      border-color: var(--accent-3);
+    }
+
+    .search-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .search-links a {
+      display: block;
+      padding: 12px;
+      color: var(--ink);
+      text-decoration: none;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      overflow-wrap: anywhere;
+    }
+
+    .search-links a:hover {
+      border-color: var(--accent);
+      background: var(--soft);
+    }
+
+    .finder-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .result {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .result h3 {
+      margin-bottom: 6px;
+    }
+
+    .result .meta {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .linkbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .linkbar a,
+    .linkbar button {
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      background: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .linkbar button {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .score {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      min-height: 26px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .queue {
+      display: grid;
+      gap: 12px;
+    }
+
+    .queue-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.8fr) auto;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .queue-item h3 {
+      margin-bottom: 6px;
+    }
+
+    .queue-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .queue-actions {
+      display: grid;
+      gap: 8px;
+      min-width: 124px;
+    }
+
+    .queue-actions button,
+    .queue-actions a {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 10px;
+      border-radius: 8px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .queue-actions button.primary {
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .sop {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .sop .price strong {
+      font-size: 20px;
+    }
+
+    .bot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .bot-log {
+      max-height: 260px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .bot-log p {
+      margin: 0 0 8px;
+      color: var(--muted);
+    }
+
+    .bot-log p:last-child {
+      margin-bottom: 0;
+    }
+
+    .mini-dashboard {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .metric strong {
+      font-size: 24px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      transform: translateY(16px);
+      opacity: 0;
+      pointer-events: none;
+      color: #fff;
+      background: var(--ink);
+      border-radius: 8px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      transition: 150ms ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 960px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .sidebar-foot {
+        position: static;
+        margin-top: 14px;
+      }
+
+      .nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      main {
+        padding: 22px;
+      }
+
+      .topbar {
+        display: block;
+      }
+
+      .status {
+        margin-top: 16px;
+      }
+
+      .span-4,
+      .span-5,
+      .span-6,
+      .span-7,
+      .span-8,
+      .span-12 {
+        grid-column: span 12;
+      }
+
+      .price-row,
+      .mini-dashboard,
+      .kpis,
+      .field-grid,
+      .search-links,
+      .result-grid,
+      .sop,
+      .bot-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .queue-item {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .nav {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      main {
+        padding: 16px;
+      }
+
+      .task {
+        grid-template-columns: 30px minmax(0, 1fr);
+      }
+
+      .task time {
+        grid-column: 2;
+      }
+    }
+
+    /* Premium command-center skin */
+    :root {
+      --ink: #111816;
+      --muted: #66716d;
+      --line: #dfe5e1;
+      --panel: rgba(255, 255, 255, 0.88);
+      --bg: #f7f8f5;
+      --accent: #0b8f6f;
+      --accent-2: #e0552f;
+      --accent-3: #1b6ca8;
+      --soft: #e8f7f1;
+      --soft-2: #fff3e9;
+      --shadow: 0 18px 54px rgba(17, 24, 22, 0.10);
+    }
+
+    body {
+      background:
+        linear-gradient(180deg, rgba(11, 143, 111, 0.10), rgba(247, 248, 245, 0) 340px),
+        linear-gradient(90deg, rgba(27, 108, 168, 0.06), transparent 46%, rgba(224, 85, 47, 0.05)),
+        var(--bg);
+      text-rendering: geometricPrecision;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .45;
+      background-image:
+        linear-gradient(rgba(17,24,22,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17,24,22,.035) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(180deg, #000, transparent 72%);
+    }
+
+    .sidebar {
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 12px 0 42px rgba(17, 24, 22, 0.06);
+    }
+
+    .brand strong {
+      font-size: 18px;
+    }
+
+    .mark {
+      animation: markPulse 4s ease-in-out infinite;
+    }
+
+    .nav button {
+      position: relative;
+      overflow: hidden;
+      transition: background 170ms ease, color 170ms ease, transform 170ms ease;
+    }
+
+    .nav button::after {
+      content: "";
+      position: absolute;
+      inset: 6px auto 6px 0;
+      width: 3px;
+      border-radius: 999px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transition: transform 170ms ease;
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      transform: translateX(2px);
+      background: linear-gradient(90deg, rgba(11,143,111,.13), rgba(255,255,255,.5));
+    }
+
+    .nav button.active::after {
+      transform: scaleY(1);
+    }
+
+    .topbar {
+      padding: 22px;
+      border: 1px solid rgba(223, 229, 225, 0.78);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.72);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      animation: riseIn 520ms ease both;
+    }
+
+    .topbar h1 {
+      max-width: 850px;
+      font-weight: 850;
+    }
+
+    .panel {
+      position: relative;
+      overflow: hidden;
+      background: var(--panel);
+      backdrop-filter: blur(16px);
+      transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+      animation: riseIn 420ms ease both;
+    }
+
+    .panel:hover {
+      transform: translateY(-2px);
+      border-color: rgba(11, 143, 111, .28);
+      box-shadow: 0 22px 62px rgba(17, 24, 22, 0.12);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(255,255,255,.4), transparent 34%);
+      opacity: .55;
+    }
+
+    .panel > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-card {
+      background:
+        linear-gradient(135deg, rgba(11, 36, 31, 0.98), rgba(11, 143, 111, 0.88)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,.08) 0 1px, transparent 1px 18px);
+    }
+
+    .btn,
+    .tab,
+    .queue-actions button,
+    .queue-actions a,
+    .linkbar a,
+    .linkbar button {
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease, border-color 150ms ease;
+    }
+
+    .btn:hover,
+    .tab:hover,
+    .queue-actions button:hover,
+    .queue-actions a:hover,
+    .linkbar a:hover,
+    .linkbar button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 24px rgba(17, 24, 22, .10);
+    }
+
+    .btn {
+      box-shadow: 0 10px 22px rgba(11, 143, 111, .18);
+    }
+
+    input,
+    textarea,
+    select {
+      background: rgba(255,255,255,.92);
+      transition: border-color 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      transform: translateY(-1px);
+    }
+
+    .metric,
+    .price,
+    .result,
+    .queue-item,
+    .task {
+      background: rgba(255,255,255,.86);
+    }
+
+    .score {
+      background: linear-gradient(90deg, rgba(11,143,111,.13), rgba(27,108,168,.10));
+      color: #075f4a;
+    }
+
+    .toast {
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(17, 24, 22, .92);
+      backdrop-filter: blur(14px);
+    }
+
+    .autopilot-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 14px 0 0;
+    }
+
+    .auto-step {
+      min-height: 72px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.74);
+    }
+
+    .auto-step b {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .auto-step span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .auto-step.active {
+      border-color: rgba(11,143,111,.45);
+      background: linear-gradient(135deg, rgba(232,247,241,.95), rgba(255,255,255,.72));
+      box-shadow: 0 12px 30px rgba(11,143,111,.12);
+    }
+
+    .auto-step.active b::after {
+      content: "";
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-left: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes markPulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-1px) scale(1.025); }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: .25; transform: scale(.85); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 960px) {
+      .topbar {
+        padding: 16px;
+      }
+
+      .autopilot-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .autopilot-strip {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Black-blue final theme */
+    :root {
+      --ink: #eaf2ff;
+      --muted: #8fa2ba;
+      --line: rgba(118, 151, 190, 0.22);
+      --panel: rgba(9, 18, 33, 0.82);
+      --bg: #050913;
+      --accent: #38bdf8;
+      --accent-2: #f97373;
+      --accent-3: #4f8cff;
+      --soft: rgba(56, 189, 248, 0.12);
+      --soft-2: rgba(79, 140, 255, 0.14);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.36);
+    }
+
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 18% 0%, rgba(56, 189, 248, 0.16), transparent 32%),
+        radial-gradient(circle at 88% 14%, rgba(79, 140, 255, 0.16), transparent 30%),
+        linear-gradient(180deg, #07101f 0%, #050913 42%, #03060d 100%);
+    }
+
+    body::before {
+      opacity: .28;
+      background-image:
+        linear-gradient(rgba(148, 180, 216, .08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 180, 216, .08) 1px, transparent 1px);
+    }
+
+    .sidebar,
+    .topbar,
+    .status,
+    .sidebar-foot,
+    .panel,
+    .price,
+    .metric,
+    .result,
+    .queue-item,
+    .task,
+    .auto-step,
+    .copybox,
+    table,
+    .bot-log {
+      color: var(--ink);
+      background: rgba(9, 18, 33, 0.78);
+      border-color: var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar {
+      background: rgba(5, 9, 19, 0.82);
+    }
+
+    .panel::before,
+    .topbar::before {
+      background: linear-gradient(120deg, rgba(125, 211, 252, .13), transparent 38%);
+    }
+
+    .muted,
+    .brand span,
+    .sidebar-foot span,
+    .metric span,
+    .result .meta,
+    .queue-item p,
+    .task span,
+    .bot-log p,
+    th {
+      color: var(--muted);
+    }
+
+    input,
+    textarea,
+    select {
+      color: var(--ink);
+      background: rgba(3, 8, 20, 0.72);
+      border-color: var(--line);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #70849c;
+    }
+
+    .btn {
+      color: #06101d;
+      background: linear-gradient(135deg, #7dd3fc, #4f8cff);
+      box-shadow: 0 14px 34px rgba(56, 189, 248, .22);
+    }
+
+    .btn.secondary,
+    .tab,
+    .pill,
+    .linkbar a,
+    .queue-actions a,
+    .queue-actions button {
+      color: var(--ink);
+      background: rgba(10, 23, 43, 0.9);
+      border-color: var(--line);
+      box-shadow: none;
+    }
+
+    .btn.warning {
+      color: white;
+      background: linear-gradient(135deg, #2563eb, #38bdf8);
+    }
+
+    .nav button {
+      color: var(--muted);
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      color: var(--ink);
+      background: linear-gradient(90deg, rgba(56,189,248,.16), rgba(79,140,255,.07));
+    }
+
+    .hero-card {
+      background:
+        linear-gradient(135deg, rgba(2, 6, 23, .98), rgba(12, 74, 110, .92)),
+        repeating-linear-gradient(135deg, rgba(125,211,252,.08) 0 1px, transparent 1px 18px);
+      border-color: rgba(125,211,252,.22);
+    }
+
+    .score {
+      color: #bdf2ff;
+      background: linear-gradient(90deg, rgba(56,189,248,.22), rgba(79,140,255,.18));
+    }
+
+    .auto-step.active {
+      border-color: rgba(125,211,252,.5);
+      background: linear-gradient(135deg, rgba(14, 116, 144, .35), rgba(10, 23, 43, .78));
+      box-shadow: 0 18px 42px rgba(56,189,248,.14);
+    }
+
+    th {
+      background: rgba(2, 8, 23, .82);
+    }
+
+    td {
+      border-color: var(--line);
+    }
+
+    .meter {
+      background: rgba(148, 163, 184, .16);
+    }
+
+    .meter i {
+      background: linear-gradient(90deg, #38bdf8, #4f8cff);
+    }
+
+    .mark {
+      background: conic-gradient(from 220deg, #38bdf8, #4f8cff, #0ea5e9, #38bdf8);
+    }
+
+    .command-panel {
+      border-color: rgba(125, 211, 252, .32);
+      background:
+        linear-gradient(135deg, rgba(14, 116, 144, .18), rgba(9, 18, 33, .86)),
+        rgba(9, 18, 33, .82);
+    }
+
+    .command-panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(125,211,252,.08), transparent);
+      transform: translateX(-100%);
+      animation: scanLine 5s ease-in-out infinite;
+    }
+
+    @keyframes scanLine {
+      0%, 35% { transform: translateX(-100%); opacity: 0; }
+      50% { opacity: 1; }
+      70%, 100% { transform: translateX(100%); opacity: 0; }
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -22%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: .72;
+      background:
+        conic-gradient(from 90deg at 50% 50%, transparent, rgba(56,189,248,.12), transparent, rgba(79,140,255,.10), transparent),
+        radial-gradient(circle at 42% 38%, rgba(14,165,233,.18), transparent 22%);
+      filter: blur(34px);
+      animation: auroraDrift 18s ease-in-out infinite alternate;
+    }
+
+    .app {
+      isolation: isolate;
+    }
+
+    .topbar,
+    .panel {
+      transform-style: preserve-3d;
+    }
+
+    .panel:nth-child(2n) {
+      animation-delay: 60ms;
+    }
+
+    .panel:nth-child(3n) {
+      animation-delay: 120ms;
+    }
+
+    .hero-card h2 {
+      text-shadow: 0 0 34px rgba(125,211,252,.24);
+    }
+
+    .btn {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: -40% auto -40% -60%;
+      width: 42%;
+      transform: rotate(18deg);
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.38), transparent);
+      transition: transform 0ms;
+    }
+
+    .btn:hover::after {
+      animation: buttonSheen 780ms ease;
+    }
+
+    .queue-item,
+    .result,
+    .metric,
+    .price {
+      animation: cardPop 420ms ease both;
+    }
+
+    .queue-item:hover,
+    .result:hover {
+      border-color: rgba(125,211,252,.45);
+      box-shadow: 0 18px 52px rgba(56,189,248,.13);
+    }
+
+    .auto-step {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auto-step::after {
+      content: "";
+      position: absolute;
+      inset: auto 12px 10px 12px;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(125,211,252,.75), transparent);
+      transform: scaleX(.2);
+      transform-origin: left;
+      opacity: .25;
+    }
+
+    .auto-step.active::after {
+      animation: pipelineFlow 1.7s ease-in-out infinite;
+    }
+
+    @keyframes auroraDrift {
+      0% { transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1); }
+      100% { transform: translate3d(3%, 2%, 0) rotate(12deg) scale(1.08); }
+    }
+
+    @keyframes buttonSheen {
+      from { transform: translateX(0) rotate(18deg); }
+      to { transform: translateX(390%) rotate(18deg); }
+    }
+
+    @keyframes cardPop {
+      from { opacity: 0; transform: translateY(8px) scale(.992); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes pipelineFlow {
+      0% { transform: translateX(-40%) scaleX(.2); opacity: .2; }
+      45% { opacity: 1; }
+      100% { transform: translateX(40%) scaleX(1); opacity: .2; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .001ms !important;
+      }
+    }
+
+    @media (max-width: 960px) {
+      .app {
+        display: block;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+        top: auto;
+        height: auto;
+        z-index: 50;
+        padding: 8px;
+        border: 1px solid rgba(125,211,252,.2);
+        border-radius: 16px;
+        backdrop-filter: blur(22px);
+      }
+
+      .brand,
+      .sidebar-foot {
+        display: none;
+      }
+
+      .nav {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+
+      .nav::-webkit-scrollbar {
+        display: none;
+      }
+
+      .nav button {
+        min-width: 96px;
+        grid-template-columns: 18px minmax(0, 1fr);
+        min-height: 44px;
+        padding: 8px 10px;
+      }
+
+      .nav button:hover,
+      .nav button.active {
+        transform: translateY(-1px);
+      }
+
+      main {
+        padding-bottom: 96px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar h1 {
+        font-size: 31px;
+        line-height: 1.04;
+      }
+
+      .topbar p {
+        font-size: 14px;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .hero-card {
+        min-height: 420px;
+      }
+
+      .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+
+      .btn,
+      .btn.secondary,
+      .btn.warning {
+        width: 100%;
+      }
+
+      .mini-dashboard {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .queue-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .queue-actions button,
+      .queue-actions a {
+        min-height: 40px;
+      }
+
+      th,
+      td {
+        min-width: 132px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+
+    /* Celestial luxury layer */
+    .luxe-radar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .luxe-radar div {
+      position: relative;
+      overflow: hidden;
+      min-height: 78px;
+      padding: 14px;
+      border: 1px solid rgba(125, 211, 252, .24);
+      border-radius: 10px;
+      background:
+        linear-gradient(135deg, rgba(15, 23, 42, .86), rgba(12, 74, 110, .34)),
+        repeating-linear-gradient(90deg, rgba(125,211,252,.045) 0 1px, transparent 1px 16px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 44px rgba(0,0,0,.22);
+    }
+
+    .luxe-radar div::after {
+      content: "";
+      position: absolute;
+      inset: auto -18% -24% -18%;
+      height: 46px;
+      background: linear-gradient(90deg, transparent, rgba(56,189,248,.22), transparent);
+      transform: rotate(-2deg);
+      animation: radarSweep 4.8s ease-in-out infinite;
+    }
+
+    .luxe-radar span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .luxe-radar strong {
+      display: block;
+      color: #eaf7ff;
+      font-size: clamp(18px, 2.3vw, 26px);
+      line-height: 1.05;
+    }
+
+    .focus-mode .sidebar,
+    .focus-mode .topbar,
+    .focus-mode .stage:not(#autopilot) {
+      filter: saturate(.7) brightness(.72);
+    }
+
+    .focus-mode #autopilot .panel:not(.command-panel) {
+      opacity: .58;
+    }
+
+    .focus-mode .command-panel {
+      transform: translateY(-2px) scale(1.005);
+      border-color: rgba(125,211,252,.58);
+      box-shadow: 0 26px 100px rgba(56,189,248,.22), var(--shadow);
+    }
+
+    .command-panel h2 {
+      font-size: clamp(24px, 3vw, 34px);
+      letter-spacing: 0;
+    }
+
+    .command-panel .copybox {
+      background:
+        linear-gradient(135deg, rgba(2, 8, 23, .76), rgba(12, 74, 110, .18)),
+        rgba(2, 8, 23, .7);
+      border-color: rgba(125,211,252,.22);
+    }
+
+    .stage.active .panel {
+      animation-name: luxuryLift;
+      animation-duration: 520ms;
+      animation-timing-function: cubic-bezier(.2,.8,.2,1);
+      animation-fill-mode: both;
+    }
+
+    .stage.active .panel:nth-child(1) { animation-delay: 0ms; }
+    .stage.active .panel:nth-child(2) { animation-delay: 45ms; }
+    .stage.active .panel:nth-child(3) { animation-delay: 90ms; }
+    .stage.active .panel:nth-child(4) { animation-delay: 135ms; }
+
+    @keyframes luxuryLift {
+      from { opacity: 0; transform: translateY(14px) scale(.985); filter: blur(3px); }
+      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+
+    @keyframes radarSweep {
+      0%, 100% { transform: translateX(-24%) rotate(-2deg); opacity: .25; }
+      50% { transform: translateX(24%) rotate(-2deg); opacity: .75; }
+    }
+
+    @media (max-width: 700px) {
+      .luxe-radar {
+        grid-template-columns: 1fr;
+      }
+
+      .luxe-radar div {
+        min-height: 68px;
+      }
+    }
+
+    /* Galactic Pro Max skin */
+    #galaxyCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -3;
+      background:
+        radial-gradient(circle at 48% 18%, rgba(147, 197, 253, .18), transparent 24%),
+        radial-gradient(circle at 20% 78%, rgba(168, 85, 247, .14), transparent 26%),
+        #020617;
+    }
+
+    body {
+      min-height: 100svh;
+      background:
+        radial-gradient(circle at 12% 10%, rgba(56,189,248,.18), transparent 26%),
+        radial-gradient(circle at 88% 4%, rgba(129,140,248,.18), transparent 28%),
+        radial-gradient(circle at 72% 88%, rgba(14,165,233,.10), transparent 34%),
+        linear-gradient(180deg, #030712 0%, #020617 52%, #00030a 100%);
+    }
+
+    body::before {
+      z-index: -2;
+      opacity: .34;
+      background-image:
+        linear-gradient(rgba(125,211,252,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125,211,252,.08) 1px, transparent 1px),
+        radial-gradient(circle at center, rgba(125,211,252,.22) 1px, transparent 1.4px);
+      background-size: 48px 48px, 48px 48px, 96px 96px;
+      mask-image: linear-gradient(180deg, rgba(0,0,0,.95), transparent 86%);
+    }
+
+    body::after {
+      z-index: -1;
+      opacity: .82;
+      background:
+        radial-gradient(ellipse at 50% 8%, rgba(125,211,252,.22), transparent 38%),
+        conic-gradient(from 180deg at 50% 50%, transparent, rgba(56,189,248,.14), transparent, rgba(168,85,247,.12), transparent);
+      mix-blend-mode: screen;
+    }
+
+    .app {
+      position: relative;
+    }
+
+    .app::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -1;
+      background:
+        linear-gradient(115deg, transparent 0 36%, rgba(125,211,252,.08) 43%, transparent 50% 100%),
+        linear-gradient(245deg, transparent 0 42%, rgba(99,102,241,.07) 49%, transparent 56% 100%);
+      animation: orbitalLight 14s ease-in-out infinite alternate;
+    }
+
+    .sidebar,
+    .topbar,
+    .panel {
+      border-color: rgba(148, 210, 255, .18);
+      background:
+        linear-gradient(145deg, rgba(15, 23, 42, .78), rgba(2, 8, 23, .62)),
+        rgba(2, 6, 23, .72);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 24px 90px rgba(0,0,0,.38),
+        0 0 0 1px rgba(125,211,252,.05);
+    }
+
+    .topbar {
+      border-radius: 18px;
+    }
+
+    .panel {
+      border-radius: 14px;
+    }
+
+    .hero-card,
+    .command-panel {
+      border-color: rgba(125,211,252,.36);
+      background:
+        radial-gradient(circle at 18% 14%, rgba(125,211,252,.20), transparent 26%),
+        radial-gradient(circle at 82% 6%, rgba(168,85,247,.18), transparent 28%),
+        linear-gradient(135deg, rgba(2, 6, 23, .96), rgba(12, 74, 110, .70));
+      box-shadow:
+        0 28px 110px rgba(56,189,248,.12),
+        inset 0 1px 0 rgba(255,255,255,.12);
+    }
+
+    .hero-card::before,
+    .command-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent),
+        repeating-linear-gradient(115deg, transparent 0 18px, rgba(125,211,252,.055) 18px 19px);
+      opacity: .68;
+    }
+
+    .topbar h1,
+    .hero-card h2,
+    .command-panel h2 {
+      background: linear-gradient(92deg, #f8fbff, #bae6fd 42%, #c4b5fd 78%, #f8fbff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: none;
+    }
+
+    .metric strong,
+    .kpi strong,
+    .luxe-radar strong {
+      background: linear-gradient(92deg, #e0f2fe, #7dd3fc, #a5b4fc);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .btn {
+      border: 1px solid rgba(186,230,253,.34);
+      background:
+        linear-gradient(135deg, rgba(125,211,252,1), rgba(79,140,255,1) 48%, rgba(168,85,247,.92));
+      box-shadow:
+        0 16px 36px rgba(56,189,248,.24),
+        inset 0 1px 0 rgba(255,255,255,.42);
+    }
+
+    .btn.secondary,
+    .tab,
+    .pill,
+    .queue-actions a,
+    .queue-actions button,
+    .linkbar a,
+    .linkbar button {
+      background:
+        linear-gradient(145deg, rgba(15,23,42,.88), rgba(2,8,23,.62));
+      border-color: rgba(148, 210, 255, .2);
+    }
+
+    .btn.secondary:hover,
+    .tab:hover,
+    .queue-actions a:hover,
+    .queue-actions button:hover,
+    .linkbar a:hover,
+    .linkbar button:hover {
+      border-color: rgba(125,211,252,.48);
+      background:
+        linear-gradient(145deg, rgba(14,116,144,.34), rgba(15,23,42,.82));
+    }
+
+    .copybox,
+    .bot-log,
+    input,
+    textarea,
+    select {
+      background:
+        linear-gradient(145deg, rgba(2,6,23,.82), rgba(15,23,42,.55));
+      border-color: rgba(148, 210, 255, .18);
+    }
+
+    .queue-item,
+    .result,
+    .price,
+    .metric,
+    .task,
+    .auto-step,
+    .luxe-radar div {
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, rgba(15,23,42,.78), rgba(2,8,23,.52));
+      border-color: rgba(148, 210, 255, .16);
+    }
+
+    .queue-item:hover,
+    .result:hover,
+    .price:hover,
+    .metric:hover {
+      transform: translateY(-3px);
+      border-color: rgba(125,211,252,.48);
+      box-shadow:
+        0 22px 70px rgba(56,189,248,.14),
+        inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .mark {
+      border: 1px solid rgba(255,255,255,.32);
+      box-shadow:
+        0 0 34px rgba(56,189,248,.28),
+        inset 0 1px 0 rgba(255,255,255,.35);
+    }
+
+    .score {
+      border: 1px solid rgba(125,211,252,.25);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    @keyframes orbitalLight {
+      from { opacity: .38; transform: translateX(-2%) rotate(0deg); }
+      to { opacity: .82; transform: translateX(2%) rotate(2deg); }
+    }
+
+    @media (max-width: 960px) {
+      .sidebar {
+        left: max(10px, env(safe-area-inset-left));
+        right: max(10px, env(safe-area-inset-right));
+        bottom: max(10px, env(safe-area-inset-bottom));
+      }
+
+      main {
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+      }
+    }
+
+    /* Minimal cosmic luxury refinement */
+    #galaxyCanvas {
+      opacity: .72;
+    }
+
+    body {
+      letter-spacing: 0;
+      background:
+        radial-gradient(circle at 50% -10%, rgba(30, 64, 175, .32), transparent 34%),
+        radial-gradient(circle at 92% 8%, rgba(14, 165, 233, .13), transparent 28%),
+        linear-gradient(180deg, #020617, #02040a 58%, #000207);
+    }
+
+    body::before {
+      opacity: .18;
+      background-size: 72px 72px, 72px 72px, 144px 144px;
+    }
+
+    body::after {
+      opacity: .34;
+      filter: blur(52px);
+    }
+
+    main {
+      padding-top: 28px;
+    }
+
+    .topbar,
+    .panel,
+    .sidebar,
+    .status,
+    .sidebar-foot {
+      background:
+        linear-gradient(180deg, rgba(15, 23, 42, .72), rgba(2, 6, 23, .68));
+      border-color: rgba(148, 210, 255, .14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.06),
+        0 24px 78px rgba(0,0,0,.28);
+    }
+
+    .topbar,
+    .panel {
+      border-radius: 18px;
+    }
+
+    .topbar h1 {
+      font-weight: 780;
+      letter-spacing: 0;
+    }
+
+    .topbar p,
+    p,
+    .muted {
+      color: #93a4bb;
+    }
+
+    .panel:hover {
+      transform: translateY(-1px);
+      border-color: rgba(125, 211, 252, .26);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 30px 90px rgba(0,0,0,.34);
+    }
+
+    .panel::before,
+    .hero-card::before,
+    .command-panel::before {
+      opacity: .28;
+    }
+
+    .hero-card,
+    .command-panel {
+      background:
+        radial-gradient(circle at 16% 8%, rgba(56, 189, 248, .18), transparent 22%),
+        linear-gradient(145deg, rgba(3, 7, 18, .96), rgba(8, 47, 73, .42));
+      border-color: rgba(125, 211, 252, .24);
+    }
+
+    .btn {
+      min-height: 44px;
+      border-radius: 10px;
+      font-weight: 760;
+    }
+
+    .btn.secondary,
+    .tab,
+    .pill,
+    .queue-actions a,
+    .queue-actions button,
+    .linkbar a,
+    .linkbar button {
+      border-radius: 10px;
+      background: rgba(15, 23, 42, .58);
+    }
+
+    input,
+    textarea,
+    select,
+    .copybox,
+    .bot-log {
+      border-radius: 12px;
+      background: rgba(2, 6, 23, .54);
+    }
+
+    .metric,
+    .price,
+    .result,
+    .queue-item,
+    .task,
+    .auto-step,
+    .luxe-radar div {
+      background: rgba(15, 23, 42, .52);
+      border-color: rgba(148, 210, 255, .12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+
+    .metric strong,
+    .kpi strong,
+    .luxe-radar strong {
+      font-weight: 780;
+    }
+
+    .nav button {
+      border: 1px solid transparent;
+    }
+
+    .nav button.active {
+      border-color: rgba(125, 211, 252, .16);
+    }
+
+    .toast {
+      background: rgba(2, 6, 23, .94);
+      border-color: rgba(125, 211, 252, .22);
+    }
+
+    /* Complete visual rebuild: cosmic luxury cockpit */
+    :root {
+      --ink: #f4f9ff;
+      --muted: #7f92ad;
+      --line: rgba(150, 200, 255, .13);
+      --panel: rgba(4, 10, 24, .74);
+      --bg: #00030a;
+      --accent: #78d8ff;
+      --accent-2: #ff6b9a;
+      --accent-3: #6d8dff;
+      --soft: rgba(120, 216, 255, .11);
+      --shadow: 0 34px 120px rgba(0, 0, 0, .52);
+    }
+
+    html {
+      background: #00030a;
+    }
+
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 50% -18%, rgba(96, 165, 250, .32), transparent 32%),
+        radial-gradient(circle at 88% 16%, rgba(59, 130, 246, .14), transparent 24%),
+        radial-gradient(circle at 4% 88%, rgba(14, 165, 233, .12), transparent 28%),
+        linear-gradient(180deg, #020712 0%, #00030a 58%, #000103 100%);
+      overflow-x: hidden;
+    }
+
+    #galaxyCanvas {
+      opacity: .9;
+      filter: saturate(.9) contrast(1.1);
+    }
+
+    body::before {
+      opacity: .15;
+      background-image:
+        linear-gradient(rgba(120,216,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(120,216,255,.08) 1px, transparent 1px);
+      background-size: 96px 96px;
+      mask-image: radial-gradient(circle at 50% 0%, #000 0 42%, transparent 78%);
+    }
+
+    body::after {
+      opacity: .4;
+      background:
+        conic-gradient(from 90deg at 50% 46%, transparent, rgba(120,216,255,.12), transparent 26%, rgba(109,141,255,.10), transparent 60%),
+        radial-gradient(ellipse at 50% 0%, rgba(186,230,253,.18), transparent 42%);
+      filter: blur(70px);
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 224px minmax(0, 1fr);
+      gap: 0;
+      min-height: 100svh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      padding: 18px 12px;
+      border-right: 1px solid rgba(120,216,255,.10);
+      background:
+        linear-gradient(180deg, rgba(5, 11, 26, .82), rgba(0, 3, 10, .62)),
+        rgba(0,3,10,.76);
+      backdrop-filter: blur(24px);
+      box-shadow: 18px 0 80px rgba(0,0,0,.34);
+    }
+
+    .brand {
+      display: grid;
+      place-items: center;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .brand .mark {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 32% 22%, rgba(255,255,255,.9), transparent 12%),
+        conic-gradient(from 210deg, #78d8ff, #6d8dff, #1e3a8a, #78d8ff);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.18),
+        0 0 42px rgba(120,216,255,.26),
+        inset 0 1px 0 rgba(255,255,255,.35);
+    }
+
+    .brand div:last-child {
+      display: block;
+    }
+
+    .nav {
+      display: grid;
+      gap: 10px;
+    }
+
+    .nav button {
+      width: 100%;
+      min-height: 58px;
+      display: grid;
+      align-items: center;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      padding: 0 14px;
+      margin: 0;
+      border: 1px solid rgba(120,216,255,.10);
+      border-radius: 18px;
+      background: rgba(10, 20, 42, .38);
+      color: #8fa8c6;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.045);
+    }
+
+    .nav button span:first-child {
+      font-size: 18px;
+    }
+
+    .nav button span:last-child {
+      position: static;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      color: var(--ink);
+      background: transparent;
+      box-shadow: none;
+      opacity: 1;
+      pointer-events: auto;
+      transform: none;
+      transition: none;
+      z-index: auto;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .nav button:hover span:last-child {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .nav button:hover,
+    .nav button.active {
+      color: #e0f7ff;
+      border-color: rgba(120,216,255,.42);
+      background:
+        radial-gradient(circle at 35% 20%, rgba(120,216,255,.22), transparent 44%),
+        rgba(10, 28, 56, .64);
+      box-shadow:
+        0 0 34px rgba(56,189,248,.16),
+        inset 0 1px 0 rgba(255,255,255,.10);
+      transform: translateY(-1px);
+    }
+
+    .nav button::after,
+    .sidebar-foot {
+      display: none;
+    }
+
+    main {
+      padding: 28px clamp(18px, 3vw, 42px) 46px;
+    }
+
+    .topbar {
+      position: relative;
+      min-height: 290px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 290px;
+      align-items: end;
+      max-width: 1280px;
+      padding: clamp(22px, 4vw, 44px);
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(120,216,255,.18);
+      background:
+        radial-gradient(circle at 22% 8%, rgba(120,216,255,.20), transparent 26%),
+        radial-gradient(circle at 88% 18%, rgba(109,141,255,.16), transparent 30%),
+        linear-gradient(135deg, rgba(8, 18, 40, .86), rgba(1, 5, 16, .72));
+      box-shadow:
+        0 38px 130px rgba(0,0,0,.46),
+        inset 0 1px 0 rgba(255,255,255,.10);
+    }
+
+    .topbar::after {
+      content: "";
+      position: absolute;
+      right: clamp(18px, 5vw, 84px);
+      top: 36px;
+      width: min(34vw, 340px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 1px solid rgba(120,216,255,.22);
+      background:
+        radial-gradient(circle at 34% 30%, rgba(255,255,255,.62), transparent 6%),
+        radial-gradient(circle at 50% 50%, rgba(120,216,255,.12), transparent 48%);
+      box-shadow:
+        0 0 80px rgba(120,216,255,.16),
+        inset 0 0 52px rgba(120,216,255,.08);
+      opacity: .9;
+      animation: orbitCore 12s ease-in-out infinite alternate;
+    }
+
+    .topbar > div:first-child {
+      max-width: 820px;
+      z-index: 1;
+    }
+
+    .topbar h1 {
+      font-size: clamp(42px, 7vw, 92px);
+      line-height: .88;
+      max-width: 880px;
+      margin-bottom: 18px;
+      font-weight: 820;
+      letter-spacing: 0;
+      background: linear-gradient(90deg, #ffffff, #dff8ff 34%, #9cc9ff 68%, #ffffff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .topbar p {
+      max-width: 680px;
+      font-size: 18px;
+      color: #9fb3ca;
+    }
+
+    .status {
+      z-index: 1;
+      align-self: end;
+      min-width: 0;
+      border-radius: 22px;
+      border-color: rgba(120,216,255,.18);
+      background: rgba(2, 8, 23, .58);
+    }
+
+    .stage {
+      max-width: 1280px;
+    }
+
+    .grid {
+      gap: 18px;
+    }
+
+    .panel,
+    .price,
+    .metric,
+    .result,
+    .queue-item,
+    .task,
+    .copybox,
+    .bot-log,
+    .luxe-radar div {
+      border-radius: 22px;
+    }
+
+    .panel {
+      padding: clamp(16px, 2vw, 24px);
+      border: 1px solid rgba(120,216,255,.13);
+      background:
+        linear-gradient(180deg, rgba(9, 19, 42, .68), rgba(2, 6, 23, .56));
+      box-shadow:
+        0 22px 90px rgba(0,0,0,.34),
+        inset 0 1px 0 rgba(255,255,255,.055);
+    }
+
+    .panel:hover {
+      border-color: rgba(120,216,255,.28);
+      transform: translateY(-2px);
+      box-shadow:
+        0 30px 110px rgba(0,0,0,.42),
+        0 0 46px rgba(56,189,248,.08),
+        inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .hero-card {
+      min-height: 430px;
+      border-radius: 30px;
+      background:
+        radial-gradient(circle at 18% 10%, rgba(120,216,255,.21), transparent 24%),
+        radial-gradient(circle at 84% 6%, rgba(79,140,255,.16), transparent 24%),
+        linear-gradient(145deg, rgba(1,5,16,.96), rgba(8,47,73,.54));
+    }
+
+    .hero-card h2 {
+      max-width: 820px;
+      font-size: clamp(38px, 5vw, 68px);
+      line-height: .92;
+    }
+
+    .command-panel {
+      border-radius: 30px;
+      background:
+        linear-gradient(145deg, rgba(2, 8, 23, .84), rgba(8, 47, 73, .38)),
+        radial-gradient(circle at 14% 0%, rgba(120,216,255,.18), transparent 28%);
+    }
+
+    .command-panel h2 {
+      font-size: clamp(30px, 4vw, 48px);
+    }
+
+    .luxe-radar {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .luxe-radar div,
+    .metric,
+    .price,
+    .result,
+    .queue-item,
+    .task,
+    .auto-step {
+      background: rgba(4, 12, 29, .62);
+      border-color: rgba(120,216,255,.12);
+    }
+
+    .btn {
+      border-radius: 999px;
+      min-height: 46px;
+      padding-inline: 18px;
+    }
+
+    .btn.secondary,
+    .tab,
+    .pill {
+      border-radius: 999px;
+    }
+
+    .copybox {
+      border-radius: 20px;
+      background: rgba(1, 5, 16, .62);
+      line-height: 1.62;
+    }
+
+    @keyframes orbitCore {
+      0% { transform: translate3d(0,0,0) scale(1); opacity: .72; }
+      100% { transform: translate3d(-18px, 10px, 0) scale(1.04); opacity: .96; }
+    }
+
+    @media (max-width: 960px) {
+      .app {
+        display: block;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: max(10px, env(safe-area-inset-left));
+        right: max(10px, env(safe-area-inset-right));
+        bottom: max(10px, env(safe-area-inset-bottom));
+        top: auto;
+        width: auto;
+        height: auto;
+        padding: 8px;
+        border: 1px solid rgba(120,216,255,.16);
+        border-radius: 22px;
+        z-index: 80;
+      }
+
+      .brand {
+        display: none;
+      }
+
+      .nav {
+        display: flex;
+        gap: 6px;
+        overflow-x: auto;
+      }
+
+      .nav button {
+        min-width: 58px;
+        width: 58px;
+        height: 52px;
+      }
+
+      .nav button span:last-child {
+        display: none;
+      }
+
+      main {
+        padding: 16px max(14px, env(safe-area-inset-left)) 98px max(14px, env(safe-area-inset-right));
+      }
+
+      .topbar {
+        min-height: 430px;
+        display: block;
+        padding: 24px;
+      }
+
+      .topbar::after {
+        width: 250px;
+        right: -48px;
+        top: 34px;
+        opacity: .55;
+      }
+
+      .topbar h1 {
+        font-size: clamp(40px, 13vw, 62px);
+      }
+
+      .status {
+        margin-top: 22px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        border-radius: 24px;
+      }
+
+      .hero-card,
+      .command-panel {
+        border-radius: 24px;
+      }
+
+      .panel {
+        border-radius: 20px;
+      }
+
+      .mini-dashboard,
+      .luxe-radar {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        gap: 8px;
+      }
+    }
+
+    /* Minimal orbital background */
+    body {
+      background:
+        radial-gradient(circle at 48% -8%, rgba(59, 130, 246, .24), transparent 34%),
+        radial-gradient(circle at 86% 22%, rgba(14, 165, 233, .10), transparent 28%),
+        radial-gradient(circle at 16% 92%, rgba(37, 99, 235, .12), transparent 30%),
+        linear-gradient(180deg, #020712 0%, #02040a 60%, #000207 100%);
+    }
+
+    body::before {
+      opacity: .28;
+      background:
+        radial-gradient(circle at 50% 18%, transparent 0 120px, rgba(125,211,252,.12) 121px 122px, transparent 123px 260px, rgba(125,211,252,.08) 261px 262px, transparent 263px),
+        radial-gradient(circle at 78% 68%, transparent 0 72px, rgba(99,102,241,.10) 73px 74px, transparent 75px),
+        linear-gradient(rgba(125,211,252,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(125,211,252,.045) 1px, transparent 1px);
+      background-size: 820px 820px, 480px 480px, 96px 96px, 96px 96px;
+      background-position: 50% -180px, 110% 30%, center, center;
+      mask-image: linear-gradient(180deg, #000, transparent 88%);
+    }
+
+    body::after {
+      opacity: .42;
+      background:
+        linear-gradient(115deg, transparent 0 42%, rgba(125,211,252,.09) 48%, transparent 54%),
+        radial-gradient(ellipse at 50% 0%, rgba(96,165,250,.16), transparent 44%);
+      filter: blur(44px);
+    }
+
+    #galaxyCanvas {
+      opacity: .38;
+    }
+
+    .topbar,
+    .panel {
+      background: rgba(3, 9, 22, .70);
+      border-color: rgba(125, 211, 252, .12);
+      box-shadow: 0 22px 78px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.045);
+    }
+
+    .hero-card,
+    .command-panel {
+      background:
+        linear-gradient(145deg, rgba(3, 9, 22, .86), rgba(8, 47, 73, .28));
+      border-color: rgba(125, 211, 252, .18);
+    }
+
+    /* Final navigation rebuild */
+    .nav-ico {
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+    }
+
+    .nav-ico svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .nav button {
+      min-height: 50px;
+      border-radius: 14px;
+      color: #8ba4c2;
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .nav button span:last-child {
+      color: inherit;
+      font-size: 13px;
+    }
+
+    .nav button.active {
+      color: #f4fbff;
+      background: rgba(120, 216, 255, .09);
+      border-color: rgba(120, 216, 255, .16);
+    }
+
+    .nav button:hover {
+      color: #f4fbff;
+      background: rgba(120, 216, 255, .07);
+      border-color: rgba(120, 216, 255, .12);
+    }
+
+    @media (max-width: 960px) {
+      .sidebar {
+        padding: 8px;
+        border-radius: 22px;
+        background: rgba(3, 9, 22, .88);
+      }
+
+      .nav {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(72px, 1fr));
+        gap: 6px;
+        overflow-x: auto;
+        padding: 0;
+      }
+
+      .nav button {
+        width: auto;
+        min-width: 72px;
+        height: 58px;
+        min-height: 58px;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 26px 16px;
+        justify-items: center;
+        align-items: center;
+        gap: 2px;
+        padding: 7px 6px 6px;
+        margin: 0;
+        border-radius: 16px;
+      }
+
+      .nav button span:last-child {
+        display: block;
+        position: static;
+        min-width: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+        color: inherit;
+        font-size: 10px;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .nav-ico,
+      .nav-ico svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .nav button.active {
+        background: linear-gradient(180deg, rgba(120,216,255,.15), rgba(120,216,255,.05));
+      }
+    }
+
+    @media (max-width: 430px) {
+      .nav {
+        grid-template-columns: repeat(4, 74px);
+      }
+
+      .nav button {
+        min-width: 74px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="galaxyCanvas" aria-hidden="true"></canvas>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M7 4h10a3 3 0 0 1 3 3v5a3 3 0 0 1-3 3h-3.5L9 19v-4H7a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M8 8h8M8 11h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <strong>RevenueSprint 48</strong>
+          <span>быстрый запуск услуги</span>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Разделы">
+        <button class="active" data-stage="offer" title="Оффер">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3 21 12 12 21 3 12 12 3Z"/><path d="M12 7 17 12 12 17 7 12 12 7Z"/></svg></span><span>Оффер</span>
+        </button>
+        <button data-stage="reviews" title="Сметы">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 13.6-5.7"/><path d="M18 3v4h-4"/><path d="M20 12a8 8 0 0 1-13.6 5.7"/><path d="M6 21v-4h4"/></svg></span><span>Сметы</span>
+        </button>
+        <button data-stage="calculator" title="Калькулятор">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/><path d="M4 4h16v16H4z"/></svg></span><span>Деньги</span>
+        </button>
+        <button data-stage="prospects" title="Поиск клиентов">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/><path d="M8 10h5"/></svg></span><span>Клиенты</span>
+        </button>
+        <button data-stage="outreach" title="Сообщения">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg></span><span>Сообщения</span>
+        </button>
+        <button data-stage="crm" title="CRM">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M4 10h16"/><path d="M9 5v14"/><path d="M15 5v14"/></svg></span><span>CRM</span>
+        </button>
+        <button data-stage="autopilot" title="Автопилот">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7-11-7Z"/><path d="M4 5v14"/></svg></span><span>Автопилот</span>
+        </button>
+        <button data-stage="delivery" title="Выполнение">
+          <span class="nav-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L20 6"/><path d="M4 4h16v16H4z"/></svg></span><span>Выполнение</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <span><b>Правило запуска:</b> не обещай бизнесу магию. Обещай конкретно: меньше пропущенных заявок, быстрый ответ клиентам, отчет через 24 часа.</span>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <h1>RevenueSprint</h1>
+          <p>Минималистичный command center для поиска подрядчиков, контактов, очереди сообщений и follow-up.</p>
+        </div>
+        <div class="status" aria-live="polite">
+          <b>Прогресс чеклиста</b>
+          <div class="meter"><i id="progressBar"></i></div>
+          <p class="muted" id="progressText">0% готово</p>
+        </div>
+      </header>
+
+      <section class="stage active" id="offer">
+        <div class="grid">
+          <div class="panel hero-card span-12">
+            <h2>48-hour Quote Recovery Autopilot</h2>
+            <p>Продаем не “AI” и не “ответы на отзывы”. Продаем возврат денег из старых смет: подрядчик уже потратил время на замер, звонок или оценку, но клиент не купил. Мы поднимаем эти лиды, готовим follow-up, отслеживаем ответы и возвращаем заявки в работу.</p>
+            <div class="tagline">
+              <span class="pill">цель: 1 продажа по $500</span>
+              <span class="pill">срок доставки: 48 часов</span>
+              <span class="pill">ниша: подрядчики со сметами</span>
+            </div>
+            <div class="kpis">
+              <div class="kpi">
+                <strong>$500</strong>
+                <span>one-time запуск по старым сметам</span>
+              </div>
+              <div class="kpi">
+                <strong>20-50</strong>
+                <span>старых смет или лидов для реактивации</span>
+              </div>
+              <div class="kpi">
+                <strong>$299+</strong>
+                <span>месячный follow-up автопилот</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel span-7">
+            <h2>Что именно продавать</h2>
+            <ul class="offer-list">
+              <li><span class="check">1</span><div><b>Old estimate recovery campaign.</b><br><span class="muted">Клиент дает CSV/таблицу старых смет, заявок или no-response лидов за последние 30-180 дней.</span></div></li>
+              <li><span class="check">2</span><div><b>Follow-up sequence.</b><br><span class="muted">Мы сегментируем лиды, пишем email/SMS/DM-сообщения и готовим очередь отправки с ручным подтверждением.</span></div></li>
+              <li><span class="check">3</span><div><b>Booking recovery board.</b><br><span class="muted">Отслеживаем ответы: interested, price objection, call back, booked, won, lost.</span></div></li>
+              <li><span class="check">4</span><div><b>Monthly autopilot.</b><br><span class="muted">После первой кампании продаем постоянный follow-up для новых смет и пропущенных заявок.</span></div></li>
+            </ul>
+          </div>
+
+          <div class="panel span-5">
+            <h2>Пакеты для продажи</h2>
+            <div class="price-row" style="grid-template-columns: 1fr;">
+              <div class="price">
+                <h3>Quote Recovery Sprint</h3>
+                <strong>$500</strong>
+                <p class="muted">20-50 старых смет/лидов, сообщения, очередь, трекинг ответов.</p>
+              </div>
+              <div class="price">
+                <h3>Recovery Autopilot</h3>
+                <strong>$299/mo</strong>
+                <p class="muted">Постоянный follow-up новых смет, недельный отчет, обновление скриптов.</p>
+              </div>
+              <div class="price">
+                <h3>Lead Desk</h3>
+                <strong>$799/mo</strong>
+                <p class="muted">Follow-up + missed-call intake + booking handoff для команды клиента.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel span-12">
+            <h2>Кого выбирать первым</h2>
+            <div class="price-row">
+              <div class="price">
+                <h3>Roofing / HVAC</h3>
+                <p class="muted">Высокий чек, много смет, один возвращенный заказ может покрыть оплату.</p>
+              </div>
+              <div class="price">
+                <h3>Painters / flooring</h3>
+                <p class="muted">Много запросов цены, люди сравнивают подрядчиков и часто зависают.</p>
+              </div>
+              <div class="price">
+                <h3>Landscaping / fencing</h3>
+                <p class="muted">Сезонность, старые оценки, много “подумаю и вернусь”.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="reviews">
+        <div class="grid">
+          <div class="panel span-5">
+            <h2>Quote Recovery оффер</h2>
+            <div class="copybox small" id="reviewOffer">I help contractors recover old estimates that went quiet. Send me 20-50 past quotes or leads, and I will build a 48-hour follow-up campaign: segmentation, approved messages, response tracking, and a simple board for booked callbacks. Fixed $500.</div>
+            <div class="actions">
+              <button class="btn secondary" data-copy="#reviewOffer">Скопировать оффер</button>
+            </div>
+            <p class="muted">Смысл: подрядчик уже заплатил временем или рекламой за эти лиды. Мы возвращаем старые разговоры в работу, а не продаем “красивые тексты”.</p>
+          </div>
+
+          <div class="panel span-7">
+            <h2>Генератор follow-up для сметы</h2>
+            <div class="field-grid">
+              <div>
+                <label for="reviewTone">Тон</label>
+                <select id="reviewTone">
+                  <option value="warm">Warm professional</option>
+                  <option value="premium">Premium calm</option>
+                  <option value="direct">Short direct</option>
+                </select>
+              </div>
+              <div>
+                <label for="reviewRating">Ситуация</label>
+                <select id="reviewRating">
+                  <option value="5">No response after estimate</option>
+                  <option value="4">Price objection</option>
+                  <option value="3">Project delayed</option>
+                  <option value="1">Cold old lead</option>
+                </select>
+              </div>
+            </div>
+            <label for="reviewText">Контекст сметы</label>
+            <textarea id="reviewText">Roof repair estimate sent last month. Customer said they needed to compare options.</textarea>
+            <div class="actions">
+              <button class="btn" id="generateReviewReply">Сгенерировать follow-up</button>
+              <button class="btn secondary" data-copy="#reviewReply">Скопировать</button>
+            </div>
+            <div class="copybox" id="reviewReply"></div>
+          </div>
+
+          <div class="panel span-12">
+            <h2>48-hour delivery</h2>
+            <div class="price-row">
+              <div class="price">
+                <h3>Day 1</h3>
+                <ul>
+                  <li>Получить CSV старых смет/заявок.</li>
+                  <li>Разделить на hot / warm / cold.</li>
+                  <li>Согласовать тон и запреты по сообщениям.</li>
+                </ul>
+              </div>
+              <div class="price">
+                <h3>Day 2</h3>
+                <ul>
+                  <li>Отдать очередь follow-up.</li>
+                  <li>Запустить ручную или approved отправку.</li>
+                  <li>Пометить ответы и booked callbacks.</li>
+                </ul>
+              </div>
+              <div class="price">
+                <h3>Upsell</h3>
+                <ul>
+                  <li>“Теперь давайте не терять новые сметы.”</li>
+                  <li>Предложить $299-799/mo follow-up desk.</li>
+                  <li>Добавить missed-call intake позже.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="calculator">
+        <div class="grid">
+          <div class="panel span-5">
+            <h2>Калькулятор выгоды</h2>
+            <div class="field-grid">
+              <div>
+                <label for="missedCalls">Старых смет/лидов в базе</label>
+                <input id="missedCalls" type="number" min="0" value="20">
+              </div>
+              <div>
+                <label for="leadValue">Средняя прибыль с заказа, $</label>
+                <input id="leadValue" type="number" min="0" value="900">
+              </div>
+              <div>
+                <label for="saveRate">Сколько ответит, %</label>
+                <input id="saveRate" type="number" min="0" max="100" value="12">
+              </div>
+              <div>
+                <label for="closeRate">Сколько станет заказом, %</label>
+                <input id="closeRate" type="number" min="0" max="100" value="20">
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" id="calcBtn">Посчитать</button>
+              <button class="btn secondary" data-copy="#calcPitch">Скопировать питч</button>
+            </div>
+          </div>
+
+          <div class="panel span-7">
+            <h2>Готовый аргумент</h2>
+            <div class="mini-dashboard">
+              <div class="metric"><span>Ответов</span><strong id="savedLeads">4</strong></div>
+              <div class="metric"><span>Заказов</span><strong id="newClients">1</strong></div>
+              <div class="metric"><span>Потенциал</span><strong id="monthlyGain">$126</strong></div>
+              <div class="metric"><span>Окупаемость</span><strong id="payback">4.0x</strong></div>
+            </div>
+            <div class="copybox" id="calcPitch"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="prospects">
+        <div class="grid">
+          <div class="panel span-5">
+            <h2>Поиск клиентов</h2>
+            <div class="field-grid">
+              <div>
+                <label for="city">Город/район</label>
+                <input id="city" value="Austin TX">
+              </div>
+              <div>
+                <label for="niche">Ниша</label>
+                <select id="niche">
+                  <option>roofing contractor</option>
+                  <option>HVAC repair</option>
+                  <option>painting contractor</option>
+                  <option>flooring contractor</option>
+                  <option>landscaping contractor</option>
+                  <option>fence contractor</option>
+                  <option>plumber</option>
+                  <option>remodeling contractor</option>
+                </select>
+              </div>
+              <div>
+                <label for="radius">Радиус поиска, км</label>
+                <input id="radius" type="number" min="1" max="50" value="12">
+              </div>
+              <div>
+                <label for="maxResults">Максимум бизнесов</label>
+                <input id="maxResults" type="number" min="5" max="100" value="30">
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" id="autoFind">Найти бизнесы автоматически</button>
+              <button class="btn" id="buildSearch">Создать ссылки</button>
+              <button class="btn secondary" id="addAllFound">Добавить найденных в CRM</button>
+              <button class="btn secondary" id="addSample">Добавить пример лида</button>
+            </div>
+            <p class="muted">Автопоиск берет открытые данные OpenStreetMap: название, сайт, телефон, адрес, если они есть. Лучший признак лида: на сайте есть “Get estimate”, “Request quote” или “Free consultation”.</p>
+          </div>
+
+          <div class="panel span-7">
+            <h2>Ссылки для поиска</h2>
+            <div class="search-links" id="searchLinks"></div>
+          </div>
+
+          <div class="panel span-12">
+            <div class="finder-head">
+              <div>
+                <h2>Найденные бизнесы</h2>
+                <p class="muted" id="finderStatus">Нажми “Найти бизнесы автоматически”.</p>
+              </div>
+              <span class="pill" id="foundCount">0 найдено</span>
+            </div>
+            <div class="result-grid" id="finderResults"></div>
+          </div>
+
+          <div class="panel span-12">
+            <h2>Критерии хорошего лида</h2>
+            <div class="price-row">
+              <div class="price"><h3>Есть высокий чек</h3><p class="muted">Roofing, HVAC, flooring, painting, fencing: один заказ часто покрывает $500.</p></div>
+              <div class="price"><h3>Есть сметы</h3><p class="muted">На сайте есть request quote/free estimate, значит у них бывают лиды, которые не закрылись.</p></div>
+              <div class="price"><h3>Легко объяснить</h3><p class="muted">“Вы уже получили эти лиды. Давайте попробуем вернуть часть старых разговоров.”</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="outreach">
+        <div class="grid">
+          <div class="panel span-5">
+            <h2>Генератор сообщений</h2>
+            <div class="field-grid">
+              <div>
+                <label for="offerType">Оффер</label>
+                <select id="offerType">
+                  <option value="quotes">Quote recovery</option>
+                  <option value="missed">Missed-call follow-up</option>
+                </select>
+              </div>
+              <div>
+                <label for="bizName">Название бизнеса</label>
+                <input id="bizName" value="Austin Roof Pros">
+              </div>
+              <div>
+                <label for="ownerName">Имя владельца</label>
+                <input id="ownerName" value="Alex">
+              </div>
+              <div>
+                <label for="bizType">Тип бизнеса</label>
+                <input id="bizType" value="roofing contractor">
+              </div>
+              <div>
+                <label for="specificIssue">Что заметил</label>
+                <input id="specificIssue" value="you likely send estimates where some homeowners go quiet after comparing options">
+              </div>
+            </div>
+            <label for="language">Язык</label>
+            <select id="language">
+              <option value="en">English</option>
+              <option value="ru">Русский</option>
+            </select>
+            <div class="actions">
+              <button class="btn" id="generateMsgs">Сгенерировать</button>
+              <button class="btn secondary" data-copy="#messageOutput">Скопировать</button>
+            </div>
+          </div>
+
+          <div class="panel span-7">
+            <h2>Сообщения</h2>
+            <div class="tabs">
+              <button class="tab active" data-template="email">Email</button>
+              <button class="tab" data-template="dm">DM</button>
+              <button class="tab" data-template="call">Звонок</button>
+              <button class="tab" data-template="follow">Follow-up</button>
+            </div>
+            <div class="copybox" id="messageOutput"></div>
+          </div>
+
+          <div class="panel span-12">
+            <h2>Скрипт 7-минутного звонка</h2>
+            <div class="copybox small">1. “I noticed one small leak in your lead flow and wanted to show it quickly.”<br>2. Спросить: “How many calls/forms do you usually miss after hours or when the team is on jobs?”<br>3. Посчитать примерную потерю в калькуляторе.<br>4. Предложить: “I can set up the rescue flow in 24 hours for $500. If it does not make sense after the audit, I will tell you before you pay.”<br>5. Закрыть на действие: “Want me to send the one-page plan and invoice?”</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="crm">
+        <div class="grid">
+          <div class="panel span-12">
+            <h2>CRM на сегодня</h2>
+            <div class="field-grid">
+              <div><label for="leadBusiness">Бизнес</label><input id="leadBusiness" placeholder="Business name"></div>
+              <div><label for="leadContact">Контакт</label><input id="leadContact" placeholder="Email / phone / URL"></div>
+              <div><label for="leadNiche">Ниша</label><input id="leadNiche" placeholder="plumber"></div>
+              <div><label for="leadStatus">Статус</label><select id="leadStatus"><option>To contact</option><option>Sent</option><option>Replied</option><option>Call booked</option><option>Won</option><option>Lost</option></select></div>
+            </div>
+            <label for="leadNote">Заметка</label>
+            <textarea id="leadNote" placeholder="Конкретная проблема, которую увидел"></textarea>
+            <div class="actions">
+              <button class="btn" id="saveLead">Добавить</button>
+              <button class="btn secondary" id="exportCsv">Скачать CSV</button>
+              <button class="btn secondary" id="exportBackup">Backup JSON</button>
+              <label class="btn secondary" for="importBackup" style="margin:0;">Import JSON</label>
+              <input id="importBackup" type="file" accept="application/json" style="display:none;">
+              <button class="btn warning" id="clearCrm">Очистить</button>
+            </div>
+          </div>
+
+          <div class="panel span-12">
+            <table aria-label="CRM">
+              <thead>
+                <tr>
+                  <th>Бизнес</th>
+                  <th>Контакт</th>
+                  <th>Ниша</th>
+                  <th>Статус</th>
+                  <th>Проверка</th>
+                  <th>Лучший контакт</th>
+                  <th>Заметка</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="crmBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="autopilot">
+        <div class="grid">
+          <div class="panel span-5">
+            <h2>Автопилот дохода</h2>
+            <div class="field-grid">
+              <div>
+                <label for="targetRevenue">Цель в месяц, $</label>
+                <input id="targetRevenue" type="number" min="0" value="5000">
+              </div>
+              <div>
+                <label for="frontPrice">Цена первого оффера, $</label>
+                <input id="frontPrice" type="number" min="1" value="500">
+              </div>
+              <div>
+                <label for="replyRate">Ожидаемые ответы, %</label>
+                <input id="replyRate" type="number" min="1" max="100" value="8">
+              </div>
+              <div>
+                <label for="closeRateAuto">Закрытие ответивших, %</label>
+                <input id="closeRateAuto" type="number" min="1" max="100" value="25">
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn" id="planAutopilot">Посчитать план</button>
+              <button class="btn secondary" id="exportQueue">Экспорт очереди</button>
+            </div>
+            <p class="muted">Система автоматизирует поиск, оценку, CRM, сообщения и очередь. Отправку, оплату и нестандартные обещания подтверждаешь ты.</p>
+          </div>
+
+          <div class="panel span-7">
+            <h2>План на месяц</h2>
+            <div class="mini-dashboard">
+              <div class="metric"><span>Нужно продаж</span><strong id="salesNeeded">13</strong></div>
+              <div class="metric"><span>Нужно ответов</span><strong id="repliesNeeded">50</strong></div>
+              <div class="metric"><span>Нужно контактов</span><strong id="contactsNeeded">625</strong></div>
+              <div class="metric"><span>В день</span><strong id="dailyNeeded">21</strong></div>
+            </div>
+            <div class="copybox small" id="autopilotAdvice"></div>
+          </div>
+
+          <div class="panel span-12 command-panel">
+            <div class="finder-head">
+              <div>
+                <h2>Smart Command</h2>
+                <p class="muted" id="nextActionText">Запусти Full Auto Pipeline, затем работай с Verified / Promising лидами.</p>
+              </div>
+              <span class="pill" id="systemHealth">System ready</span>
+            </div>
+            <div class="mini-dashboard">
+              <div class="metric"><span>Ready to send</span><strong id="readyToSend">0</strong></div>
+              <div class="metric"><span>Need contact</span><strong id="needContact">0</strong></div>
+              <div class="metric"><span>Replied</span><strong id="repliedCount">0</strong></div>
+              <div class="metric"><span>Won</span><strong id="wonCount">0</strong></div>
+            </div>
+            <div class="actions">
+              <button class="btn" id="smartNextAction">Next Best Action</button>
+              <button class="btn warning" id="generateMissionBrief">Mission Brief</button>
+              <button class="btn secondary" id="copyTopLead">Copy Top Lead Message</button>
+              <button class="btn secondary" id="copyCloseKit">Copy Close Kit</button>
+              <button class="btn secondary" id="toggleFocusMode">Luxe Focus</button>
+              <button class="btn secondary" id="installApp">Install App</button>
+              <button class="btn secondary" id="buildTodayPack">Build Today Pack</button>
+              <button class="btn secondary" id="exportTodayPack">Export Today Pack</button>
+              <button class="btn secondary" id="buildContactHunt">Contact Hunt Pack</button>
+              <button class="btn secondary" id="filterReady">Show Ready</button>
+              <button class="btn secondary" id="filterNoContact">No Contact</button>
+              <button class="btn secondary" id="filterFollowups">Show Follow-ups</button>
+              <button class="btn secondary" id="filterReplies">Show Replies</button>
+              <button class="btn secondary" id="filterAllQueue">Show All</button>
+            </div>
+            <div class="luxe-radar">
+              <div>
+                <span>Pipeline value</span>
+                <strong id="radarPipeline">$0</strong>
+              </div>
+              <div>
+                <span>Close target</span>
+                <strong id="radarTarget">1 sprint</strong>
+              </div>
+              <div>
+                <span>Best next move</span>
+                <strong id="radarMove">Run pipeline</strong>
+              </div>
+            </div>
+            <div class="copybox small" id="missionBriefOutput">Mission Brief появится здесь: план на день, верхние лиды, follow-ups и скрипт закрытия.</div>
+            <div class="copybox small" id="todayPackOutput">Today Pack появится здесь: 20 лучших лидов, лучший контакт и готовое сообщение.</div>
+            <div class="copybox small" id="contactHuntOutput">Contact Hunt Pack появится здесь: лиды без контактов и готовые ссылки для поиска email/form/social.</div>
+            <div class="copybox small install-hint" id="installHint">Mobile: после деплоя открой HTTPS-ссылку на телефоне и нажми Install App или Add to Home Screen.</div>
+          </div>
+
+          <div class="panel span-12">
+            <h2>Lead Bot</h2>
+            <div class="bot-grid">
+              <div>
+                <label for="botCities">Города, каждый с новой строки</label>
+                <textarea id="botCities">Austin TX
+Dallas TX
+Charlotte NC
+Tampa FL
+Phoenix AZ</textarea>
+              </div>
+              <div>
+                <label for="botNiches">Ниши, каждая с новой строки</label>
+                <textarea id="botNiches">roofing contractor
+HVAC repair
+painting contractor
+flooring contractor
+fence contractor</textarea>
+              </div>
+              <div>
+                <label for="botRadius">Радиус на город, км</label>
+                <input id="botRadius" type="number" min="2" max="50" value="18">
+              </div>
+              <div>
+                <label for="botPerCombo">Бизнесов на связку город/ниша</label>
+                <input id="botPerCombo" type="number" min="3" max="25" value="8">
+              </div>
+            </div>
+            <div class="actions">
+              <button class="btn warning" id="runFullPipeline">Full Auto Pipeline</button>
+              <button class="btn" id="runLeadBot">Запустить Lead Bot</button>
+              <button class="btn secondary" id="deepCheckSites">Deep Check сайтов</button>
+              <button class="btn secondary" id="findContacts">Find Contacts</button>
+              <button class="btn secondary" id="archiveWeak">Скрыть слабых</button>
+              <button class="btn secondary" id="exportLeads">Экспорт CRM</button>
+              <button class="btn secondary" id="buildQueueFromBot">Собрать очередь</button>
+            </div>
+            <div class="autopilot-strip">
+              <div class="auto-step active" id="stepFind"><b>Find</b><span>поиск подрядчиков по рынкам</span></div>
+              <div class="auto-step" id="stepCheck"><b>Check</b><span>автопроверка сайтов и CTA</span></div>
+              <div class="auto-step" id="stepRank"><b>Rank</b><span>скоринг и удаление мусора</span></div>
+              <div class="auto-step" id="stepQueue"><b>Queue</b><span>готовая очередь сообщений</span></div>
+            </div>
+            <div class="mini-dashboard">
+              <div class="metric"><span>Сканов</span><strong id="botScans">0</strong></div>
+              <div class="metric"><span>Найдено</span><strong id="botFound">0</strong></div>
+              <div class="metric"><span>Добавлено</span><strong id="botAdded">0</strong></div>
+              <div class="metric"><span>Verified</span><strong id="botVerified">0</strong></div>
+              <div class="metric"><span>Contacts</span><strong id="botContacts">0</strong></div>
+              <div class="metric"><span>Статус</span><strong id="botState">Idle</strong></div>
+            </div>
+            <div class="bot-log" id="botLog"><p>Готов к запуску. Бот использует открытые данные и не отправляет сообщения без твоего подтверждения.</p></div>
+          </div>
+
+          <div class="panel span-12">
+            <h2>Ежедневный конвейер</h2>
+            <div class="sop">
+              <div class="price"><h3>1. Поиск</h3><strong>30 мин</strong><p class="muted">Автопоиск 30-50 подрядчиков в одной нише и городе.</p></div>
+              <div class="price"><h3>2. Проверка</h3><strong>45 мин</strong><p class="muted">Открыть сайт и оставить тех, где есть estimate/quote форма.</p></div>
+              <div class="price"><h3>3. Отправка</h3><strong>45 мин</strong><p class="muted">Скопировать персональные сообщения из очереди.</p></div>
+              <div class="price"><h3>4. Закрытие</h3><strong>30 мин</strong><p class="muted">Ответившим отправить 2 примера и счет на $249.</p></div>
+            </div>
+          </div>
+
+          <div class="panel span-12">
+            <div class="finder-head">
+              <div>
+                <h2>Очередь отправки</h2>
+                <p class="muted" id="queueStatus">Очередь строится из CRM: сначала лиды со статусом To contact.</p>
+              </div>
+              <span class="pill" id="queueCount">0 в очереди</span>
+            </div>
+            <div class="actions">
+              <button class="btn" id="buildQueue">Собрать очередь</button>
+              <button class="btn secondary" id="markDailyDone">Отметить дневной блок</button>
+            </div>
+            <div class="queue" id="outreachQueue"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="delivery">
+        <div class="grid">
+          <div class="panel span-7">
+            <h2>Чеклист 48 часов</h2>
+            <div class="timeline" id="taskList"></div>
+          </div>
+          <div class="panel span-5">
+            <h2>После оплаты</h2>
+            <div class="copybox" id="onboardingText">Спасибо, я начну с короткого recovery pass и пришлю первую очередь до [time]. Чтобы сделать quote recovery быстро, пришлите:<br><br>1. CSV/таблицу 20-50 старых смет или no-response лидов.<br>2. Поля: имя, телефон/email, услуга, дата, сумма сметы, статус.<br>3. Какие услуги сейчас приоритетны.<br>4. Какие обещания/скидки нельзя упоминать.<br>5. Кто утверждает сообщения перед отправкой.</div>
+            <div class="actions">
+              <button class="btn secondary" data-copy="#onboardingText">Скопировать onboarding</button>
+            </div>
+          </div>
+          <div class="panel span-12">
+            <h2>Что настроить клиенту без лишней сложности</h2>
+            <div class="price-row">
+              <div class="price">
+                <h3>Без доступов</h3>
+                <ul>
+                  <li>Сегментация старых смет</li>
+                  <li>Готовые email/SMS/DM тексты</li>
+                  <li>Таблица callback tracking</li>
+                </ul>
+              </div>
+              <div class="price">
+                <h3>С доступами</h3>
+                <ul>
+                  <li>Импорт в CRM клиента</li>
+                  <li>Approved email sequence</li>
+                  <li>Еженедельный recovery report</li>
+                </ul>
+              </div>
+              <div class="price">
+                <h3>Не обещать</h3>
+                <ul>
+                  <li>Гарантированные продажи</li>
+                  <li>SMS без согласия/opt-out</li>
+                  <li>Скидки без разрешения клиента</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">Скопировано</div>
+
+  <script>
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+
+    const store = {
+      get(key, fallback) {
+        try {
+          return JSON.parse(localStorage.getItem(key)) ?? fallback;
+        } catch {
+          return fallback;
+        }
+      },
+      set(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    };
+
+    const tasks = [
+      ["Pick one contractor niche", "Например: roofing или HVAC в одном городе.", "0:00"],
+      ["Find 50 prospects", "Искать подрядчиков с формой estimate/quote и понятным владельцем.", "1:30"],
+      ["Send 40 personal messages", "Каждое сообщение про старые сметы и no-response лиды.", "3:00"],
+      ["Call 10 businesses", "Сказать: “Do you have old estimates that went quiet?”", "5:00"],
+      ["Book 3 quick calls", "Показать one-page workflow и попросить CSV старых лидов.", "8:00"],
+      ["Close 1 paid sprint", "Цель: 1 x $500. Брать оплату до выполнения.", "24:00"],
+      ["Deliver recovery queue", "Сегментация, follow-up, трекинг, callback board.", "36:00"],
+      ["Offer monthly autopilot", "После первой кампании предложить $299-799/mo.", "48:00"]
+    ];
+
+    let activeTemplate = "email";
+    let foundBusinesses = [];
+    let queueFilter = "all";
+    let deferredInstallPrompt = null;
+
+    const osmSelectors = {
+      "roofing contractor": [
+        ['craft', 'roofer'],
+        ['office', 'construction_company']
+      ],
+      "painting contractor": [
+        ['craft', 'painter'],
+        ['shop', 'paint']
+      ],
+      "flooring contractor": [
+        ['craft', 'floorer'],
+        ['shop', 'flooring']
+      ],
+      "landscaping contractor": [
+        ['craft', 'landscaper'],
+        ['shop', 'garden_centre']
+      ],
+      "fence contractor": [
+        ['craft', 'fencer'],
+        ['office', 'construction_company']
+      ],
+      "remodeling contractor": [
+        ['office', 'construction_company'],
+        ['craft', 'builder']
+      ],
+      plumber: [
+        ['craft', 'plumber'],
+        ['office', 'plumber']
+      ],
+      "HVAC repair": [
+        ['craft', 'hvac'],
+        ['craft', 'heating_engineer']
+      ]
+    };
+
+    function osmAddress(tags = {}) {
+      const street = [tags["addr:housenumber"], tags["addr:street"]].filter(Boolean).join(" ");
+      return [street, tags["addr:city"], tags["addr:state"], tags["addr:postcode"]].filter(Boolean).join(", ");
+    }
+
+    function contactFromTags(tags = {}) {
+      return tags.phone || tags["contact:phone"] || tags.email || tags["contact:email"] || tags.website || tags["contact:website"] || "";
+    }
+
+    function websiteFromTags(tags = {}) {
+      const website = tags.website || tags["contact:website"];
+      if (!website) return "";
+      return website.startsWith("http") ? website : `https://${website}`;
+    }
+
+    function googleSearchUrl(business) {
+      return `https://www.google.com/search?q=${encodeURIComponent(`${business.name} ${business.address || $("#city").value} contractor estimates`)}`;
+    }
+
+    function mapsSearchUrl(business) {
+      const q = `${business.name} ${business.address || $("#city").value}`;
+      return `https://www.google.com/maps/search/${encodeURIComponent(q)}`;
+    }
+
+    function setFinderStatus(text) {
+      $("#finderStatus").textContent = text;
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function parseLines(value) {
+      return value
+        .split(/\r?\n/)
+        .map(item => item.trim())
+        .filter(Boolean);
+    }
+
+    function botLog(text) {
+      const log = $("#botLog");
+      if (!log) return;
+      const p = document.createElement("p");
+      p.textContent = `${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} · ${text}`;
+      log.prepend(p);
+    }
+
+    function setAutoStep(id) {
+      ["stepFind", "stepCheck", "stepRank", "stepQueue"].forEach(stepId => {
+        const el = $("#" + stepId);
+        if (el) el.classList.toggle("active", stepId === id);
+      });
+    }
+
+    async function queryBusinesses(city, niche, radiusMeters, max) {
+      const selectors = osmSelectors[niche] || [['name', '']];
+      const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(city)}`;
+      const geoRes = await fetch(geoUrl, { headers: { "Accept": "application/json" } });
+      if (!geoRes.ok) throw new Error(`City lookup failed: ${city}`);
+      const geo = await geoRes.json();
+      if (!geo.length) throw new Error(`City not found: ${city}`);
+
+      const lat = Number(geo[0].lat);
+      const lon = Number(geo[0].lon);
+      const parts = selectors
+        .map(([key, value]) => value
+          ? `nwr["${key}"="${value}"](around:${radiusMeters},${lat},${lon});`
+          : `nwr["${key}"](around:${radiusMeters},${lat},${lon});`
+        )
+        .join("\n");
+      const query = `[out:json][timeout:25];\n(\n${parts}\n);\nout center tags ${max};`;
+      const overpassRes = await fetch("https://overpass-api.de/api/interpreter", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body: new URLSearchParams({ data: query })
+      });
+      if (!overpassRes.ok) throw new Error(`Business search failed: ${city} / ${niche}`);
+
+      const data = await overpassRes.json();
+      const seen = new Set();
+      return (data.elements || [])
+        .map(item => {
+          const tags = item.tags || {};
+          const name = tags.name || tags.brand || "";
+          const latValue = item.lat || item.center?.lat;
+          const lonValue = item.lon || item.center?.lon;
+          const address = osmAddress(tags);
+          const website = websiteFromTags(tags);
+          return {
+            id: `${item.type}-${item.id}`,
+            name,
+            niche,
+            sourceCity: city,
+            phone: tags.phone || tags["contact:phone"] || "",
+            email: tags.email || tags["contact:email"] || "",
+            website,
+            address,
+            lat: latValue,
+            lon: lonValue,
+            contact: contactFromTags(tags),
+            note: "Auto-found from OpenStreetMap. Check website for estimate/quote flow before outreach."
+          };
+        })
+        .filter(item => item.name)
+        .filter(item => {
+          const key = `${item.name.toLowerCase()}|${item.address.toLowerCase()}|${item.sourceCity.toLowerCase()}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        })
+        .sort((a, b) => scoreBusiness(b) - scoreBusiness(a))
+        .slice(0, max);
+    }
+
+    function scoreBusiness(business) {
+      let score = 40;
+      if (business.website) score += 15;
+      if (business.phone || business.email) score += 15;
+      if (business.address) score += 10;
+      if (["roofing contractor", "HVAC repair", "painting contractor", "flooring contractor"].includes(business.niche)) score += 10;
+      if (business.name && business.name.length > 2) score += 10;
+      return Math.min(100, score);
+    }
+
+    function scoreLabel(score) {
+      if (score >= 85) return "Hot";
+      if (score >= 70) return "Good";
+      if (score >= 55) return "Maybe";
+      return "Check";
+    }
+
+    function leadGoogleUrl(lead) {
+      return `https://www.google.com/search?q=${encodeURIComponent(`${lead.business} ${lead.niche || ""} estimates services`)}`;
+    }
+
+    function contactSearchUrl(lead) {
+      return `https://www.google.com/search?q=${encodeURIComponent(`"${lead.business || ""}" ${lead.niche || ""} email OR contact OR "request quote"`)}`;
+    }
+
+    function formSearchUrl(lead) {
+      return `https://www.google.com/search?q=${encodeURIComponent(`"${lead.business || ""}" "contact" OR "free estimate" OR "request quote"`)}`;
+    }
+
+    function socialSearchUrl(lead) {
+      return `https://www.google.com/search?q=${encodeURIComponent(`"${lead.business || ""}" site:facebook.com OR site:instagram.com OR site:linkedin.com`)}`;
+    }
+
+    function leadMessage(lead) {
+      const business = lead.business || "your business";
+      const niche = lead.niche || "contractor";
+      return `Hi, quick idea for ${business}.\n\nDo you have old estimates or leads where the homeowner went quiet after comparing options?\n\nI help ${niche}s run a 48-hour quote recovery sprint: you send 20-50 past quotes/leads, I segment them, write approved follow-ups, and set up a simple callback tracking board.\n\nFixed $500 for the first sprint. If one old estimate turns back into a job, it can pay for itself.\n\nWant me to send the one-page workflow?`;
+    }
+
+    function followUpMessage(lead) {
+      const business = lead.business || "your business";
+      return `Quick follow-up on my note about old estimates for ${business}.\n\nThe sprint is small: 20-50 old quotes or no-response leads, 48 hours, and you get a callback board showing who is still worth contacting.\n\nIf you have old estimates sitting in a CRM or spreadsheet, want me to send the one-page workflow?`;
+    }
+
+    function extractEmail(value = "") {
+      const match = String(value).match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+      return match ? match[0] : "";
+    }
+
+    function extractUrl(value = "") {
+      const text = String(value);
+      const direct = text.match(/https?:\/\/[^\s,]+/i);
+      if (direct) return direct[0].replace(/[).]+$/, "");
+      const domain = text.match(/\b(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+\b/i);
+      if (!domain) return "";
+      const raw = domain[0].replace(/[).]+$/, "");
+      if (raw.includes("@")) return "";
+      return raw.startsWith("www.") ? `https://${raw}` : `https://${raw}`;
+    }
+
+    function normalizeUrl(href = "", baseUrl = "") {
+      try {
+        return new URL(href, baseUrl).href;
+      } catch {
+        return "";
+      }
+    }
+
+    function uniqueList(items) {
+      return Array.from(new Set(items.filter(Boolean)));
+    }
+
+    function extractContactsFromHtml(html = "", baseUrl = "") {
+      const emailMatches = uniqueList(Array.from(html.matchAll(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi)).map(match => match[0].toLowerCase()))
+        .filter(email => !/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(email));
+      const phoneMatches = uniqueList(Array.from(html.matchAll(/(?:\+?1[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4}/g)).map(match => match[0].trim()));
+
+      let contactForms = [];
+      let socials = [];
+      let mailtos = [];
+      let telLinks = [];
+
+      try {
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const links = Array.from(doc.querySelectorAll("a[href]")).map(a => ({
+          href: a.getAttribute("href") || "",
+          text: (a.textContent || "").trim().toLowerCase()
+        }));
+
+        mailtos = links
+          .filter(link => link.href.toLowerCase().startsWith("mailto:"))
+          .map(link => link.href.replace(/^mailto:/i, "").split("?")[0].toLowerCase());
+        telLinks = links
+          .filter(link => link.href.toLowerCase().startsWith("tel:"))
+          .map(link => link.href.replace(/^tel:/i, "").trim());
+
+        contactForms = links
+          .filter(link => /contact|quote|estimate|get-a-quote|request|schedule|consultation/i.test(`${link.href} ${link.text}`))
+          .map(link => normalizeUrl(link.href, baseUrl))
+          .filter(url => url && !url.startsWith("mailto:") && !url.startsWith("tel:"))
+          .slice(0, 5);
+
+        socials = links
+          .filter(link => /facebook\.com|instagram\.com|linkedin\.com|x\.com|twitter\.com/i.test(link.href))
+          .map(link => normalizeUrl(link.href, baseUrl))
+          .slice(0, 5);
+      } catch {
+        // DOMParser can fail on broken markup; regex contacts above still help.
+      }
+
+      const emails = uniqueList([...mailtos, ...emailMatches]).slice(0, 5);
+      const phones = uniqueList([...telLinks, ...phoneMatches]).slice(0, 5);
+      const forms = uniqueList(contactForms);
+      const socialLinks = uniqueList(socials);
+      const best = emails[0] || forms[0] || phones[0] || socialLinks[0] || baseUrl || "";
+
+      return {
+        emails,
+        phones,
+        forms,
+        socials: socialLinks,
+        best,
+        summary: [
+          emails.length ? `${emails.length} email` : "",
+          phones.length ? `${phones.length} phone` : "",
+          forms.length ? `${forms.length} form/link` : "",
+          socialLinks.length ? `${socialLinks.length} social` : ""
+        ].filter(Boolean).join(", ") || "no contact extracted"
+      };
+    }
+
+    function mailtoUrl(lead) {
+      const email = lead.contactEmail || extractEmail(lead.contact);
+      if (!email) return "";
+      const subject = `Recovering old estimates for ${lead.business || "your business"}`;
+      return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(leadMessage(lead))}`;
+    }
+
+    function analyzeWebsiteText(text = "", niche = "") {
+      const lower = text.toLowerCase();
+      const hits = [];
+      let score = 20;
+
+      const rules = [
+        [/free estimate|free quote|request (a )?quote|get (a )?quote|schedule (an )?estimate|book (an )?estimate|estimate request/i, 35, "estimate/quote CTA"],
+        [/roof|hvac|air conditioning|heating|painting|flooring|fence|remodel|renovation|plumbing|landscaping/i, 15, "contractor service keywords"],
+        [/financing|insurance claim|storm damage|replacement|installation|repair/i, 12, "high-value job signal"],
+        [/\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}/, 10, "phone found"],
+        [/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i, 10, "email found"],
+        [/gallery|projects|before and after|testimonials|reviews/i, 8, "proof/work examples"]
+      ];
+
+      for (const [pattern, points, label] of rules) {
+        if (pattern.test(text)) {
+          score += points;
+          hits.push(label);
+        }
+      }
+
+      if (niche && lower.includes(niche.split(" ")[0].toLowerCase())) score += 5;
+      score = Math.min(100, score);
+
+      return {
+        score,
+        status: score >= 75 ? "Verified" : score >= 55 ? "Promising" : "Needs manual",
+        summary: hits.length ? hits.join(", ") : "No strong quote-recovery signals found"
+      };
+    }
+
+    function analyzeLeadMetadata(lead) {
+      const text = `${lead.business || ""} ${lead.contact || ""} ${lead.niche || ""} ${lead.note || ""}`.toLowerCase();
+      const hits = [];
+      let score = 35;
+
+      if (extractUrl(text)) {
+        score += 18;
+        hits.push("website/url present");
+      }
+      if (extractEmail(text) || /\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}/.test(text)) {
+        score += 12;
+        hits.push("direct contact present");
+      }
+      if (/roof|hvac|flooring|paint|fence|remodel|plumb|landscap/.test(text)) {
+        score += 15;
+        hits.push("high-ticket contractor niche");
+      }
+      if (/estimate|quote|free estimate|request quote|get a quote|consultation/.test(text)) {
+        score += 15;
+        hits.push("quote/estimate signal");
+      }
+      if ((lead.business || "").length > 3) {
+        score += 5;
+        hits.push("named business");
+      }
+
+      score = Math.min(100, score);
+      return {
+        score,
+        status: score >= 60 ? "Promising" : "Needs manual",
+        summary: hits.length ? hits.join(", ") : "weak metadata"
+      };
+    }
+
+    async function fetchWebsiteText(url) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 12000);
+      try {
+        const proxied = `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+        const res = await fetch(proxied, { signal: controller.signal });
+        if (!res.ok) throw new Error("site fetch failed");
+        return await res.text();
+      } finally {
+        clearTimeout(timeout);
+      }
+    }
+
+    async function verifyLeadWebsite(lead) {
+      const metadata = analyzeLeadMetadata(lead);
+      const url = extractUrl(`${lead.contact || ""} ${lead.note || ""}`);
+      const fallbackContacts = extractContactsFromHtml(`${lead.contact || ""} ${lead.note || ""}`, url);
+      if (!url) {
+        return {
+          ...lead,
+          verified: metadata.status,
+          verifyScore: metadata.score,
+          verifySummary: `Metadata fallback: ${metadata.summary}. No website URL found.`,
+          bestContact: fallbackContacts.best || lead.contact || "",
+          contactEmail: fallbackContacts.emails[0] || extractEmail(lead.contact),
+          contactPhone: fallbackContacts.phones[0] || "",
+          contactForm: fallbackContacts.forms[0] || "",
+          contactSocial: fallbackContacts.socials[0] || "",
+          contactSummary: fallbackContacts.summary
+        };
+      }
+
+      try {
+        const text = await fetchWebsiteText(url);
+        const result = analyzeWebsiteText(text.slice(0, 250000), lead.niche);
+        const contacts = extractContactsFromHtml(text, url);
+        const score = Math.max(result.score, metadata.score);
+        const status = score >= 75 ? "Verified" : score >= 55 ? "Promising" : "Needs manual";
+        return {
+          ...lead,
+          verified: status,
+          verifyScore: score,
+          verifySummary: `${result.summary}. Metadata: ${metadata.summary}. Contacts: ${contacts.summary}. Checked: ${url}`,
+          contact: lead.contact || contacts.best || url,
+          websiteUrl: url,
+          bestContact: contacts.best || lead.contact || url,
+          contactEmail: contacts.emails[0] || extractEmail(lead.contact),
+          contactPhone: contacts.phones[0] || "",
+          contactForm: contacts.forms[0] || "",
+          contactSocial: contacts.socials[0] || "",
+          contactSummary: contacts.summary
+        };
+      } catch {
+        const score = Math.max(metadata.score, 45);
+        return {
+          ...lead,
+          verified: score >= 60 ? "Promising" : "Needs manual",
+          verifyScore: score,
+          verifySummary: `Could not auto-read site. Metadata fallback: ${metadata.summary}. Open manually: ${url}`,
+          contact: lead.contact || url,
+          websiteUrl: url,
+          bestContact: fallbackContacts.best || lead.contact || url,
+          contactEmail: fallbackContacts.emails[0] || extractEmail(lead.contact),
+          contactPhone: fallbackContacts.phones[0] || "",
+          contactForm: fallbackContacts.forms[0] || "",
+          contactSocial: fallbackContacts.socials[0] || "",
+          contactSummary: fallbackContacts.summary
+        };
+      }
+    }
+
+    function updateLeadStatus(id, status) {
+      const leads = getLeads().map(lead => {
+        if (lead.id !== id) return lead;
+        const now = new Date();
+        const update = { ...lead, status };
+        if (status === "Sent") {
+          update.sentAt = now.toISOString();
+          update.followUpDue = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString();
+        }
+        if (status === "Replied") update.repliedAt = now.toISOString();
+        if (status === "Won") update.wonAt = now.toISOString();
+        return update;
+      });
+      setLeads(leads);
+      renderQueue();
+      toast(`Статус: ${status}`);
+    }
+
+    function calculateAutopilot() {
+      const target = Number($("#targetRevenue").value) || 3000;
+      const price = Math.max(1, Number($("#frontPrice").value) || 249);
+      const replyRate = Math.max(1, Number($("#replyRate").value) || 8) / 100;
+      const closeRate = Math.max(1, Number($("#closeRateAuto").value) || 25) / 100;
+      const sales = Math.ceil(target / price);
+      const replies = Math.ceil(sales / closeRate);
+      const contacts = Math.ceil(replies / replyRate);
+      const daily = Math.ceil(contacts / 30);
+
+      $("#salesNeeded").textContent = sales;
+      $("#repliesNeeded").textContent = replies;
+      $("#contactsNeeded").textContent = contacts;
+      $("#dailyNeeded").textContent = daily;
+      $("#autopilotAdvice").textContent = `Чтобы выйти примерно на $${target.toLocaleString()} в месяц при цене $${price}, нужно около ${sales} продаж. При ${Math.round(replyRate * 100)}% ответов и ${Math.round(closeRate * 100)}% закрытия это примерно ${contacts} контактов в месяц, то есть ${daily} новых проверенных подрядчиков в день. Сначала продавай quote recovery sprint, потом месячный follow-up autopilot.`;
+    }
+
+    function buildQueueItems() {
+      return getLeads()
+        .filter(lead => ["To contact", "Sent", "Replied", "Call booked"].includes(lead.status))
+        .filter(lead => {
+          if (queueFilter === "ready") return isReadyLead(lead);
+          if (queueFilter === "noContact") return lead.status === "To contact" && !hasUsableContact(lead);
+          if (queueFilter === "followups") return isFollowUpDue(lead);
+          if (queueFilter === "replies") return lead.status === "Replied" || lead.status === "Call booked";
+          return true;
+        })
+        .sort((a, b) => {
+          const order = { "Replied": 0, "Call booked": 1, "To contact": 2, "Sent": 3 };
+          const statusSort = (order[a.status] ?? 9) - (order[b.status] ?? 9);
+          if (statusSort !== 0) return statusSort;
+          return (Number(b.verifyScore) || 0) - (Number(a.verifyScore) || 0);
+        });
+    }
+
+    function updateVerifiedMetric() {
+      const count = getLeads().filter(lead => ["Verified", "Promising"].includes(lead.verified)).length;
+      if ($("#botVerified")) $("#botVerified").textContent = count;
+      const contacts = getLeads().filter(lead => lead.bestContact || lead.contactEmail || lead.contactForm || lead.contactPhone || lead.contactSocial).length;
+      if ($("#botContacts")) $("#botContacts").textContent = contacts;
+      updateSmartCommand();
+    }
+
+    function hasUsableContact(lead) {
+      return Boolean(lead.contactEmail || lead.contactForm || lead.contactSocial || lead.contactPhone || lead.bestContact || extractEmail(lead.contact));
+    }
+
+    function isReadyLead(lead) {
+      return lead.status === "To contact" && ["Verified", "Promising"].includes(lead.verified) && hasUsableContact(lead);
+    }
+
+    function isFollowUpDue(lead) {
+      return lead.status === "Sent" && lead.followUpDue && new Date(lead.followUpDue).getTime() <= Date.now();
+    }
+
+    function updateSmartCommand() {
+      const leads = getLeads();
+      const ready = leads.filter(isReadyLead).length;
+      const needs = leads.filter(lead => lead.status === "To contact" && !hasUsableContact(lead)).length;
+      const replied = leads.filter(lead => lead.status === "Replied" || lead.status === "Call booked").length;
+      const followups = leads.filter(isFollowUpDue).length;
+      const won = leads.filter(lead => lead.status === "Won").length;
+
+      if ($("#readyToSend")) $("#readyToSend").textContent = ready;
+      if ($("#needContact")) $("#needContact").textContent = needs;
+      if ($("#repliedCount")) $("#repliedCount").textContent = replied;
+      if ($("#wonCount")) $("#wonCount").textContent = won;
+
+      let text = "Запусти Full Auto Pipeline, затем работай с верхними лидами.";
+      let health = "System ready";
+      if (replied > 0) {
+        text = `Есть ${replied} ответивших. Сначала дожми их: отправь one-page workflow и предложи старт за $500.`;
+        health = "Replies first";
+      } else if (followups > 0) {
+        text = `Пора сделать follow-up по ${followups} отправленным лидам. Покажи Follow-ups и отправь второе касание.`;
+        health = "Follow-ups due";
+      } else if (ready > 0) {
+        text = `Готово ${ready} лидов. Отправь первые 20 сообщений и ставь статус Sent.`;
+        health = "Ready to send";
+      } else if (needs > 0) {
+        text = `Есть ${needs} лидов без контакта. Запусти Contact Hunt Pack: он даст готовые ссылки для поиска email/form/social.`;
+        health = "Contact hunt";
+      }
+
+      if ($("#nextActionText")) $("#nextActionText").textContent = text;
+      if ($("#systemHealth")) $("#systemHealth").textContent = health;
+      updateRadar();
+    }
+
+    function updateRadar() {
+      const leads = getLeads();
+      const ready = leads.filter(isReadyLead).length;
+      const replied = leads.filter(lead => lead.status === "Replied" || lead.status === "Call booked").length;
+      const won = leads.filter(lead => lead.status === "Won").length;
+      const pipeline = (ready * 500 * 0.03) + (replied * 500 * 0.28) + (won * 500);
+      const move = replied ? "Close replies" : ready ? "Send today pack" : leads.length ? "Find contacts" : "Run pipeline";
+
+      if ($("#radarPipeline")) $("#radarPipeline").textContent = `$${Math.round(pipeline).toLocaleString()}`;
+      if ($("#radarTarget")) $("#radarTarget").textContent = won ? `${won} won` : "1 sprint";
+      if ($("#radarMove")) $("#radarMove").textContent = move;
+    }
+
+    async function runDeepCheckSites() {
+      const leads = getLeads();
+      const targets = leads
+        .filter(lead => lead.status === "To contact")
+        .filter(lead => !lead.verified || lead.verified === "Needs manual")
+        .slice(0, 60);
+
+      if (!targets.length) {
+        toast("Нет лидов для проверки");
+        return;
+      }
+
+      $("#deepCheckSites").disabled = true;
+      setAutoStep("stepCheck");
+      $("#botState").textContent = "Checking";
+      botLog(`Deep Check старт: ${targets.length} сайтов/лидов.`);
+
+      let updated = [...leads];
+      let verified = 0;
+
+      for (let index = 0; index < targets.length; index += 1) {
+        const lead = targets[index];
+        botLog(`Проверяю ${lead.business}...`);
+        const checked = await verifyLeadWebsite(lead);
+        if (["Verified", "Promising"].includes(checked.verified)) verified += 1;
+        updated = updated.map(item => item.id === lead.id ? checked : item);
+        store.set("leadrescue:leads", updated);
+        renderCrm();
+        renderQueue();
+        updateVerifiedMetric();
+        $("#botState").textContent = `${index + 1}/${targets.length}`;
+        botLog(`${checked.business}: ${checked.verified} (${checked.verifyScore}/100) — ${checked.verifySummary}`);
+        await sleep(900);
+      }
+
+      $("#botState").textContent = "Checked";
+      $("#deepCheckSites").disabled = false;
+      botLog(`Deep Check готов. Verified/Promising: ${verified}.`);
+      toast(`Проверено: ${targets.length}`);
+    }
+
+    function renderQueue() {
+      const queue = buildQueueItems();
+      $("#queueCount").textContent = `${queue.length} в очереди`;
+      $("#queueStatus").textContent = queue.length
+        ? "Сначала обработай Replied/Call booked, потом отправляй новым To contact."
+        : "Добавь бизнесы в CRM, затем собери очередь.";
+
+      $("#outreachQueue").innerHTML = queue.length ? queue.map(lead => {
+        const msg = leadMessage(lead);
+        const emailUrl = mailtoUrl(lead);
+        return `
+          <article class="queue-item">
+            <div>
+              <h3>${escapeHtml(lead.business || "Без названия")}</h3>
+              <span class="score">${escapeHtml(lead.verified || "Unchecked")} ${lead.verifyScore ? `${lead.verifyScore}/100` : ""}</span>
+              <span class="pill">${escapeHtml(lead.status)}</span>
+              <p>${escapeHtml(lead.contact || "Контакт не указан")}</p>
+              <p><b>Best:</b> ${escapeHtml(lead.bestContact || lead.contactEmail || lead.contactForm || lead.contactPhone || "не найден")}</p>
+              <p>${escapeHtml(lead.contactSummary || "")}</p>
+              <p>${escapeHtml(lead.verifySummary || "")}</p>
+              <p>${escapeHtml(lead.note || "")}</p>
+            </div>
+            <div class="copybox small">${escapeHtml(msg)}</div>
+            <div class="queue-actions">
+              <button class="primary" data-copy-message="${lead.id}">Копировать</button>
+              ${isFollowUpDue(lead) ? `<button data-copy-followup="${lead.id}">Follow-up</button>` : ""}
+              ${emailUrl ? `<a href="${emailUrl}">Email</a>` : ""}
+              ${lead.contactForm ? `<a href="${escapeHtml(lead.contactForm)}" target="_blank" rel="noreferrer">Form</a>` : ""}
+              ${lead.contactSocial ? `<a href="${escapeHtml(lead.contactSocial)}" target="_blank" rel="noreferrer">Social</a>` : ""}
+              ${lead.contactPhone ? `<a href="tel:${escapeHtml(lead.contactPhone)}">Call</a>` : ""}
+              <a href="${contactSearchUrl(lead)}" target="_blank" rel="noreferrer">Email Hunt</a>
+              <a href="${formSearchUrl(lead)}" target="_blank" rel="noreferrer">Form Hunt</a>
+              <a href="${socialSearchUrl(lead)}" target="_blank" rel="noreferrer">Social Hunt</a>
+              <button data-add-contact="${lead.id}">Add Contact</button>
+              <button data-status-id="${lead.id}" data-next-status="Archived">Archive</button>
+              <a href="${leadGoogleUrl(lead)}" target="_blank" rel="noreferrer">Проверить</a>
+              <button data-status-id="${lead.id}" data-next-status="Sent">Sent</button>
+              ${isFollowUpDue(lead) ? `<button data-followed-up="${lead.id}">Done FU</button>` : ""}
+              <button data-status-id="${lead.id}" data-next-status="Replied">Replied</button>
+              <button data-status-id="${lead.id}" data-next-status="Won">Won</button>
+            </div>
+          </article>
+        `;
+      }).join("") : `<p class="muted">Очередь пуста.</p>`;
+    }
+
+    function exportOutreachQueue() {
+      const rows = [["Business", "Contact", "Best Contact", "Email", "Phone", "Form", "Social", "Niche", "Status", "Sent At", "Follow-up Due", "Verification", "Verify Score", "Check URL", "Message"], ...buildQueueItems().map(lead => [
+        lead.business,
+        lead.contact,
+        lead.bestContact || "",
+        lead.contactEmail || "",
+        lead.contactPhone || "",
+        lead.contactForm || "",
+        lead.contactSocial || "",
+        lead.niche,
+        lead.status,
+        lead.sentAt || "",
+        lead.followUpDue || "",
+        lead.verified || "",
+        lead.verifyScore || "",
+        leadGoogleUrl(lead),
+        leadMessage(lead)
+      ])];
+      const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "revenue-sprint-outreach-queue.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function markDailyBlock() {
+      const today = new Date().toISOString().slice(0, 10);
+      const history = store.get("leadrescue:daily", {});
+      history[today] = (history[today] || 0) + 1;
+      store.set("leadrescue:daily", history);
+      toast(`Дневной блок отмечен: ${history[today]}`);
+    }
+
+    function setQueueFilter(filter) {
+      queueFilter = filter;
+      renderQueue();
+      toast(filter === "all" ? "Показаны все" : filter === "ready" ? "Показаны готовые" : filter === "noContact" ? "Показаны без контакта" : filter === "followups" ? "Показаны follow-ups" : "Показаны ответы");
+    }
+
+    function topActionLead() {
+      return buildQueueItems()[0];
+    }
+
+    function copyTopLeadMessage() {
+      const lead = topActionLead();
+      if (!lead) {
+        toast("Нет лида в очереди");
+        return;
+      }
+      writeClipboard(leadMessage(lead)).then(() => {
+        toast(`Скопировано: ${lead.business}`);
+      }).catch(() => toast("Не удалось скопировать"));
+    }
+
+    function todayPackLeads() {
+      return getLeads()
+        .filter(isReadyLead)
+        .sort((a, b) => (Number(b.verifyScore) || 0) - (Number(a.verifyScore) || 0))
+        .slice(0, 20);
+    }
+
+    function buildTodayPack() {
+      const leads = todayPackLeads();
+      const text = leads.length ? leads.map((lead, index) => {
+        const contact = lead.contactEmail || lead.contactForm || lead.contactSocial || lead.contactPhone || lead.bestContact || lead.contact || "no contact";
+        return `${index + 1}. ${lead.business} — ${lead.niche}\nContact: ${contact}\nScore: ${lead.verified || "Unchecked"} ${lead.verifyScore || ""}\nMessage:\n${leadMessage(lead)}\n`;
+      }).join("\n---\n\n") : "Нет готовых лидов. Запусти Full Auto Pipeline или Find Contacts.";
+
+      $("#todayPackOutput").textContent = text;
+      if (leads.length) writeClipboard(text).then(() => toast(`Today Pack: ${leads.length} лидов`)).catch(() => toast("Today Pack собран"));
+      return text;
+    }
+
+    function exportTodayPack() {
+      const text = buildTodayPack();
+      const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const stamp = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `today-quote-recovery-pack-${stamp}.txt`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function contactHuntLeads() {
+      return getLeads()
+        .filter(lead => lead.status === "To contact" && !hasUsableContact(lead))
+        .sort((a, b) => (Number(b.verifyScore) || 0) - (Number(a.verifyScore) || 0))
+        .slice(0, 25);
+    }
+
+    function buildContactHuntPack() {
+      const leads = contactHuntLeads();
+      const text = leads.length ? leads.map((lead, index) => {
+        return `${index + 1}. ${lead.business} — ${lead.niche}\nScore: ${lead.verified || "Unchecked"} ${lead.verifyScore || ""}\nEmail Hunt: ${contactSearchUrl(lead)}\nForm Hunt: ${formSearchUrl(lead)}\nSocial Hunt: ${socialSearchUrl(lead)}\nGeneral Check: ${leadGoogleUrl(lead)}\n`;
+      }).join("\n---\n\n") : "Нет лидов без контактов. Отлично: работай с Ready / Promising.";
+
+      $("#contactHuntOutput").textContent = text;
+      writeClipboard(text).then(() => toast(`Contact Hunt: ${leads.length} лидов`)).catch(() => toast("Contact Hunt готов"));
+      return text;
+    }
+
+    function closeKitText() {
+      return `Great. The workflow is simple:\n\n1. You send 20-50 old estimates or no-response leads.\n2. I segment them into Hot / Warm / Cold.\n3. I write approved follow-up messages.\n4. I build a callback tracking board.\n5. You or your team handles the actual calls/bookings.\n\nThe first sprint is $500 and takes 48 hours after I receive the list.\n\nIf you want to start, I can send the invoice and onboarding checklist now.`;
+    }
+
+    function copyCloseKit() {
+      writeClipboard(closeKitText()).then(() => toast("Close Kit скопирован")).catch(() => toast("Не удалось скопировать"));
+    }
+
+    function generateMissionBrief() {
+      const leads = getLeads();
+      const ready = leads.filter(isReadyLead).sort((a, b) => (Number(b.verifyScore) || 0) - (Number(a.verifyScore) || 0));
+      const replies = leads.filter(lead => lead.status === "Replied" || lead.status === "Call booked");
+      const followups = leads.filter(isFollowUpDue);
+      const sent = leads.filter(lead => lead.status === "Sent").length;
+      const won = leads.filter(lead => lead.status === "Won").length;
+      const top = ready.slice(0, 5).map((lead, index) => `${index + 1}. ${lead.business} (${lead.niche}) — ${lead.verified || "Unchecked"} ${lead.verifyScore || ""} — ${lead.bestContact || lead.contactEmail || lead.contactForm || lead.contact || "no contact"}`).join("\n") || "Нет готовых лидов.";
+
+      const brief = `REVENUESPRINT MISSION BRIEF\n\nStatus:\n- Ready to send: ${ready.length}\n- Replies to close: ${replies.length}\n- Follow-ups due: ${followups.length}\n- Sent: ${sent}\n- Won: ${won}\n\nPriority:\n${replies.length ? "1. Дожать ответивших: отправить one-page workflow и закрыть на $500." : followups.length ? "1. Отправить follow-up тем, кто уже получил первое сообщение." : ready.length ? "1. Отправить 20 сообщений из Today Pack." : "1. Запустить Full Auto Pipeline / Find Contacts."}\n\nTop leads:\n${top}\n\nClose script:\n${closeKitText()}`;
+
+      $("#missionBriefOutput").textContent = brief;
+      writeClipboard(brief).then(() => toast("Mission Brief скопирован")).catch(() => toast("Mission Brief готов"));
+      return brief;
+    }
+
+    function toggleFocusMode() {
+      document.body.classList.toggle("focus-mode");
+      toast(document.body.classList.contains("focus-mode") ? "Luxe Focus on" : "Luxe Focus off");
+    }
+
+    async function installApp() {
+      if (!deferredInstallPrompt) {
+        toast("На телефоне: Share/Menu → Add to Home Screen");
+        return;
+      }
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice.catch(() => {});
+      deferredInstallPrompt = null;
+    }
+
+    function runSmartNextAction() {
+      const leads = getLeads();
+      const replied = leads.filter(lead => lead.status === "Replied" || lead.status === "Call booked");
+      const ready = leads.filter(isReadyLead);
+      const noContact = leads.filter(lead => lead.status === "To contact" && !hasUsableContact(lead));
+
+      if (replied.length) {
+        queueFilter = "replies";
+        renderQueue();
+        toast("Сначала дожимаем ответы");
+        return;
+      }
+
+      if (ready.length) {
+        queueFilter = "ready";
+        renderQueue();
+        buildTodayPack();
+        return;
+      }
+
+      if (noContact.length) {
+        queueFilter = "noContact";
+        renderQueue();
+        buildContactHuntPack();
+        return;
+      }
+
+      if (leads.length) {
+        runDeepCheckSites();
+        return;
+      }
+
+      runFullPipeline();
+    }
+
+    function saveUiSettings() {
+      store.set("leadrescue:settings", {
+        botCities: $("#botCities")?.value || "",
+        botNiches: $("#botNiches")?.value || "",
+        botRadius: $("#botRadius")?.value || "",
+        botPerCombo: $("#botPerCombo")?.value || "",
+        targetRevenue: $("#targetRevenue")?.value || "",
+        frontPrice: $("#frontPrice")?.value || "",
+        replyRate: $("#replyRate")?.value || "",
+        closeRateAuto: $("#closeRateAuto")?.value || ""
+      });
+    }
+
+    function loadUiSettings() {
+      const settings = store.get("leadrescue:settings", {});
+      Object.entries(settings).forEach(([id, value]) => {
+        const el = $("#" + id);
+        if (el && value !== "") el.value = value;
+      });
+    }
+
+    function writeClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.left = "-9999px";
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+      return Promise.resolve();
+    }
+
+    function toast(text = "Скопировано") {
+      const box = $("#toast");
+      box.textContent = text;
+      box.classList.add("show");
+      setTimeout(() => box.classList.remove("show"), 1700);
+    }
+
+    function switchStage(id) {
+      $$(".stage").forEach(stage => stage.classList.toggle("active", stage.id === id));
+      $$(".nav button").forEach(button => button.classList.toggle("active", button.dataset.stage === id));
+    }
+
+    function calc() {
+      const missed = Number($("#missedCalls").value) || 0;
+      const value = Number($("#leadValue").value) || 0;
+      const save = (Number($("#saveRate").value) || 0) / 100;
+      const close = (Number($("#closeRate").value) || 0) / 100;
+      const saved = missed * save;
+      const clients = saved * close;
+      const gain = clients * value;
+      const payback = gain > 0 ? (gain / 500).toFixed(1) : "0.0";
+
+      $("#savedLeads").textContent = Math.round(saved);
+      $("#newClients").textContent = clients.toFixed(1);
+      $("#monthlyGain").textContent = `$${Math.round(gain).toLocaleString()}`;
+      $("#payback").textContent = `${payback}x`;
+      $("#calcPitch").textContent = `If you have about ${missed} old estimates or quiet leads and each won job is worth about $${value} in profit, getting replies from only ${Math.round(saved)} people and closing ${Math.round(close * 100)}% could be worth around $${Math.round(gain).toLocaleString()}. My $500 sprint is designed to turn those old conversations into a tracked callback campaign.`;
+    }
+
+    function buildSearchLinks() {
+      const city = encodeURIComponent($("#city").value.trim());
+      const niche = encodeURIComponent($("#niche").value.trim());
+      const q = `${niche}+${city}`;
+      const links = [
+        ["Google Maps", `https://www.google.com/maps/search/${q}`],
+        ["Google search: quote clues", `https://www.google.com/search?q=${q}+%22free+estimate%22+OR+%22request+quote%22`],
+        ["Yelp", `https://www.yelp.com/search?find_desc=${niche}&find_loc=${city}`],
+        ["Facebook pages", `https://www.google.com/search?q=site%3Afacebook.com+${q}`]
+      ];
+
+      $("#searchLinks").innerHTML = links.map(([name, url]) => `<a href="${url}" target="_blank" rel="noreferrer">${name}<br><span class="muted">${decodeURIComponent(url)}</span></a>`).join("");
+    }
+
+    async function findBusinesses() {
+      const city = $("#city").value.trim();
+      const niche = $("#niche").value.trim();
+      const radiusMeters = Math.max(1000, Math.min(50000, (Number($("#radius").value) || 12) * 1000));
+      const max = Math.max(5, Math.min(100, Number($("#maxResults").value) || 30));
+      const selectors = osmSelectors[niche] || [['name', '']];
+
+      if (!city) {
+        toast("Укажи город");
+        return;
+      }
+
+      $("#autoFind").disabled = true;
+      setFinderStatus("Ищу координаты города...");
+      $("#finderResults").innerHTML = "";
+      $("#foundCount").textContent = "0 найдено";
+
+      try {
+        const geoUrl = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(city)}`;
+        const geoRes = await fetch(geoUrl, { headers: { "Accept": "application/json" } });
+        if (!geoRes.ok) throw new Error("Не удалось найти город");
+        const geo = await geoRes.json();
+        if (!geo.length) throw new Error("Город не найден");
+
+        const lat = Number(geo[0].lat);
+        const lon = Number(geo[0].lon);
+        const parts = selectors
+          .map(([key, value]) => value
+            ? `nwr["${key}"="${value}"](around:${radiusMeters},${lat},${lon});`
+            : `nwr["${key}"](around:${radiusMeters},${lat},${lon});`
+          )
+          .join("\n");
+        const query = `[out:json][timeout:25];\n(\n${parts}\n);\nout center tags ${max};`;
+
+        setFinderStatus("Ищу бизнесы в открытых картах...");
+        const overpassRes = await fetch("https://overpass-api.de/api/interpreter", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+          body: new URLSearchParams({ data: query })
+        });
+        if (!overpassRes.ok) throw new Error("Источник данных временно не ответил");
+
+        const data = await overpassRes.json();
+        const seen = new Set();
+        foundBusinesses = (data.elements || [])
+          .map(item => {
+            const tags = item.tags || {};
+            const name = tags.name || tags.brand || "";
+            const latValue = item.lat || item.center?.lat;
+            const lonValue = item.lon || item.center?.lon;
+            const address = osmAddress(tags);
+            const website = websiteFromTags(tags);
+            return {
+              id: `${item.type}-${item.id}`,
+              name,
+              niche,
+              phone: tags.phone || tags["contact:phone"] || "",
+              email: tags.email || tags["contact:email"] || "",
+              website,
+              address,
+              lat: latValue,
+              lon: lonValue,
+              contact: contactFromTags(tags),
+              note: "Auto-found from OpenStreetMap. Check website for estimate/quote flow before outreach."
+            };
+          })
+          .filter(item => item.name)
+          .filter(item => {
+            const key = `${item.name.toLowerCase()}|${item.address.toLowerCase()}`;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
+          .slice(0, max);
+
+        renderFinder();
+        setFinderStatus(foundBusinesses.length
+          ? "Готово. Теперь открой сайт/Google у лучших результатов и проверь, есть ли estimate/quote форма."
+          : "Ничего не найдено. Попробуй увеличить радиус, выбрать другую нишу или другой город."
+        );
+      } catch (error) {
+        foundBusinesses = [];
+        renderFinder();
+        setFinderStatus(`${error.message}. Попробуй еще раз или используй ссылки поиска справа.`);
+      } finally {
+        $("#autoFind").disabled = false;
+      }
+    }
+
+    function renderFinder() {
+      $("#foundCount").textContent = `${foundBusinesses.length} найдено`;
+      $("#finderResults").innerHTML = foundBusinesses.length ? foundBusinesses.map((business, index) => {
+        const score = scoreBusiness(business);
+        return `
+        <article class="result">
+          <h3>${escapeHtml(business.name)}</h3>
+          <span class="score">${scoreLabel(score)} ${score}/100</span>
+          <div class="meta">
+            <span>${escapeHtml(business.niche)}</span>
+            <span>${escapeHtml(business.address || "Адрес не указан")}</span>
+            <span>${escapeHtml(business.phone || business.email || business.website || "Контакт не указан")}</span>
+          </div>
+          <div class="linkbar">
+            ${business.website ? `<a href="${escapeHtml(business.website)}" target="_blank" rel="noreferrer">Сайт</a>` : ""}
+            <a href="${googleSearchUrl(business)}" target="_blank" rel="noreferrer">Google check</a>
+            <a href="${mapsSearchUrl(business)}" target="_blank" rel="noreferrer">Maps</a>
+            <button data-add-found="${index}">В CRM</button>
+          </div>
+        </article>
+      `;
+      }).join("") : `<p class="muted">Пока нет найденных бизнесов.</p>`;
+    }
+
+    function addFoundToCrm(index) {
+      const business = foundBusinesses[index];
+      if (!business) return;
+      setLeads([{
+        id: crypto.randomUUID(),
+        business: business.name,
+        contact: business.contact || business.website || business.phone || business.email,
+        niche: business.niche,
+        status: "To contact",
+        note: `${business.note} ${business.address ? `Address: ${business.address}.` : ""}`.trim()
+      }, ...getLeads()]);
+      toast("Добавлено в CRM");
+    }
+
+    function addAllFoundToCrm() {
+      if (!foundBusinesses.length) {
+        toast("Сначала найди бизнесы");
+        return;
+      }
+
+      const current = getLeads();
+      const existing = new Set(current.map(lead => `${lead.business}|${lead.contact}`.toLowerCase()));
+      const additions = foundBusinesses
+        .map(business => ({
+          id: crypto.randomUUID(),
+          business: business.name,
+          contact: business.contact || business.website || business.phone || business.email,
+          niche: business.niche,
+          status: "To contact",
+          note: `${business.note} ${business.address ? `Address: ${business.address}.` : ""}`.trim()
+        }))
+        .filter(lead => {
+          const key = `${lead.business}|${lead.contact}`.toLowerCase();
+          if (existing.has(key)) return false;
+          existing.add(key);
+          return true;
+        });
+
+      setLeads([...additions, ...current]);
+      switchStage("crm");
+      toast(`Добавлено: ${additions.length}`);
+    }
+
+    async function runLeadBot() {
+      const cities = parseLines($("#botCities").value).slice(0, 10);
+      const niches = parseLines($("#botNiches").value).slice(0, 8);
+      const radiusMeters = Math.max(2000, Math.min(50000, (Number($("#botRadius").value) || 18) * 1000));
+      const maxPerCombo = Math.max(3, Math.min(25, Number($("#botPerCombo").value) || 8));
+      let combos = cities.flatMap(city => niches.map(niche => ({ city, niche })));
+
+      if (!cities.length || !niches.length) {
+        toast("Добавь города и ниши");
+        return;
+      }
+
+      if (combos.length > 25) {
+        botLog(`Слишком много связок (${combos.length}). Для защиты от лимитов беру первые 25.`);
+        combos = combos.slice(0, 25);
+      }
+
+      $("#runLeadBot").disabled = true;
+      setAutoStep("stepFind");
+      $("#botState").textContent = "Running";
+      $("#botScans").textContent = "0";
+      $("#botFound").textContent = "0";
+      $("#botAdded").textContent = "0";
+      botLog(`Старт: ${combos.length} связок, радиус ${Math.round(radiusMeters / 1000)} км.`);
+
+      const current = getLeads();
+      const existing = new Set(current.map(lead => `${lead.business}|${lead.contact}|${lead.niche}`.toLowerCase()));
+      const additions = [];
+      let scans = 0;
+      let foundTotal = 0;
+
+      for (const combo of combos) {
+        scans += 1;
+        $("#botScans").textContent = scans;
+        $("#botState").textContent = `${combo.city}`;
+        botLog(`Сканирую ${combo.niche} в ${combo.city}...`);
+
+        try {
+          const items = await queryBusinesses(combo.city, combo.niche, radiusMeters, maxPerCombo);
+          foundTotal += items.length;
+          let addedNow = 0;
+
+          for (const business of items) {
+            const score = scoreBusiness(business);
+            if (score < 55) continue;
+            const contact = business.contact || business.website || business.phone || business.email || "";
+            const key = `${business.name}|${contact}|${business.niche}`.toLowerCase();
+            if (existing.has(key)) continue;
+            existing.add(key);
+            addedNow += 1;
+            additions.push({
+              id: crypto.randomUUID(),
+              business: business.name,
+              contact,
+              niche: business.niche,
+              status: "To contact",
+              note: `${scoreLabel(score)} lead (${score}/100). City: ${business.sourceCity}. ${business.note} ${business.address ? `Address: ${business.address}.` : ""}`.trim()
+            });
+          }
+
+          $("#botFound").textContent = foundTotal;
+          $("#botAdded").textContent = additions.length;
+          botLog(`${combo.city} / ${combo.niche}: найдено ${items.length}, добавлено ${addedNow}.`);
+        } catch (error) {
+          botLog(`${combo.city} / ${combo.niche}: ${error.message}`);
+        }
+
+        await sleep(1300);
+      }
+
+      if (additions.length) {
+        setLeads([...additions, ...current]);
+        renderQueue();
+      }
+
+      $("#botState").textContent = "Done";
+      $("#runLeadBot").disabled = false;
+      botLog(`Готово. Добавлено в CRM: ${additions.length}.`);
+      toast(`Lead Bot готов: ${additions.length} лидов`);
+    }
+
+    function archiveWeakLeads() {
+      const leads = getLeads();
+      let archived = 0;
+      const updated = leads.map(lead => {
+        const score = Number(lead.verifyScore) || 0;
+        if (lead.status === "To contact" && lead.verified === "Needs manual" && score < 55) {
+          archived += 1;
+          return { ...lead, status: "Archived" };
+        }
+        return lead;
+      });
+      setLeads(updated);
+      renderQueue();
+      updateVerifiedMetric();
+      botLog(`Скрыто слабых лидов: ${archived}.`);
+      toast(`Скрыто: ${archived}`);
+    }
+
+    async function runFullPipeline() {
+      $("#runFullPipeline").disabled = true;
+      botLog("Full Auto Pipeline старт.");
+      try {
+        setAutoStep("stepFind");
+        await runLeadBot();
+        setAutoStep("stepCheck");
+        await runDeepCheckSites();
+        setAutoStep("stepRank");
+        archiveWeakLeads();
+        setAutoStep("stepQueue");
+        renderQueue();
+        switchStage("autopilot");
+        botLog("Full Auto Pipeline готов. Работай с верхними лидами в очереди.");
+        toast("Pipeline готов");
+      } finally {
+        $("#runFullPipeline").disabled = false;
+      }
+    }
+
+    function makeMessages() {
+      const biz = $("#bizName").value.trim() || "your business";
+      const owner = $("#ownerName").value.trim() || "there";
+      const type = $("#bizType").value.trim() || "local service business";
+      const issue = $("#specificIssue").value.trim() || "I noticed a visible review-response gap";
+      const lang = $("#language").value;
+      const offer = $("#offerType").value;
+
+      const quoteEn = {
+        email: `Subject: Recovering old estimates for ${biz}\n\nHi ${owner},\n\nI was looking at ${biz} and noticed ${issue}.\n\nI help ${type}s recover old estimates and leads that went quiet. You send 20-50 past quotes or no-response leads, and I build a 48-hour follow-up campaign: segmentation, approved messages, response tracking, and a simple callback board.\n\nFixed $500 for the first sprint. If one old estimate turns back into a job, it can pay for itself.\n\nWorth a quick look this week?`,
+        dm: `Hi ${owner}, quick idea for ${biz}: I help ${type}s recover old estimates that went quiet. Send 20-50 past quotes/leads, I build the follow-up messages and tracking board. Fixed $500 for the first sprint. Want me to send the workflow?`,
+        call: `Hi ${owner}, quick one. Do you have old estimates where homeowners went quiet after comparing options? I help ${type}s run a 48-hour quote recovery sprint: segment the old leads, send approved follow-ups, and track callbacks. Fixed $500. Want me to send the one-page plan?`,
+        follow: `Hi ${owner}, quick follow-up. If ${biz} has even 20 old estimates sitting in the CRM, I can turn them into a simple callback campaign this week. Want me to send the exact steps?`
+      };
+
+      const quoteRu = {
+        email: `Тема: Возврат старых смет для ${biz}\n\nЗдравствуйте, ${owner}.\n\nЯ посмотрел ${biz} и заметил: ${issue}.\n\nЯ помогаю бизнесам типа ${type} возвращать старые сметы и заявки, где клиент замолчал. Вы даете 20-50 прошлых смет или no-response лидов, а я за 48 часов собираю follow-up кампанию: сегментация, согласованные сообщения, трекинг ответов и доска callback.\n\nПервый спринт — $500 фиксировано. Если хотя бы одна старая смета вернется в заказ, это может окупиться.\n\nПрислать короткий план?`,
+        dm: `Здравствуйте, ${owner}. Идея для ${biz}: я помогаю ${type} возвращать старые сметы, где клиент замолчал. Вы даете 20-50 прошлых смет/лидов, я собираю follow-up и трекинг. Первый спринт $500. Прислать схему?`,
+        call: `Здравствуйте, ${owner}. Коротко: у вас бывают старые сметы, где клиент сравнивал варианты и пропал? Я помогаю ${type} за 48 часов поднять такие лиды: сегментировать, отправить согласованный follow-up и собрать callbacks. Первый спринт $500. Прислать план?`,
+        follow: `${owner}, добрый день. Если у ${biz} есть хотя бы 20 старых смет в CRM или таблице, я могу на этой неделе собрать из них callback-кампанию. Прислать точные шаги?`
+      };
+
+      const missedEn = {
+        email: `Subject: Quick lead follow-up idea for ${biz}\n\nHi ${owner},\n\nI was looking at ${biz} and noticed ${issue}.\n\nFor ${type}s, even a few missed calls/forms can turn into lost jobs. I build a simple 24-hour missed lead rescue setup: after-hours response text, intake questions, owner notification, and follow-up templates.\n\nIt is a fixed $500 setup. If I cannot point to a clear lead-flow gap after the audit, I will say so before you pay.\n\nWorth a quick look this week?`,
+        dm: `Hi ${owner}, I noticed ${issue} for ${biz}. I set up simple missed-call/follow-up flows for ${type}s so leads get a fast response even when the team is busy. Fixed $500, delivered in 24h. Want me to send a 1-page plan?`,
+        call: `Hi ${owner}, this is a quick one. I looked at ${biz} and noticed ${issue}. Do you know roughly how many calls or form leads get missed when the team is busy or after hours? I set up a 24-hour rescue flow so those leads get an instant response and you get the details. If it looks useful, I can send a one-page plan and do it for $500.`,
+        follow: `Hi ${owner}, quick follow-up. I can map the missed-lead flow for ${biz} today and show exactly what I would change before you decide. If it is not useful, no pressure. Should I send the short plan?`
+      };
+
+      const missedRu = {
+        email: `Тема: Быстрая идея для заявок ${biz}\n\nЗдравствуйте, ${owner}.\n\nЯ посмотрел ${biz} и заметил: ${issue}.\n\nДля бизнеса типа ${type} даже несколько пропущенных звонков или форм могут стоить денег. Я делаю простую настройку спасения пропущенных заявок за 24 часа: автоответ, вопросы для клиента, уведомление владельцу и шаблоны follow-up.\n\nФиксированная цена — $500. Если после аудита я не найду понятной проблемы в потоке заявок, скажу до оплаты.\n\nМожно прислать короткий план?`,
+        dm: `Здравствуйте, ${owner}. Я заметил у ${biz}: ${issue}. Я настраиваю быстрый follow-up для пропущенных заявок у ${type}: автоответ, сбор деталей и уведомление владельцу. $500, доставка за 24 часа. Прислать короткий план?`,
+        call: `Здравствуйте, ${owner}. Я коротко: посмотрел ${biz} и заметил ${issue}. Сколько примерно звонков или заявок теряется, когда команда занята или после часов работы? Я настраиваю простой сценарий, чтобы такие лиды получали быстрый ответ, а вы получали детали. Если интересно, пришлю план и сделаю за $500.`,
+        follow: `${owner}, добрый день. Могу сегодня накидать для ${biz} схему спасения пропущенных заявок и показать, что именно поменять. Если не подойдет — без давления. Прислать короткий план?`
+      };
+
+      const bundle = offer === "quotes"
+        ? (lang === "ru" ? quoteRu : quoteEn)
+        : (lang === "ru" ? missedRu : missedEn);
+
+      $("#messageOutput").textContent = bundle[activeTemplate];
+    }
+
+    function makeReviewReply() {
+      const text = $("#reviewText").value.trim();
+      const tone = $("#reviewTone").value;
+      const situation = $("#reviewRating").value;
+      const intro = {
+        warm: "Hi, hope you are doing well.",
+        premium: "Hi, I wanted to follow up professionally.",
+        direct: "Hi, quick follow-up."
+      }[tone];
+
+      let reply;
+      if (situation === "4") {
+        reply = `${intro} I know price matters, so I wanted to check whether the estimate still makes sense or if we should adjust the scope. If you want, we can review the options and see if there is a simpler version that fits your timeline.`;
+      } else if (situation === "3") {
+        reply = `${intro} Last time we spoke, it sounded like the project might be delayed. Should we keep this on the calendar for later, or would it help to revisit the estimate and timing this week?`;
+      } else if (situation === "1") {
+        reply = `${intro} We spoke a while back about your project, and I wanted to see if it is still on your list. If it is no longer relevant, no problem. If it is, I can help you refresh the estimate or schedule a quick call.`;
+      } else {
+        reply = `${intro} I wanted to check in on the estimate we sent. Are you still considering the project, or would it help to answer any questions before you make a decision?`;
+      }
+
+      if (text.length > 0) {
+        reply += `\n\nContext note for personalization: ${text}`;
+      }
+
+      $("#reviewReply").textContent = reply;
+    }
+
+    function getLeads() {
+      return store.get("leadrescue:leads", []);
+    }
+
+    function setLeads(leads) {
+      store.set("leadrescue:leads", leads);
+      renderCrm();
+      if ($("#outreachQueue")) renderQueue();
+      updateSmartCommand();
+    }
+
+    function saveLead() {
+      const lead = {
+        id: crypto.randomUUID(),
+        business: $("#leadBusiness").value.trim(),
+        contact: $("#leadContact").value.trim(),
+        niche: $("#leadNiche").value.trim(),
+        status: $("#leadStatus").value,
+        note: $("#leadNote").value.trim()
+      };
+      if (!lead.business && !lead.contact) {
+        toast("Добавь бизнес или контакт");
+        return;
+      }
+      setLeads([lead, ...getLeads()]);
+      $("#leadBusiness").value = "";
+      $("#leadContact").value = "";
+      $("#leadNiche").value = "";
+      $("#leadNote").value = "";
+      toast("Лид добавлен");
+    }
+
+    function renderCrm() {
+      const leads = getLeads();
+      $("#crmBody").innerHTML = leads.length ? leads.map(lead => `
+        <tr class="crm-row">
+          <td>${escapeHtml(lead.business)}</td>
+          <td>${escapeHtml(lead.contact)}</td>
+          <td>${escapeHtml(lead.niche)}</td>
+          <td>${escapeHtml(lead.status)}</td>
+          <td>${escapeHtml(lead.verified || "Unchecked")} ${lead.verifyScore ? `${lead.verifyScore}/100` : ""}</td>
+          <td>${escapeHtml(lead.bestContact || lead.contactEmail || lead.contactForm || lead.contactPhone || "")}</td>
+          <td>${escapeHtml(lead.note)}</td>
+          <td><button data-delete="${lead.id}">Удалить</button></td>
+        </tr>
+      `).join("") : `<tr><td colspan="8" class="muted">Пока пусто. Добавь 30 лидов сегодня.</td></tr>`;
+    }
+
+    function exportCsv() {
+      const leads = getLeads();
+      const rows = [["Business", "Contact", "Best Contact", "Email", "Phone", "Form", "Social", "Niche", "Status", "Sent At", "Follow-up Due", "Verification", "Verify Score", "Verify Summary", "Note"], ...leads.map(l => [l.business, l.contact, l.bestContact || "", l.contactEmail || "", l.contactPhone || "", l.contactForm || "", l.contactSocial || "", l.niche, l.status, l.sentAt || "", l.followUpDue || "", l.verified || "", l.verifyScore || "", l.verifySummary || "", l.note])];
+      const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "leadrescue-crm.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function appBackupData() {
+      return {
+        app: "RevenueSprint 48",
+        version: 2,
+        exportedAt: new Date().toISOString(),
+        leads: getLeads(),
+        tasks: store.get("leadrescue:tasks", {}),
+        daily: store.get("leadrescue:daily", {}),
+        settings: {
+          botCities: $("#botCities")?.value || "",
+          botNiches: $("#botNiches")?.value || "",
+          botRadius: $("#botRadius")?.value || "",
+          botPerCombo: $("#botPerCombo")?.value || ""
+        }
+      };
+    }
+
+    function exportBackup() {
+      const blob = new Blob([JSON.stringify(appBackupData(), null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const stamp = new Date().toISOString().slice(0, 19).replaceAll(":", "-");
+      a.href = url;
+      a.download = `revenue-sprint-backup-${stamp}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast("Backup скачан");
+    }
+
+    function applyBackup(data) {
+      if (!data || !Array.isArray(data.leads)) {
+        toast("Неверный backup");
+        return;
+      }
+
+      store.set("leadrescue:leads", data.leads);
+      store.set("leadrescue:tasks", data.tasks || {});
+      store.set("leadrescue:daily", data.daily || {});
+
+      if (data.settings) {
+        if ($("#botCities") && data.settings.botCities) $("#botCities").value = data.settings.botCities;
+        if ($("#botNiches") && data.settings.botNiches) $("#botNiches").value = data.settings.botNiches;
+        if ($("#botRadius") && data.settings.botRadius) $("#botRadius").value = data.settings.botRadius;
+        if ($("#botPerCombo") && data.settings.botPerCombo) $("#botPerCombo").value = data.settings.botPerCombo;
+      }
+
+      renderCrm();
+      renderQueue();
+      renderTasks();
+      updateVerifiedMetric();
+      toast(`Backup восстановлен: ${data.leads.length} лидов`);
+    }
+
+    function importBackupFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          applyBackup(JSON.parse(reader.result));
+        } catch {
+          toast("Не удалось прочитать JSON");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function addSampleLead() {
+      setLeads([{
+        id: crypto.randomUUID(),
+        business: "Austin Roof Pros",
+        contact: "https://example.com / owner@example.com",
+        niche: "roofing contractor",
+        status: "To contact",
+        note: "Website offers free estimates; likely has old quote/no-response leads."
+      }, ...getLeads()]);
+      switchStage("crm");
+      toast("Пример добавлен");
+    }
+
+    function renderTasks() {
+      const done = store.get("leadrescue:tasks", {});
+      $("#taskList").innerHTML = tasks.map((task, index) => `
+        <label class="task">
+          <input type="checkbox" data-task="${index}" ${done[index] ? "checked" : ""}>
+          <span><b>${task[0]}</b><span>${task[1]}</span></span>
+          <time>${task[2]}</time>
+        </label>
+      `).join("");
+      updateProgress();
+    }
+
+    function updateProgress() {
+      const done = store.get("leadrescue:tasks", {});
+      const count = Object.values(done).filter(Boolean).length;
+      const pct = Math.round((count / tasks.length) * 100);
+      $("#progressBar").style.width = `${pct}%`;
+      $("#progressText").textContent = `${pct}% готово (${count}/${tasks.length})`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    document.addEventListener("click", event => {
+      const nav = event.target.closest("[data-stage]");
+      if (nav) switchStage(nav.dataset.stage);
+
+      const tab = event.target.closest("[data-template]");
+      if (tab) {
+        activeTemplate = tab.dataset.template;
+        $$(".tab").forEach(button => button.classList.toggle("active", button === tab));
+        makeMessages();
+      }
+
+      const copy = event.target.closest("[data-copy]");
+      if (copy) {
+        const target = $(copy.dataset.copy);
+        writeClipboard(target ? target.textContent.trim() : "").then(() => toast()).catch(() => toast("Не удалось скопировать"));
+      }
+
+      const del = event.target.closest("[data-delete]");
+      if (del) setLeads(getLeads().filter(lead => lead.id !== del.dataset.delete));
+
+      const found = event.target.closest("[data-add-found]");
+      if (found) addFoundToCrm(Number(found.dataset.addFound));
+
+      const copyMsg = event.target.closest("[data-copy-message]");
+      if (copyMsg) {
+        const lead = getLeads().find(item => item.id === copyMsg.dataset.copyMessage);
+        if (lead) writeClipboard(leadMessage(lead)).then(() => toast()).catch(() => toast("Не удалось скопировать"));
+      }
+
+      const copyFu = event.target.closest("[data-copy-followup]");
+      if (copyFu) {
+        const lead = getLeads().find(item => item.id === copyFu.dataset.copyFollowup);
+        if (lead) writeClipboard(followUpMessage(lead)).then(() => toast("Follow-up скопирован")).catch(() => toast("Не удалось скопировать"));
+      }
+
+      const followedUp = event.target.closest("[data-followed-up]");
+      if (followedUp) {
+        const leads = getLeads().map(lead => {
+          if (lead.id !== followedUp.dataset.followedUp) return lead;
+          return {
+            ...lead,
+            lastFollowUpAt: new Date().toISOString(),
+            followUpDue: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+          };
+        });
+        setLeads(leads);
+        toast("Follow-up отмечен");
+      }
+
+      const addContact = event.target.closest("[data-add-contact]");
+      if (addContact) {
+        const value = prompt("Вставь найденный email / phone / contact form / social link");
+        if (value && value.trim()) {
+          const contact = value.trim();
+          const leads = getLeads().map(lead => {
+            if (lead.id !== addContact.dataset.addContact) return lead;
+            return {
+              ...lead,
+              bestContact: contact,
+              contactEmail: extractEmail(contact) || lead.contactEmail || "",
+              contactPhone: /\d/.test(contact) && !contact.startsWith("http") && !contact.includes("@") ? contact : lead.contactPhone || "",
+              contactForm: contact.startsWith("http") && /contact|quote|estimate|request/i.test(contact) ? contact : lead.contactForm || "",
+              contactSocial: /facebook|instagram|linkedin|twitter|x\.com/i.test(contact) ? contact : lead.contactSocial || "",
+              contactSummary: `manual contact added: ${contact}`
+            };
+          });
+          setLeads(leads);
+          toast("Контакт сохранен");
+        }
+      }
+
+      const statusBtn = event.target.closest("[data-status-id]");
+      if (statusBtn) updateLeadStatus(statusBtn.dataset.statusId, statusBtn.dataset.nextStatus);
+    });
+
+    document.addEventListener("change", event => {
+      const box = event.target.closest("[data-task]");
+      if (!box) return;
+      const done = store.get("leadrescue:tasks", {});
+      done[box.dataset.task] = box.checked;
+      store.set("leadrescue:tasks", done);
+      updateProgress();
+    });
+
+    $("#calcBtn").addEventListener("click", calc);
+    ["missedCalls", "leadValue", "saveRate", "closeRate"].forEach(id => $("#" + id).addEventListener("input", calc));
+    $("#buildSearch").addEventListener("click", buildSearchLinks);
+    $("#autoFind").addEventListener("click", findBusinesses);
+    $("#addAllFound").addEventListener("click", addAllFoundToCrm);
+    $("#generateMsgs").addEventListener("click", makeMessages);
+    $("#offerType").addEventListener("change", makeMessages);
+    $("#generateReviewReply").addEventListener("click", makeReviewReply);
+    $("#saveLead").addEventListener("click", saveLead);
+    $("#exportCsv").addEventListener("click", exportCsv);
+    $("#exportBackup").addEventListener("click", exportBackup);
+    $("#importBackup").addEventListener("change", event => importBackupFile(event.target.files[0]));
+    $("#clearCrm").addEventListener("click", () => {
+      if (confirm("Очистить CRM?")) setLeads([]);
+    });
+    $("#addSample").addEventListener("click", addSampleLead);
+    $("#planAutopilot").addEventListener("click", calculateAutopilot);
+    $("#buildQueue").addEventListener("click", renderQueue);
+    $("#exportQueue").addEventListener("click", exportOutreachQueue);
+    $("#markDailyDone").addEventListener("click", markDailyBlock);
+    $("#runFullPipeline").addEventListener("click", runFullPipeline);
+    $("#runLeadBot").addEventListener("click", runLeadBot);
+    $("#deepCheckSites").addEventListener("click", runDeepCheckSites);
+    $("#findContacts").addEventListener("click", runDeepCheckSites);
+    $("#archiveWeak").addEventListener("click", archiveWeakLeads);
+    $("#smartNextAction").addEventListener("click", runSmartNextAction);
+    $("#generateMissionBrief").addEventListener("click", generateMissionBrief);
+    $("#copyTopLead").addEventListener("click", copyTopLeadMessage);
+    $("#copyCloseKit").addEventListener("click", copyCloseKit);
+    $("#toggleFocusMode").addEventListener("click", toggleFocusMode);
+    $("#installApp").addEventListener("click", installApp);
+    $("#buildTodayPack").addEventListener("click", buildTodayPack);
+    $("#exportTodayPack").addEventListener("click", exportTodayPack);
+    $("#buildContactHunt").addEventListener("click", buildContactHuntPack);
+    $("#filterReady").addEventListener("click", () => setQueueFilter("ready"));
+    $("#filterNoContact").addEventListener("click", () => setQueueFilter("noContact"));
+    $("#filterFollowups").addEventListener("click", () => setQueueFilter("followups"));
+    $("#filterReplies").addEventListener("click", () => setQueueFilter("replies"));
+    $("#filterAllQueue").addEventListener("click", () => setQueueFilter("all"));
+    $("#exportLeads").addEventListener("click", exportCsv);
+    $("#buildQueueFromBot").addEventListener("click", () => {
+      renderQueue();
+      toast("Очередь обновлена");
+    });
+    ["targetRevenue", "frontPrice", "replyRate", "closeRateAuto"].forEach(id => $("#" + id).addEventListener("input", () => {
+      calculateAutopilot();
+      saveUiSettings();
+    }));
+    ["botCities", "botNiches", "botRadius", "botPerCombo"].forEach(id => $("#" + id).addEventListener("input", saveUiSettings));
+
+    loadUiSettings();
+    calc();
+    buildSearchLinks();
+    makeMessages();
+    makeReviewReply();
+    calculateAutopilot();
+    renderCrm();
+    renderQueue();
+    updateVerifiedMetric();
+    renderTasks();
+
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+      navigator.serviceWorker.register("./service-worker.js").catch(() => {});
+    }
+
+    if ($("#installHint")) {
+      $("#installHint").textContent = location.protocol.startsWith("http")
+        ? "Mobile: нажми Install App или Add to Home Screen, чтобы открыть как приложение."
+        : "Mobile: локальный file:// не ставится как приложение. Задеплой на GitHub Pages / Vercel / Netlify, потом Add to Home Screen.";
+    }
+
+    window.addEventListener("beforeinstallprompt", event => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      toast("Можно установить как приложение");
+    });
+
+    function startGalaxyCanvas() {
+      const canvas = $("#galaxyCanvas");
+      if (!canvas || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+      const ctx = canvas.getContext("2d", { alpha: true });
+      let width = 0;
+      let height = 0;
+      let stars = [];
+      let pointerX = 0;
+      let pointerY = 0;
+
+      function resize() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth;
+        height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = width < 640 ? 80 : 150;
+        stars = Array.from({ length: count }, () => ({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          z: Math.random() * 0.7 + 0.3,
+          r: Math.random() * 1.35 + 0.25,
+          vx: (Math.random() - 0.5) * 0.05,
+          vy: (Math.random() - 0.5) * 0.05,
+          tw: Math.random() * Math.PI * 2
+        }));
+      }
+
+      function draw(time) {
+        ctx.clearRect(0, 0, width, height);
+        const px = (pointerX - width / 2) * 0.012;
+        const py = (pointerY - height / 2) * 0.012;
+
+        const nebula = ctx.createRadialGradient(width * 0.72 + px, height * 0.24 + py, 0, width * 0.72, height * 0.24, Math.max(width, height) * 0.62);
+        nebula.addColorStop(0, "rgba(56,189,248,0.16)");
+        nebula.addColorStop(0.42, "rgba(79,70,229,0.07)");
+        nebula.addColorStop(1, "rgba(2,6,23,0)");
+        ctx.fillStyle = nebula;
+        ctx.fillRect(0, 0, width, height);
+
+        for (const star of stars) {
+          star.x += star.vx * star.z;
+          star.y += star.vy * star.z;
+          star.tw += 0.018;
+          if (star.x < -10) star.x = width + 10;
+          if (star.x > width + 10) star.x = -10;
+          if (star.y < -10) star.y = height + 10;
+          if (star.y > height + 10) star.y = -10;
+
+          const x = star.x + px * star.z;
+          const y = star.y + py * star.z;
+          const alpha = 0.35 + Math.sin(star.tw + time * 0.001) * 0.28;
+          ctx.beginPath();
+          ctx.arc(x, y, star.r * star.z, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(210, 240, 255, ${Math.max(0.12, alpha)})`;
+          ctx.fill();
+        }
+
+        for (let i = 0; i < stars.length; i += 1) {
+          for (let j = i + 1; j < Math.min(stars.length, i + 9); j += 1) {
+            const a = stars[i];
+            const b = stars[j];
+            const ax = a.x + px * a.z;
+            const ay = a.y + py * a.z;
+            const bx = b.x + px * b.z;
+            const by = b.y + py * b.z;
+            const dist = Math.hypot(ax - bx, ay - by);
+            if (dist < 112) {
+              ctx.strokeStyle = `rgba(125, 211, 252, ${0.10 * (1 - dist / 112)})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.moveTo(ax, ay);
+              ctx.lineTo(bx, by);
+              ctx.stroke();
+            }
+          }
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener("resize", resize);
+      window.addEventListener("pointermove", event => {
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+      }, { passive: true });
+      pointerX = window.innerWidth / 2;
+      pointerY = window.innerHeight / 2;
+      resize();
+      requestAnimationFrame(draw);
+    }
+
+    startGalaxyCanvas();
+  </script>
+</body>
+</html>

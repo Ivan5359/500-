@@ -1,0 +1,19 @@
+{
+  "name": "RevenueSprint 48",
+  "short_name": "RevenueSprint",
+  "description": "Quote Recovery Sprint command center for contractor outreach.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#050913",
+  "theme_color": "#050913",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

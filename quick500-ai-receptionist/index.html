@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lead Rescue Desk - 48h AI Receptionist Setup</title>
+  <meta name="description" content="A fast AI receptionist and lead follow-up setup for local service businesses.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Lead Rescue Desk home">
+      <span class="brand-mark">LR</span>
+      <span>Lead Rescue Desk</span>
+    </a>
+    <nav class="nav" aria-label="Primary navigation">
+      <a href="#offer">Offer</a>
+      <a href="#demo">Demo</a>
+      <a href="#proof">Proof</a>
+      <a href="#contact">Book</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Installed in 48 hours for local service businesses</p>
+        <h1>Stop losing paid leads when nobody replies fast enough.</h1>
+        <p class="lead">
+          We install a lightweight AI receptionist that answers common questions,
+          captures job details, qualifies the lead, and pushes the next step to
+          your phone or calendar.
+        </p>
+        <div class="actions">
+          <a class="button primary" href="#contact">Get a $500 pilot</a>
+          <a class="button secondary" href="#demo">Calculate lost leads</a>
+        </div>
+      </div>
+      <div class="signal-panel" aria-label="Live lead handling preview">
+        <div class="phone-shell">
+          <div class="phone-top">
+            <span></span>
+            <strong>New lead</strong>
+            <span class="status-dot"></span>
+          </div>
+          <div class="chat">
+            <p class="bubble inbound">Do you have emergency availability today?</p>
+            <p class="bubble outbound">Yes. What service do you need and what ZIP code?</p>
+            <p class="bubble inbound">AC stopped cooling. 78704.</p>
+            <p class="bubble outbound">Got it. A tech can call within 8 minutes. Best number?</p>
+          </div>
+          <div class="lead-card">
+            <span>Qualified lead</span>
+            <strong>Emergency HVAC, 78704</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="offer" class="band">
+      <div class="section-head">
+        <p class="eyebrow">The fast offer</p>
+        <h2>$500 pilot: one lead rescue flow installed this week.</h2>
+      </div>
+      <div class="grid three">
+        <article class="item">
+          <h3>1. Intake assistant</h3>
+          <p>Answers FAQs, captures contact info, urgency, service type, location, and budget range.</p>
+        </article>
+        <article class="item">
+          <h3>2. Owner alert</h3>
+          <p>Sends a clean summary to email, SMS-ready text, or your preferred inbox for fast follow-up.</p>
+        </article>
+        <article class="item">
+          <h3>3. Review follow-up</h3>
+          <p>Creates a simple post-job message asking happy customers for a Google review.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="demo" class="calculator">
+      <div class="calc-copy">
+        <p class="eyebrow">Demo</p>
+        <h2>Show the client what slow replies cost.</h2>
+        <p>
+          Adjust the numbers during a sales call. The goal is not perfect math;
+          it is making the opportunity visible in under one minute.
+        </p>
+      </div>
+      <form class="calc-box" aria-label="Lost lead calculator">
+        <label>
+          Missed or late leads per week
+          <input id="missed" type="number" min="0" value="7">
+        </label>
+        <label>
+          Average job value ($)
+          <input id="value" type="number" min="0" value="350">
+        </label>
+        <label>
+          Close rate after fast reply (%)
+          <input id="close" type="number" min="0" max="100" value="25">
+        </label>
+        <output class="result" for="missed value close">
+          <span>Estimated monthly recoverable revenue</span>
+          <strong id="result">$2,450</strong>
+        </output>
+      </form>
+    </section>
+
+    <section id="proof" class="band split">
+      <div>
+        <p class="eyebrow">Why this niche</p>
+        <h2>Local operators already buy this category.</h2>
+      </div>
+      <div class="proof-list">
+        <p>Yelp launched AI receptionist tools for businesses at roughly $99/month, which validates demand for phone and lead handling automation.</p>
+        <p>Small business CRM tools increasingly bundle AI workflows, but many owners still need hands-on setup rather than another dashboard.</p>
+        <p>The offer is service-first: charge for installation, customization, and owner training instead of waiting for subscription revenue.</p>
+      </div>
+    </section>
+
+    <section id="contact" class="contact">
+      <div>
+        <p class="eyebrow">Pilot</p>
+        <h2>Want this installed in 48 hours?</h2>
+        <p>Send your website, service area, FAQ, pricing notes, and where new leads should go.</p>
+      </div>
+      <form class="contact-form">
+        <label>
+          Name
+          <input type="text" placeholder="Alex Rivera">
+        </label>
+        <label>
+          Business website
+          <input type="url" placeholder="https://example.com">
+        </label>
+        <label>
+          Best email
+          <input type="email" placeholder="owner@example.com">
+        </label>
+        <label>
+          What should the assistant handle?
+          <textarea rows="4" placeholder="Missed calls, quote requests, appointment booking..."></textarea>
+        </label>
+        <button type="button">Request pilot</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <span>Lead Rescue Desk</span>
+    <span>AI receptionist setup for service businesses</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
