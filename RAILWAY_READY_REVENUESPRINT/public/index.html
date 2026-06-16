@@ -124,10 +124,43 @@
     .eyebrow { display:inline-flex; padding:7px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
     h1 { margin: 22px 0 14px; font-size: clamp(48px, 8vw, 108px); line-height:.86; letter-spacing:0; }
     .lead { max-width: 760px; color: var(--soft); font-size: clamp(16px, 2vw, 21px); line-height:1.5; margin:0; }
-    .mini-grid { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; margin-top:32px; }
-    .mini { min-height:82px; padding:12px; border:1px solid var(--line); border-radius:var(--r); background:var(--panel2); }
-    .mini b { display:block; font-size:22px; margin-bottom:6px; }
-    .mini span { color:var(--muted); font-size:12px; line-height:1.35; }
+    .intro-note {
+      margin-top: 28px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .24);
+      color: var(--soft);
+      line-height: 1.5;
+    }
+    .intro-note b {
+      color: white;
+    }
+    .doc-links {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .doc-link {
+      min-height: 64px;
+      display: grid;
+      align-content: center;
+      gap: 4px;
+      padding: 12px;
+      border: 1px solid var(--line2);
+      border-radius: var(--r);
+      color: var(--text);
+      text-decoration: none;
+      background: rgba(95, 242, 255, .07);
+      transition: .18s ease;
+    }
+    .doc-link:hover {
+      transform: translateY(-1px);
+      background: rgba(78, 164, 255, .12);
+    }
+    .doc-link b { font-size: 15px; }
+    .doc-link span { color: var(--muted); font-size: 12px; line-height: 1.35; }
     .section-head { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:12px; }
     .section-head h2 { margin:0; font-size:18px; }
     .section-head p { margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.42; }
@@ -218,7 +251,7 @@
       .top { align-items:flex-start; flex-direction:column; }
       .actions { width:100%; display:grid; grid-template-columns:1fr 1fr; }
       .btn { width:100%; }
-      .hero-action, .fields, .mini-grid, .steps, .metrics, .guide, .contact-grid, .detail-grid, .detail-hero { grid-template-columns:1fr; }
+      .hero-action, .fields, .doc-links, .steps, .metrics, .guide, .contact-grid, .detail-grid, .detail-hero { grid-template-columns:1fr; }
       .modal { padding:10px; }
       .toast { right:10px; bottom:84px; }
     }
@@ -259,11 +292,19 @@
         <div class="panel pad">
           <span class="eyebrow">Quote Recovery Sprint</span>
           <h1>RevenueSprint</h1>
-          <p class="lead">Чистый Railway-ready command center: находит бизнесы, проверяет контакты, открывает Gmail/формы, готовит сообщение и сохраняет историю.</p>
-          <div class="mini-grid">
-            <div class="mini"><b>$500</b><span>первый быстрый проект для подрядчика</span></div>
-            <div class="mini"><b>48h</b><span>разбор старых смет и очередь follow-up</span></div>
-            <div class="mini"><b>Email/Form</b><span>без американского номера, без массового спама</span></div>
+          <p class="lead">Спокойная рабочая панель: находит бизнесы, проверяет контакты, открывает Gmail/формы, готовит сообщение и сохраняет историю.</p>
+          <div class="intro-note">
+            <b>Идея простая:</b> система помогает найти компании, которым можно предложить разбор старых заявок. Она не отправляет спам сама, а готовит список, контакты и текст.
+          </div>
+          <div class="doc-links">
+            <a class="doc-link" href="/presentation.html">
+              <b>Presentation</b>
+              <span>Объяснение проекта для друга.</span>
+            </a>
+            <a class="doc-link" href="/guide.html">
+              <b>Guide</b>
+              <span>Пошаговое руководство для телефона.</span>
+            </a>
           </div>
         </div>
 
