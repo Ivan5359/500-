@@ -1,0 +1,13 @@
+{
+  "name": "revenuesprint-48",
+  "version": "1.0.0",
+  "private": true,
+  "description": "RevenueSprint 48 Railway-ready outreach command center.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

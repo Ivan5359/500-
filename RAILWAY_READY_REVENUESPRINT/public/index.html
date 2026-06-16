@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#00030a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
+  <title>RevenueSprint 48</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <style>
+    :root {
+      --bg: #00030a;
+      --panel: rgba(3, 9, 20, .88);
+      --panel2: rgba(0, 0, 0, .34);
+      --line: rgba(97, 174, 255, .18);
+      --line2: rgba(95, 242, 255, .35);
+      --text: #f5f9ff;
+      --muted: #8fa0b8;
+      --soft: #c4d3e8;
+      --blue: #4ea4ff;
+      --cyan: #5ff2ff;
+      --green: #69ffbd;
+      --yellow: #ffd166;
+      --red: #ff6b87;
+      --r: 10px;
+      --shadow: 0 30px 120px rgba(0, 0, 0, .58);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 78% 10%, rgba(30, 118, 255, .16), transparent 28rem),
+        radial-gradient(circle at 14% 78%, rgba(95, 242, 255, .06), transparent 24rem),
+        linear-gradient(145deg, #000103, #020714 52%, #000103);
+      overflow-x: hidden;
+    }
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(95, 242, 255, .032) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(95, 242, 255, .032) 1px, transparent 1px);
+      background-size: 76px 76px;
+      mask-image: radial-gradient(circle at 55% 42%, black, transparent 76%);
+      z-index: -2;
+    }
+    #stars { position: fixed; inset: 0; z-index: -3; width: 100%; height: 100%; pointer-events: none; }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; color: inherit; cursor: pointer; }
+    a { color: inherit; }
+    .app { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+    .rail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 16px;
+      border-right: 1px solid var(--line);
+      background: rgba(0, 2, 9, .88);
+      backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .mark {
+      width: 38px; height: 38px; border-radius: 10px; border: 1px solid var(--line2);
+      background: radial-gradient(circle at 65% 28%, var(--cyan), transparent 17%), radial-gradient(circle at 34% 70%, var(--blue), transparent 22%), #061124;
+      box-shadow: 0 0 30px rgba(78, 164, 255, .24);
+    }
+    .brand b { display: block; line-height: 1; }
+    .brand span { color: var(--muted); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; }
+    .nav { display: grid; gap: 6px; }
+    .nav a {
+      min-height: 42px; display: flex; align-items: center; gap: 10px; padding: 0 12px;
+      text-decoration: none; color: var(--soft); border: 1px solid transparent; border-radius: var(--r);
+    }
+    .nav a:before {
+      content: attr(data-n); width: 22px; height: 22px; display: grid; place-items: center;
+      border: 1px solid var(--line); border-radius: 50%; color: var(--muted); font-size: 11px;
+    }
+    .nav a.active, .nav a:hover { background: rgba(78, 164, 255, .08); border-color: var(--line); color: white; }
+    .side-note {
+      margin-top: auto; padding: 14px; border: 1px solid var(--line); border-radius: var(--r);
+      background: rgba(255,255,255,.03); color: var(--muted); font-size: 12px; line-height: 1.45;
+    }
+    .main { min-width: 0; padding: 22px; }
+    .top {
+      position: sticky; top: 0; z-index: 10; margin: -22px -22px 18px; min-height: 58px;
+      padding: 10px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      border-bottom: 1px solid var(--line); background: rgba(0, 3, 10, .82); backdrop-filter: blur(18px);
+    }
+    .system { color: var(--muted); font-size: 13px; display: flex; align-items: center; gap: 9px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 18px var(--green); }
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .btn {
+      min-height: 38px; padding: 0 13px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      border-radius: var(--r); border: 1px solid var(--line); background: rgba(9, 19, 39, .72); color: var(--soft);
+      transition: transform .18s ease, border .18s ease, background .18s ease;
+      text-decoration: none; white-space: nowrap;
+    }
+    .btn:hover { transform: translateY(-1px); border-color: var(--line2); color: white; background: rgba(20, 50, 96, .72); }
+    .btn.primary { color: #001525; border-color: transparent; background: linear-gradient(135deg, var(--cyan), var(--blue)); font-weight: 900; box-shadow: 0 18px 48px rgba(78,164,255,.24); }
+    .panel {
+      position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(4, 11, 24, .91), rgba(0, 3, 10, .94)); box-shadow: var(--shadow);
+    }
+    .panel:after {
+      content: ""; position: absolute; inset: 0; pointer-events: none; transform: translateX(-130%);
+      background: linear-gradient(110deg, transparent, rgba(95,242,255,.045), transparent);
+      animation: sweep 8s ease-in-out infinite;
+    }
+    @keyframes sweep { 0%,72% { transform: translateX(-130%); opacity:0 } 82% { opacity:1 } 100% { transform: translateX(130%); opacity:0 } }
+    .pad { padding: 18px; }
+    .panel > * { position: relative; z-index: 1; }
+    .hero { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(340px,.9fr); gap: 16px; margin-bottom: 16px; }
+    .eyebrow { display:inline-flex; padding:7px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { margin: 22px 0 14px; font-size: clamp(48px, 8vw, 108px); line-height:.86; letter-spacing:0; }
+    .lead { max-width: 760px; color: var(--soft); font-size: clamp(16px, 2vw, 21px); line-height:1.5; margin:0; }
+    .mini-grid { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; margin-top:32px; }
+    .mini { min-height:82px; padding:12px; border:1px solid var(--line); border-radius:var(--r); background:var(--panel2); }
+    .mini b { display:block; font-size:22px; margin-bottom:6px; }
+    .mini span { color:var(--muted); font-size:12px; line-height:1.35; }
+    .section-head { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .section-head h2 { margin:0; font-size:18px; }
+    .section-head p { margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.42; }
+    .control { display:grid; gap:12px; }
+    .hero-action {
+      display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; align-items:center;
+      padding:14px; border:1px solid rgba(95,242,255,.22); border-radius:var(--r); background:rgba(0,0,0,.28);
+    }
+    .hero-action b { display:block; font-size:18px; margin-bottom:5px; }
+    .hero-action span { color:var(--muted); font-size:13px; line-height:1.4; }
+    .fields { display:grid; grid-template-columns: minmax(0,1fr) 120px 120px; gap:10px; }
+    .field { display:grid; gap:6px; }
+    label { color:var(--muted); font-size:12px; }
+    input, select, textarea {
+      width:100%; min-height:42px; border:1px solid var(--line); border-radius:var(--r); color:var(--text);
+      background:rgba(0,0,0,.28); outline:0; padding:0 12px;
+    }
+    textarea { min-height:130px; padding:12px; line-height:1.45; resize:vertical; }
+    .chips, .filters { display:flex; flex-wrap:wrap; gap:7px; }
+    .chip { min-height:34px; padding:0 10px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.035); color:var(--soft); }
+    .chip.active { color:#001525; background:linear-gradient(135deg,var(--cyan),var(--blue)); border-color:transparent; font-weight:900; }
+    .progress { height:8px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08); border-radius:999px; overflow:hidden; }
+    .progress i { display:block; height:100%; width:var(--w,0%); background:linear-gradient(90deg,var(--cyan),var(--blue)); transition:width .28s ease; }
+    .steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .step { min-height:100px; text-align:left; padding:13px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.24); color:var(--soft); }
+    .step i { width:26px; height:26px; display:grid; place-items:center; border:1px solid var(--line2); border-radius:50%; color:var(--cyan); font-style:normal; font-weight:900; margin-bottom:10px; }
+    .step b { display:block; color:white; margin-bottom:5px; }
+    .step span { color:var(--muted); font-size:12px; line-height:1.35; }
+    .metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:16px; }
+    .metric { padding:14px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.22); }
+    .metric span { color:var(--muted); font-size:12px; }
+    .metric b { display:block; margin-top:8px; font-size:28px; line-height:1; }
+    .grid { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr); gap:16px; align-items:start; }
+    .guide { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-bottom:12px; }
+    .guide div { padding:10px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.22); }
+    .guide b { display:block; font-size:12px; margin-bottom:5px; }
+    .guide span { color:var(--muted); font-size:11px; line-height:1.32; }
+    .list { display:grid; gap:10px; }
+    .card { cursor:pointer; padding:14px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.22); display:grid; gap:11px; transition:.18s ease; }
+    .card:hover { transform:translateY(-1px); border-color:var(--line2); background:rgba(78,164,255,.07); }
+    .card-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .title { min-width:0; }
+    .title b { display:block; font-size:16px; overflow-wrap:anywhere; }
+    .title span { display:block; margin-top:5px; color:var(--muted); font-size:12px; overflow-wrap:anywhere; }
+    .score { min-width:58px; height:34px; display:grid; place-items:center; border:1px solid var(--line); border-radius:999px; color:var(--cyan); background:rgba(95,242,255,.06); font-weight:900; }
+    .badges { display:flex; flex-wrap:wrap; gap:6px; }
+    .badge { min-height:25px; display:inline-flex; align-items:center; padding:0 8px; border:1px solid rgba(255,255,255,.1); border-radius:999px; color:var(--muted); font-size:12px; background:rgba(255,255,255,.035); }
+    .badge.ready { color:var(--green); border-color:rgba(105,255,189,.26); }
+    .badge.need { color:var(--yellow); border-color:rgba(255,209,102,.26); }
+    .badge.hot { color:var(--cyan); border-color:rgba(95,242,255,.28); }
+    .row-actions { display:flex; flex-wrap:wrap; gap:7px; }
+    .mini-btn { min-height:32px; padding:0 10px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.2); color:var(--soft); font-size:12px; }
+    .mini-btn.primary-mini { color:#001525; border-color:transparent; background:linear-gradient(135deg,var(--cyan),var(--blue)); font-weight:900; }
+    .console, .history { max-height:260px; overflow:auto; display:grid; gap:8px; }
+    .log, .hist { padding:9px 10px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.22); color:var(--muted); font-size:12px; line-height:1.35; }
+    .log b, .hist b { color:var(--cyan); }
+    .dock { display:none; position:fixed; z-index:30; left:10px; right:10px; bottom:max(10px,env(safe-area-inset-bottom)); grid-template-columns:repeat(5,1fr); gap:4px; padding:6px; border:1px solid var(--line); border-radius:16px; background:rgba(0,3,10,.88); backdrop-filter:blur(18px); }
+    .dock a { min-height:48px; display:grid; place-items:center; border-radius:10px; color:var(--muted); text-decoration:none; font-size:11px; }
+    .dock a.active { color:white; background:rgba(78,164,255,.12); }
+    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; padding:16px; z-index:60; background:rgba(0,0,0,.68); backdrop-filter:blur(16px); }
+    .modal.open { display:flex; }
+    .modal-box { width:min(860px,100%); max-height:88vh; overflow:auto; padding:18px; border:1px solid var(--line2); border-radius:var(--r); background:#020713; box-shadow:0 40px 140px rgba(0,0,0,.7); }
+    .modal-head { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:12px; }
+    .modal-head h2 { margin:0; font-size:18px; }
+    .detail { display:grid; gap:12px; }
+    .detail-hero { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; padding:14px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.24); }
+    .detail-hero h3 { margin:0 0 6px; font-size:22px; overflow-wrap:anywhere; }
+    .detail-hero p { margin:0; color:var(--muted); overflow-wrap:anywhere; }
+    .note { padding:12px; border:1px solid rgba(255,209,102,.26); border-radius:var(--r); background:rgba(255,209,102,.06); color:var(--soft); font-size:13px; line-height:1.45; }
+    .contact-grid, .detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .contact-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .contact, .cell { min-height:48px; padding:10px; border:1px solid var(--line); border-radius:var(--r); background:rgba(0,0,0,.22); color:var(--soft); display:grid; align-items:center; text-decoration:none; overflow-wrap:anywhere; }
+    .contact.primary-contact { color:#001525; border-color:transparent; background:linear-gradient(135deg,var(--cyan),var(--blue)); font-weight:900; text-align:center; }
+    .cell span { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+    .cell b, .cell a { font-size:13px; color:white; text-decoration:none; overflow-wrap:anywhere; }
+    .toast { position:fixed; right:16px; bottom:16px; z-index:80; display:grid; gap:8px; }
+    .toast div { width:min(360px,calc(100vw - 32px)); padding:12px; border:1px solid var(--line2); border-radius:var(--r); background:rgba(3,9,20,.95); color:var(--soft); box-shadow:var(--shadow); }
+    .hidden { display:none !important; }
+    @media (max-width: 1080px) {
+      .app { grid-template-columns:1fr; }
+      .rail { display:none; }
+      .main { padding:16px 16px 88px; }
+      .top { margin:-16px -16px 16px; padding:10px 16px; }
+      .hero, .grid { grid-template-columns:1fr; }
+      .dock { display:grid; }
+    }
+    @media (max-width: 720px) {
+      .top { align-items:flex-start; flex-direction:column; }
+      .actions { width:100%; display:grid; grid-template-columns:1fr 1fr; }
+      .btn { width:100%; }
+      .hero-action, .fields, .mini-grid, .steps, .metrics, .guide, .contact-grid, .detail-grid, .detail-hero { grid-template-columns:1fr; }
+      .modal { padding:10px; }
+      .toast { right:10px; bottom:84px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *:before, *:after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+  <div class="app">
+    <aside class="rail">
+      <div class="brand"><div class="mark"></div><div><b>RevenueSprint</b><span>48 Command</span></div></div>
+      <nav class="nav">
+        <a href="#auto" class="active" data-n="01">Автопилот</a>
+        <a href="#queue" data-n="02">Очередь</a>
+        <a href="#crm" data-n="03">CRM</a>
+        <a href="#script" data-n="04">Скрипт</a>
+        <a href="#pack" data-n="05">Выдача</a>
+      </nav>
+      <div class="side-note"><b id="sideStatus">Готово</b><br><span id="sideMeta">Нажми Full Auto. На телефоне прогресс сохраняется.</span></div>
+    </aside>
+
+    <main class="main">
+      <header class="top">
+        <div class="system"><span class="dot"></span><span id="system">Local command center ready</span></div>
+        <div class="actions">
+          <button class="btn" id="installBtn">Install</button>
+          <button class="btn" id="backupBtn">Backup</button>
+          <button class="btn" id="importBtn">Import</button>
+          <button class="btn primary" id="fullTop">Full Auto</button>
+        </div>
+      </header>
+
+      <section class="hero" id="auto">
+        <div class="panel pad">
+          <span class="eyebrow">Quote Recovery Sprint</span>
+          <h1>RevenueSprint</h1>
+          <p class="lead">Чистый Railway-ready command center: находит бизнесы, проверяет контакты, открывает Gmail/формы, готовит сообщение и сохраняет историю.</p>
+          <div class="mini-grid">
+            <div class="mini"><b>$500</b><span>первый быстрый проект для подрядчика</span></div>
+            <div class="mini"><b>48h</b><span>разбор старых смет и очередь follow-up</span></div>
+            <div class="mini"><b>Email/Form</b><span>без американского номера, без массового спама</span></div>
+          </div>
+        </div>
+
+        <div class="panel pad control">
+          <div class="section-head"><div><h2>Автопилот</h2><p>Один запуск: найти, проверить, собрать план.</p></div><button class="btn" id="demoBtn">Demo</button></div>
+          <div class="hero-action">
+            <div><b id="jobTitle">Запустить весь процесс</b><span id="jobText">Если телефон закроет сайт, сессия и история останутся.</span></div>
+            <button class="btn primary" id="fullHero">Full Auto</button>
+          </div>
+          <div class="fields">
+            <div class="field"><label>Город</label><input id="city" value="Austin, TX" /></div>
+            <div class="field"><label>Радиус</label><select id="radius"><option value="5000">5 км</option><option value="10000" selected>10 км</option><option value="20000">20 км</option></select></div>
+            <div class="field"><label>Лимит</label><select id="limit"><option>30</option><option selected>60</option><option>100</option></select></div>
+          </div>
+          <div class="field"><label>Ниши</label><div class="chips" id="niches"></div></div>
+          <div class="progress"><i id="bar"></i></div>
+          <div class="steps">
+            <button class="step" id="scanBtn"><i>1</i><b>Найти бизнесы</b><span>OSM/Overpass, несколько зеркал.</span></button>
+            <button class="step" id="checkBtn"><i>2</i><b>Проверить контакты</b><span>Email, форма, сайт, social.</span></button>
+            <button class="step" id="packBtn"><i>3</i><b>Собрать план</b><span>Top leads + готовый текст.</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics">
+        <div class="metric"><span>Всего</span><b id="mTotal">0</b></div>
+        <div class="metric"><span>Ready</span><b id="mReady">0</b></div>
+        <div class="metric"><span>Follow-up</span><b id="mFollow">0</b></div>
+        <div class="metric"><span>Won</span><b id="mWon">0</b></div>
+      </section>
+
+      <section class="grid">
+        <div class="panel pad" id="queue">
+          <div class="section-head"><div><h2>Очередь</h2><p>Нажми на бизнес: откроется контакт, сообщение и действия.</p></div><button class="btn" id="csvBtn">CSV</button></div>
+          <div class="guide">
+            <div><b>1. Открой</b><span>Нажми карточку.</span></div>
+            <div><b>2. Контакт</b><span>Email/форма лучше звонка.</span></div>
+            <div><b>3. Отправь</b><span>Через Gmail или форму.</span></div>
+            <div><b>4. Отметь</b><span>Нажми Sent.</span></div>
+          </div>
+          <div class="filters" id="filters"></div>
+          <div class="list" id="leadList"></div>
+        </div>
+
+        <div style="display:grid;gap:16px">
+          <div class="panel pad" id="crm">
+            <div class="section-head"><div><h2>Live Log</h2><p>Что делал автопилот.</p></div><button class="btn" id="clearLog">Clear</button></div>
+            <div class="console" id="log"></div>
+          </div>
+          <div class="panel pad">
+            <div class="section-head"><div><h2>История</h2><p>Сессии не пропадают после телефона.</p></div><button class="btn" id="clearHistory">Clear</button></div>
+            <div class="history" id="history"></div>
+          </div>
+          <div class="panel pad" id="script">
+            <div class="section-head"><div><h2>Скрипт</h2><p>Готовый текст для выбранного бизнеса.</p></div><button class="btn" id="copyScript">Copy</button></div>
+            <textarea id="scriptBox"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel pad" id="pack" style="margin-top:16px">
+        <div class="section-head"><div><h2>Delivery Pack</h2><p>Что ты продаешь за $500.</p></div><button class="btn" id="copyPack">Copy</button></div>
+        <textarea id="delivery"></textarea>
+      </section>
+    </main>
+  </div>
+
+  <nav class="dock">
+    <a href="#auto" class="active">Auto</a>
+    <a href="#queue">Queue</a>
+    <a href="#crm">CRM</a>
+    <a href="#script">Script</a>
+    <a href="#pack">Pack</a>
+  </nav>
+
+  <div class="modal" id="modal">
+    <div class="modal-box">
+      <div class="modal-head"><h2 id="modalTitle">Business</h2><button class="btn" id="closeModal">Close</button></div>
+      <div class="detail" id="detail"></div>
+      <textarea id="modalText" class="hidden"></textarea>
+      <div class="actions" style="margin-top:12px"><button class="btn primary hidden" id="copyModal">Copy</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+  (() => {
+    const STORE = 'revenuesprint.clean.v1';
+    const $ = (id) => document.getElementById(id);
+    const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const nicheDefs = [
+      ['roofing','Roofing',['roof','roofing','roofer']],
+      ['hvac','HVAC',['hvac','air conditioning','heating','cooling']],
+      ['painting','Painting',['paint','painting','painter']],
+      ['flooring','Flooring',['floor','flooring']],
+      ['fencing','Fencing',['fence','fencing']],
+      ['landscaping','Landscaping',['landscape','landscaping','lawn']],
+      ['remodeling','Remodeling',['remodel','renovation','contractor']],
+      ['plumbing','Plumbing',['plumb','plumbing','plumber']]
+    ];
+    const defaults = { leads: [], log: [], history: [], selected: ['roofing','hvac','painting','flooring'], filter: 'ready', selectedLead: null, job: null, progress: 0, hiddenAt: null };
+    let state = load();
+    let installPrompt = null;
+
+    function load() {
+      try { return { ...defaults, ...JSON.parse(localStorage.getItem(STORE) || '{}'), progress: 0 }; }
+      catch { return { ...defaults }; }
+    }
+    function save() { localStorage.setItem(STORE, JSON.stringify({ ...state, progress: state.progress || 0 })); }
+    function esc(x) { return String(x || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
+    function norm(x) { return String(x || '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); }
+    function idFor(x) { let h = 2166136261; x = String(x || ''); for (let i=0;i<x.length;i++){ h ^= x.charCodeAt(i); h += (h<<1)+(h<<4)+(h<<7)+(h<<8)+(h<<24); } return 'l_' + (h>>>0).toString(16); }
+    function cleanUrl(u) { if (!u) return ''; let x=String(u).trim(); if (!x) return ''; if (!/^https?:\/\//i.test(x)) x='https://'+x; try { return new URL(x).href.replace(/\/$/,''); } catch { return ''; } }
+    function toast(msg) { const el=document.createElement('div'); el.textContent=msg; $('toast').appendChild(el); setTimeout(()=>el.remove(),3500); }
+    function log(msg) { state.log.unshift({ at: new Date().toLocaleTimeString(), msg }); state.log = state.log.slice(0,120); save(); renderLog(); }
+    function progress(n) { state.progress = Math.max(0, Math.min(100,n)); $('bar').style.setProperty('--w', state.progress + '%'); save(); }
+    function setBusy(on, msg) { $('fullTop').disabled=on; $('fullHero').disabled=on; $('scanBtn').disabled=on; $('checkBtn').disabled=on; $('system').textContent = msg || (on ? 'Working...' : 'Local command center ready'); $('sideStatus').textContent = on ? 'Работает' : 'Готово'; }
+    function begin(kind) { state.job = { kind, status: 'running', stage: 'start', startedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }; state.history.unshift({ at: new Date().toISOString(), title: kind, detail: 'started' }); state.history = state.history.slice(0,30); save(); renderJob(); }
+    function updateJob(stage, detail) { if (!state.job) begin('manual'); state.job.status='running'; state.job.stage=stage; state.job.detail=detail; state.job.updatedAt=new Date().toISOString(); save(); renderJob(); }
+    function finish(kind, detail) { state.job = { kind, status:'done', stage:'done', detail, updatedAt:new Date().toISOString() }; state.history.unshift({ at:new Date().toISOString(), title:kind, detail }); state.history = state.history.slice(0,30); save(); renderJob(); }
+    function score(l) { let s=16; if(l.website)s+=18; if(l.email)s+=18; if(l.form)s+=14; if(l.phone)s+=8; if(l.social)s+=5; if(l.quoteSignal)s+=14; if(l.status==='Won')s+=20; if(l.status==='Archived')s-=35; if(l.source==='Demo')s-=8; return Math.max(0,Math.min(99,s)); }
+    function status(l) { if (l.status) return l.status; if (l.email || l.form || l.phone || l.social) return 'Ready'; if (l.website) return 'Need Check'; return 'Need Contact'; }
+    function due(l) { return l.followUpDue && l.followUpDue <= new Date().toISOString().slice(0,10) && !['Won','Archived'].includes(l.status); }
+    function plus(d) { const x=new Date(); x.setDate(x.getDate()+d); return x.toISOString().slice(0,10); }
+
+    function merge(input) {
+      const id = input.id || idFor((input.website || '') + input.name + input.city);
+      let l = state.leads.find(x => x.id===id || norm(x.name+x.city)===norm(input.name+input.city));
+      if (l) Object.assign(l, input);
+      else { l = { id, name: input.name || 'Unknown business', city: input.city || $('city').value || '', niche: input.niche || 'Contractor', website: cleanUrl(input.website), email: input.email || '', phone: input.phone || '', form: input.form || '', social: input.social || '', address: input.address || '', source: input.source || 'OSM', status: input.status || '', notes: input.notes || '', createdAt: new Date().toISOString(), quoteSignal: !!input.quoteSignal }; state.leads.unshift(l); }
+      l.website = cleanUrl(l.website);
+      l.status = status(l);
+      l.score = score(l);
+      return l;
+    }
+
+    async function geocode(city) {
+      const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(city), { headers: { Accept:'application/json' }});
+      if (!res.ok) throw new Error('city search failed');
+      const data = await res.json();
+      if (!data.length) throw new Error('city not found');
+      return { lat:+data[0].lat, lon:+data[0].lon, label:data[0].display_name };
+    }
+    function overpassQuery(lat,lon,radius) {
+      const keys = nicheDefs.filter(n=>state.selected.includes(n[0])).flatMap(n=>n[2]).join('|');
+      return `[out:json][timeout:30];(
+        nwr["name"~"${keys}",i](around:${radius},${lat},${lon});
+        nwr["craft"~"roofer|plumber|painter|hvac|floor|fence|landscap|contractor",i](around:${radius},${lat},${lon});
+        nwr["shop"~"paint|flooring|hardware",i](around:${radius},${lat},${lon});
+      );out center tags 160;`;
+    }
+    async function overpass(query) {
+      const eps = ['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://overpass.openstreetmap.ru/api/interpreter'];
+      let last;
+      for (const ep of eps) {
+        try {
+          log('Overpass: ' + new URL(ep).hostname);
+          const res = await timeout(fetch(ep, { method:'POST', body:query, headers:{'Content-Type':'text/plain;charset=UTF-8'} }), 28000);
+          if (!res.ok) throw new Error('http ' + res.status);
+          return await res.json();
+        } catch(e) { last=e; log('Mirror failed: ' + e.message); }
+      }
+      throw last || new Error('Overpass unavailable');
+    }
+    function fromOsm(el, city) {
+      const t = el.tags || {}; const name=t.name || t.brand || ''; if (!name) return null;
+      const txt = norm(Object.values(t).join(' '));
+      const found = nicheDefs.find(n=>n[2].some(k=>txt.includes(norm(k))));
+      return { name, city, niche: found ? found[1] : 'Contractor', website: t.website || t['contact:website'] || t.url || '', phone: t.phone || t['contact:phone'] || '', email: t.email || t['contact:email'] || '', address: [t['addr:housenumber'],t['addr:street'],t['addr:city'],t['addr:state']].filter(Boolean).join(' '), source:'OSM' };
+    }
+    function timeout(p, ms) { return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms))]); }
+    async function scan(nested=false) {
+      if (!nested) begin('Scan');
+      const city = $('city').value.trim(); if (!city) { toast('Введи город'); return false; }
+      setBusy(true,'Scanning businesses...'); progress(4); updateJob('scan','search city');
+      try {
+        const geo = await geocode(city); progress(18); log('City: ' + geo.label);
+        const data = await overpass(overpassQuery(geo.lat, geo.lon, +$('radius').value)); progress(58);
+        const before = state.leads.length;
+        (data.elements || []).map(x=>fromOsm(x, city)).filter(Boolean).slice(0, +$('limit').value).forEach(merge);
+        const added = state.leads.length - before;
+        progress(100); log('Scan done: +' + added); if (!nested) finish('Scan', '+' + added + ' leads'); save(); render(); toast('Сканер готов: +' + added); return true;
+      } catch(e) { log('Scan failed: ' + e.message); if(!nested) finish('Scan needs attention', e.message); toast('Сканер не прошел. Нажми Demo или измени город.'); return false; }
+      finally { if(!nested){ setBusy(false); setTimeout(()=>progress(0),900); } }
+    }
+    function abs(base, href) { if(!href)return''; try{return new URL(href,base).href}catch{return href} }
+    async function checkLead(l) {
+      if (!l.website) { l.status=status(l); return; }
+      try {
+        const res = await timeout(fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(l.website)), 11000);
+        if (!res.ok) throw new Error('fetch ' + res.status);
+        const html = await res.text();
+        const email = html.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/ig);
+        const phone = html.match(/(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}/g);
+        const form = html.match(/href=["']([^"']*(?:contact|quote|estimate|schedule|book|request)[^"']*)["']/i);
+        const social = html.match(/href=["']([^"']*(?:facebook|instagram|linkedin|twitter|x\.com)[^"']*)["']/i);
+        l.email = l.email || (email && email[0]) || '';
+        l.phone = l.phone || (phone && phone[0]) || '';
+        l.form = l.form || abs(l.website, form && form[1]);
+        l.social = l.social || abs(l.website, social && social[1]);
+        l.quoteSignal = /free estimate|request quote|get a quote|schedule|book now|contact us|estimate/i.test(html);
+      } catch(e) { l.notes = [l.notes, 'check blocked: ' + e.message].filter(Boolean).join(' | '); }
+      l.lastCheckedAt = new Date().toISOString(); l.status=status(l); l.score=score(l);
+    }
+    async function checkAll(nested=false) {
+      if (!nested) begin('Deep Check');
+      const targets = state.leads.filter(l=>l.website && l.status!=='Archived').slice(0,40);
+      if (!targets.length) { toast('Нет сайтов для проверки'); if(!nested)finish('Deep Check','no websites'); return false; }
+      setBusy(true,'Checking contacts...'); log('Checking ' + targets.length + ' websites');
+      for (let i=0;i<targets.length;i++) { progress(Math.round((i/targets.length)*100)); updateJob('check',targets[i].name); await checkLead(targets[i]); save(); render(); }
+      progress(100); if(!nested)finish('Deep Check','contacts checked'); toast('Проверка готова'); if(!nested){ setBusy(false); setTimeout(()=>progress(0),900); } return true;
+    }
+    async function fullAuto() {
+      begin('Full Auto'); setBusy(true,'Full Auto running...');
+      const ok = await scan(true);
+      if (!ok && !state.leads.length) { finish('Full Auto needs attention','no leads'); setBusy(false); setTimeout(()=>progress(0),900); return; }
+      if (state.leads.some(l=>l.website && l.status!=='Archived')) await checkAll(true);
+      todayPack(); finish('Full Auto','ready pack built'); setBusy(false); setTimeout(()=>progress(0),900);
+    }
+    function demo() {
+      const city = $('city').value || 'Austin, TX';
+      [['Blue Ridge Roofing','Roofing','https://example.com',''],['Northline HVAC','HVAC','','info@northline.example'],['Prime Coat Painting','Painting','https://example.org',''],['Atlas Flooring Studio','Flooring','','']].forEach(x=>merge({ name:x[0], niche:x[1], city, website:x[2], email:x[3], source:'Demo' }));
+      log('Demo leads added'); save(); render();
+    }
+    function subject(l){ return 'Quick idea for ' + (l.name || 'your estimates'); }
+    function message(l){ return `Hi ${l.name || 'there'},
+
+Quick idea: most contractors have old estimates that never got a clean second follow-up.
+
+I run a 48-hour Quote Recovery Sprint: you send 20-50 old estimates/leads, I sort them by priority, write the follow-up messages, and give you a simple callback board.
+
+If it helps recover even one job, it can pay for itself. Want me to send the one-page version?`; }
+    function searchUrl(l, mode='contact') { const q = mode==='email' ? `"${l.name}" ${l.city||''} email owner contact` : `"${l.name}" ${l.city||''} contact form estimate quote`; return 'https://www.google.com/search?q=' + encodeURIComponent(q); }
+    function gmail(l){ return 'https://mail.google.com/mail/?view=cm&fs=1&to=' + encodeURIComponent(l.email||'') + '&su=' + encodeURIComponent(subject(l)) + '&body=' + encodeURIComponent(message(l)); }
+    function mailto(l){ return 'mailto:' + encodeURIComponent(l.email||'') + '?subject=' + encodeURIComponent(subject(l)) + '&body=' + encodeURIComponent(message(l)); }
+    function best(l){ if(l.email)return'Email'; if(l.form)return'Contact form'; if(l.social)return'Social'; if(l.website)return'Website'; return 'Find contact'; }
+    function openBest(l){ window.open(l.email ? gmail(l) : (l.form || l.social || l.website || searchUrl(l)), '_blank', 'noopener'); }
+    function copy(text, msg='Скопировано') { navigator.clipboard?.writeText(text).then(()=>toast(msg)).catch(()=>{ const t=document.createElement('textarea'); t.value=text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); toast(msg); }); }
+    function update(id, patch) { const l=state.leads.find(x=>x.id===id); if(!l)return; Object.assign(l,patch); if(patch.status==='Sent'){l.sentAt=new Date().toISOString();l.followUpDue=plus(3)} if(patch.status==='Follow-up'){l.lastFollowUpAt=new Date().toISOString();l.followUpDue=plus(5)} l.score=score(l); save(); render(); }
+    function addContact(id) { const l=state.leads.find(x=>x.id===id); if(!l)return; const c=prompt('Вставь email, form, social или phone для ' + l.name); if(!c)return; if(c.includes('@'))l.email=c.trim(); else if(/^https?:\/\//i.test(c)){ if(/facebook|instagram|linkedin|twitter|x\.com/i.test(c))l.social=c.trim(); else l.form=c.trim(); } else l.phone=c.trim(); l.status='Ready'; save(); render(); }
+    function link(h,label,primary=false){ return h ? `<a class="contact ${primary?'primary-contact':''}" href="${esc(h)}" target="_blank" rel="noopener">${esc(label)}</a>` : ''; }
+    function openDetail(id) {
+      const l=state.leads.find(x=>x.id===id); if(!l)return; state.selectedLead=id; save();
+      const main = l.email ? gmail(l) : (l.form || l.social || l.website || searchUrl(l));
+      $('modalTitle').textContent='Business profile';
+      $('detail').innerHTML = `<div class="detail-hero"><div><h3>${esc(l.name)}</h3><p>${esc(l.niche)} · ${esc(l.city)} · ${esc(best(l))}</p></div><div class="score">${score(l)}</div></div>
+      <div class="note">Ты в Испании и без US-номера, поэтому главный путь: email, Gmail draft или форма сайта. Телефон не нужен для старта.</div>
+      <div class="contact-grid">${link(main, l.email?'Open Gmail draft':l.form?'Open form':l.website?'Open website':'Find contact', true)}${link(l.form,'Open form')}${link(l.website,'Open site')}${link(l.email?mailto(l):'','Mail app')}${link(l.social,'Open social')}${link(searchUrl(l,'email'),'Find email')}${link(searchUrl(l,'contact'),'Find form')}</div>
+      <div class="detail-grid">
+        <div class="cell"><span>Email</span><b>${esc(l.email || 'not found')}</b></div><div class="cell"><span>Phone</span><b>${esc(l.phone || 'optional')}</b></div>
+        <div class="cell"><span>Form</span><a href="${esc(l.form || '#')}" target="_blank">${esc(l.form || 'not found')}</a></div><div class="cell"><span>Website</span><a href="${esc(l.website || '#')}" target="_blank">${esc(l.website || 'not found')}</a></div>
+        <div class="cell"><span>Status</span><b>${esc(l.status)}</b></div><div class="cell"><span>Source</span><b>${esc(l.source)}</b></div>
+      </div>
+      <textarea readonly>${esc(message(l))}</textarea>
+      <div class="actions"><button class="btn primary" data-act="copy">Copy message</button><button class="btn" data-act="open">Open best contact</button><button class="btn" data-act="add">Add contact</button><button class="btn" data-act="sent">Mark Sent</button><button class="btn" data-act="archive">Archive</button></div>`;
+      $('detail').onclick = (e)=>{ const b=e.target.closest('[data-act]'); if(!b)return; const a=b.dataset.act; if(a==='copy')copy(message(l),'Сообщение скопировано'); if(a==='open')openBest(l); if(a==='add'){addContact(l.id);openDetail(l.id)} if(a==='sent'){update(l.id,{status:'Sent'});openDetail(l.id);toast('Sent сохранен')} if(a==='archive'){update(l.id,{status:'Archived'});$('modal').classList.remove('open')} };
+      $('modalText').classList.add('hidden'); $('copyModal').classList.add('hidden'); $('modal').classList.add('open'); renderScript();
+    }
+    function todayPack() {
+      const top = state.leads.filter(l=>l.status!=='Archived'&&l.status!=='Won').sort((a,b)=>score(b)-score(a)).slice(0,20);
+      const text = ['TODAY PACK · use email/contact form first', ...top.map((l,i)=>`${i+1}. ${l.name} · ${l.niche} · score ${score(l)}
+Contact: ${l.email || l.form || l.social || l.website || 'Find contact'}
+Message:
+${message(l)}
+`)].join('\n\n');
+      $('modalTitle').textContent='Today Pack'; $('detail').innerHTML=''; $('modalText').value=text; $('modalText').classList.remove('hidden'); $('copyModal').classList.remove('hidden'); $('modal').classList.add('open'); return text;
+    }
+    function delivery() {
+      return `WHAT WE SELL
+
+Quote Recovery Sprint for contractors.
+
+They send old estimates/leads. We sort them into Hot/Warm/Cold, write follow-up messages, and build a callback board in 48 hours.
+
+Price: $500 first sprint.
+Upsell: monthly Recovery Autopilot $299-$799/mo.
+
+Why buy:
+- they already paid for those leads;
+- one recovered job can be worth more than $500;
+- small contractors often have chaotic follow-up;
+- we are selling cleanup, structure, and ready-to-send actions, not magic.`;
+    }
+    function csv() {
+      const rows=[['name','niche','city','status','score','email','phone','form','social','website','source'],...state.leads.map(l=>[l.name,l.niche,l.city,l.status,score(l),l.email,l.phone,l.form,l.social,l.website,l.source])];
+      const out=rows.map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n'); const u=URL.createObjectURL(new Blob([out],{type:'text/csv'})); const a=document.createElement('a'); a.href=u; a.download='revenuesprint-leads.csv'; a.click(); URL.revokeObjectURL(u);
+    }
+    function backup(){ const u=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})); const a=document.createElement('a'); a.href=u; a.download='revenuesprint-backup.json'; a.click(); URL.revokeObjectURL(u); }
+    function restore(){ const i=document.createElement('input'); i.type='file'; i.accept='application/json'; i.onchange=async()=>{ const f=i.files[0]; if(!f)return; try{ state={...defaults,...JSON.parse(await f.text())}; save(); render(); toast('Backup imported'); }catch{toast('Backup failed')} }; i.click(); }
+
+    function matches(l){ if(state.filter==='all')return true; if(state.filter==='ready')return l.status==='Ready'||l.email||l.form||l.phone; if(state.filter==='contact')return !l.email&&!l.form&&!l.phone&&l.status!=='Archived'; if(state.filter==='follow')return due(l); if(state.filter==='won')return l.status==='Won'; return l.status===state.filter; }
+    function renderNiches(){ $('niches').innerHTML=nicheDefs.map(n=>`<button class="chip ${state.selected.includes(n[0])?'active':''}" data-id="${n[0]}">${n[1]}</button>`).join(''); $$('#niches .chip').forEach(b=>b.onclick=()=>{ const id=b.dataset.id; state.selected=state.selected.includes(id)?state.selected.filter(x=>x!==id):state.selected.concat(id); if(!state.selected.length)state.selected=[id]; save(); renderNiches(); }); }
+    function renderFilters(){ const f=[['ready','Ready'],['contact','No contact'],['follow','Follow-up'],['Sent','Sent'],['won','Won'],['all','All']]; $('filters').innerHTML=f.map(x=>`<button class="chip ${state.filter===x[0]?'active':''}" data-f="${x[0]}">${x[1]}</button>`).join(''); $$('#filters .chip').forEach(b=>b.onclick=()=>{state.filter=b.dataset.f;save();render();}); }
+    function renderLeads(){ const list=state.leads.filter(matches).sort((a,b)=>score(b)-score(a)); $('leadList').innerHTML=list.length?list.map(l=>`<article class="card" data-id="${l.id}"><div class="card-top"><div class="title"><b>${esc(l.name)}</b><span>${esc(l.niche)} · ${esc(l.city)} · ${esc(l.email || l.form || l.website || 'contact needed')}</span></div><div class="score">${score(l)}</div></div><div class="badges"><span class="badge ${l.status==='Ready'?'ready':l.status==='Need Contact'?'need':'hot'}">${esc(l.status)}</span><span class="badge">${esc(l.source)}</span>${l.website?'<span class="badge hot">site</span>':''}${due(l)?'<span class="badge need">FU due</span>':''}</div><div class="row-actions"><button class="mini-btn primary-mini" data-a="open">Open</button><button class="mini-btn" data-a="copy">Copy</button><button class="mini-btn" data-a="check">Check</button><button class="mini-btn" data-a="contact">Add contact</button><button class="mini-btn" data-a="sent">Sent</button><button class="mini-btn" data-a="won">Won</button><button class="mini-btn" data-a="archive">Archive</button></div></article>`).join(''):'<div class="card"><div class="title"><b>Очередь пустая</b><span>Нажми Full Auto, Scan или Demo.</span></div></div>';
+      $$('#leadList .card').forEach(c=>c.onclick=async(e)=>{ const id=c.dataset.id; const l=state.leads.find(x=>x.id===id); if(!l)return; const b=e.target.closest('button'); if(!b){openDetail(id);return} const a=b.dataset.a; if(a==='open')openDetail(id); if(a==='copy')copy(message(l),'Сообщение скопировано'); if(a==='check'){await checkLead(l);save();render();toast('Проверено')} if(a==='contact')addContact(id); if(a==='sent')update(id,{status:'Sent'}); if(a==='won')update(id,{status:'Won',wonAt:new Date().toISOString()}); if(a==='archive')update(id,{status:'Archived'}); }); }
+    function renderMetrics(){ $('mTotal').textContent=state.leads.length; $('mReady').textContent=state.leads.filter(l=>l.status==='Ready'||l.email||l.form||l.phone).length; $('mFollow').textContent=state.leads.filter(due).length; $('mWon').textContent=state.leads.filter(l=>l.status==='Won').length; $('sideMeta').textContent=state.leads.length + ' leads · ' + state.history.length + ' sessions'; }
+    function renderLog(){ $('log').innerHTML=state.log.length?state.log.map(l=>`<div class="log"><b>${esc(l.at)}</b> ${esc(l.msg)}</div>`).join(''):'<div class="log"><b>ready</b> waiting for Full Auto</div>'; }
+    function renderHistory(){ $('history').innerHTML=state.history.length?state.history.map(h=>`<div class="hist"><b>${esc(h.title)}</b><br>${esc(new Date(h.at).toLocaleString())}<br>${esc(h.detail)}</div>`).join(''):'<div class="hist"><b>empty</b><br>Запусти Full Auto.</div>'; }
+    function renderJob(){ if(state.job){ $('jobTitle').textContent = state.job.status==='running' ? 'Работает: ' + state.job.stage : 'Последний запуск: ' + state.job.status; $('jobText').textContent = state.job.detail || 'Сессия сохранена.'; } }
+    function renderScript(){ const l=state.leads.find(x=>x.id===state.selectedLead)||state.leads.find(x=>x.status==='Ready')||state.leads[0]; $('scriptBox').value=l?message(l):'Сначала найди лидов через Full Auto.'; }
+    function render(){ renderNiches(); renderFilters(); renderMetrics(); renderLeads(); renderLog(); renderHistory(); renderJob(); renderScript(); $('delivery').value=delivery(); progress(state.progress||0); save(); }
+    function bind(){ $('fullTop').onclick=fullAuto; $('fullHero').onclick=fullAuto; $('scanBtn').onclick=()=>scan(false); $('checkBtn').onclick=()=>checkAll(false); $('packBtn').onclick=todayPack; $('demoBtn').onclick=demo; $('csvBtn').onclick=csv; $('backupBtn').onclick=backup; $('importBtn').onclick=restore; $('clearLog').onclick=()=>{state.log=[];save();renderLog()}; $('clearHistory').onclick=()=>{state.history=[];save();renderHistory()}; $('copyScript').onclick=()=>copy($('scriptBox').value,'Скрипт скопирован'); $('copyPack').onclick=()=>copy($('delivery').value,'Delivery скопирован'); $('closeModal').onclick=()=>$('modal').classList.remove('open'); $('copyModal').onclick=()=>copy($('modalText').value,'Pack скопирован'); $('installBtn').onclick=async()=>{ if(installPrompt){ installPrompt.prompt(); installPrompt=null; } else toast('iPhone: Share -> Add to Home Screen после Railway HTTPS.'); }; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e}); window.addEventListener('pagehide',save); window.addEventListener('beforeunload',save); document.addEventListener('visibilitychange',()=>{ if(document.hidden){ state.hiddenAt=new Date().toISOString(); save(); } else render(); }); setupNav(); }
+    function setupNav(){ const links=$$('.nav a,.dock a'); const obs=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)); }),{rootMargin:'-35% 0px -55% 0px'}); ['auto','queue','crm','script','pack'].forEach(id=>obs.observe($(id))); }
+    function stars(){ const c=$('stars'), ctx=c.getContext('2d'); let pts=[]; function resize(){ const d=Math.min(devicePixelRatio||1,2); c.width=innerWidth*d;c.height=innerHeight*d;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0); pts=Array.from({length:Math.min(170,Math.floor(innerWidth*innerHeight/9000))},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,z:Math.random()*.8+.2,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.08})); } function frame(){ ctx.clearRect(0,0,innerWidth,innerHeight); ctx.fillStyle='rgba(125,185,255,.58)'; pts.forEach(p=>{p.x+=p.vx*p.z;p.y+=p.vy*p.z;if(p.x<0)p.x=innerWidth;if(p.x>innerWidth)p.x=0;if(p.y<0)p.y=innerHeight;if(p.y>innerHeight)p.y=0;ctx.globalAlpha=.25+p.z*.55;ctx.beginPath();ctx.arc(p.x,p.y,1.1*p.z,0,Math.PI*2);ctx.fill();}); ctx.globalAlpha=.11;ctx.strokeStyle='#5ff2ff'; for(let i=0;i<pts.length;i+=10){const a=pts[i],b=pts[(i+7)%pts.length],dx=a.x-b.x,dy=a.y-b.y;if(dx*dx+dy*dy<18000){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}} ctx.globalAlpha=1; requestAnimationFrame(frame); } addEventListener('resize',resize); resize(); frame(); }
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('/service-worker.js').catch(()=>{});
+    bind(); stars(); render();
+  })();
+  </script>
+</body>
+</html>

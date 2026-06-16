@@ -1,0 +1,19 @@
+{
+  "name": "RevenueSprint 48",
+  "short_name": "RevenueSprint",
+  "description": "Quote recovery command center for finding businesses, preparing outreach, and tracking follow-ups.",
+  "start_url": "/?v=clean-20260616",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#00030a",
+  "theme_color": "#00030a",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
