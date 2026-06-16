@@ -49,6 +49,16 @@ http.createServer((req, res) => {
     return;
   }
 
+  if (url.pathname === '/presentation' || url.pathname === '/presentation.html') {
+    serve(res, path.join(publicDir, 'presentation.html'));
+    return;
+  }
+
+  if (url.pathname === '/guide' || url.pathname === '/guide.html') {
+    serve(res, path.join(publicDir, 'guide.html'));
+    return;
+  }
+
   let filePath = url.pathname === '/' ? path.join(publicDir, 'index.html') : safeJoin(publicDir, url.pathname);
   if (!filePath) {
     send(res, 403, 'Forbidden');

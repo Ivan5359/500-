@@ -2,7 +2,13 @@ const CACHE = 'revenuesprint-clean-20260616';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(['/', '/icon.svg', '/manifest.webmanifest']).catch(() => undefined)));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll([
+    '/',
+    '/presentation.html',
+    '/guide.html',
+    '/icon.svg',
+    '/manifest.webmanifest'
+  ]).catch(() => undefined)));
 });
 
 self.addEventListener('activate', (event) => {
