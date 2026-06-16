@@ -12,4 +12,12 @@ After deploy open:
 
 `https://YOUR-APP.up.railway.app/?v=clean-20260616`
 
+Presentation:
+
+`https://YOUR-APP.up.railway.app/presentation.html`
+
+Mobile guide:
+
+`https://YOUR-APP.up.railway.app/guide.html`
+
 If iPhone still shows an old version, delete the old Home Screen icon and open the link in a private tab once.

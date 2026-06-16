@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#00030a" />
+  <title>RevenueSprint 48 · Guide</title>
+  <style>
+    :root {
+      --bg: #00030a;
+      --panel: rgba(4, 11, 24, .92);
+      --line: rgba(96, 178, 255, .2);
+      --line2: rgba(95, 242, 255, .4);
+      --text: #f6f9ff;
+      --soft: #c6d5e8;
+      --muted: #899bb3;
+      --blue: #4ea4ff;
+      --cyan: #5ff2ff;
+      --r: 12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 78% 10%, rgba(78, 164, 255, .15), transparent 26rem),
+        radial-gradient(circle at 12% 78%, rgba(95, 242, 255, .06), transparent 24rem),
+        linear-gradient(145deg, #000104, #020713 52%, #000104);
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(95, 242, 255, .032) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(95, 242, 255, .032) 1px, transparent 1px);
+      background-size: 76px 76px;
+      mask-image: radial-gradient(circle at 58% 42%, black, transparent 78%);
+      z-index: -1;
+    }
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0, 3, 10, .82);
+      backdrop-filter: blur(18px);
+    }
+    .top b { font-size: 14px; }
+    .links { display: flex; gap: 6px; }
+    a.btn {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--soft);
+      background: rgba(255,255,255,.035);
+      text-decoration: none;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    a.primary {
+      color: #001525;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      font-weight: 900;
+    }
+    main {
+      width: min(940px, 100%);
+      margin: 0 auto;
+      padding: 22px 14px 46px;
+    }
+    .hero, section {
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(4, 11, 24, .91), rgba(0, 3, 10, .95));
+      box-shadow: 0 28px 100px rgba(0,0,0,.52);
+      padding: clamp(18px, 4vw, 34px);
+      margin-bottom: 14px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    h1, h2 {
+      margin: 0 0 14px;
+      line-height: .98;
+      letter-spacing: 0;
+    }
+    h1 { font-size: clamp(40px, 10vw, 78px); }
+    h2 { font-size: clamp(26px, 6vw, 44px); }
+    p, li {
+      color: var(--soft);
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    ul, ol { padding-left: 22px; margin: 10px 0 0; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .card {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0,0,0,.24);
+    }
+    .card b {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 17px;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+    .quote, pre {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      padding: 14px;
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 var(--r) var(--r) 0;
+      background: rgba(95, 242, 255, .06);
+      color: var(--soft);
+      font: 15px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+    .bottom-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    @media (max-width: 680px) {
+      .top { align-items: flex-start; flex-direction: column; }
+      .links, .bottom-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+      a.btn { width: 100%; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <b>RevenueSprint 48 · Guide</b>
+    <div class="links">
+      <a class="btn primary" href="/">App</a>
+      <a class="btn" href="/presentation.html">Presentation</a>
+      <a class="btn" href="/guide.html">Guide</a>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <span class="eyebrow">Объяснение с нуля</span>
+      <h1>Что мы продаём</h1>
+      <p>Мы продаём услугу для маленьких подрядчиков: помогаем им разобрать старые заявки и сметы, написать людям ещё раз и понять, где ещё может быть заказ.</p>
+      <p>Простыми словами: бизнес уже общался с клиентами, но часть разговоров умерла. Мы наводим порядок и даём готовые действия.</p>
+    </div>
+
+    <section>
+      <h2>Мини-словарь</h2>
+      <div class="cards">
+        <div class="card"><b>Лид</b><p>Человек, который уже интересовался услугой.</p></div>
+        <div class="card"><b>Смета</b><p>Примерная цена работы, которую бизнес отправил клиенту.</p></div>
+        <div class="card"><b>Follow-up</b><p>Повторное сообщение: “Вы ещё планируете это делать?”</p></div>
+        <div class="card"><b>CRM</b><p>Список, где видно кому написали, кто ответил, кому напомнить.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Услуга за $500</h2>
+      <p>Название: Quote Recovery Sprint.</p>
+      <ol>
+        <li>Клиент даёт старые заявки или сметы.</li>
+        <li>Мы делим их на Hot, Warm, Cold.</li>
+        <li>Пишем готовые follow-up сообщения.</li>
+        <li>Делаем доску: кому писать сегодня, кому потом, кого закрыть.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Почему это могут купить</h2>
+      <ul>
+        <li>Бизнес уже потратил деньги и время на эти заявки.</li>
+        <li>У подрядчиков один заказ может стоить $2,000, $5,000, $10,000+.</li>
+        <li>Если оживить хотя бы один заказ, $500 могут окупиться.</li>
+        <li>Маленькие бизнесы часто забывают нормально делать follow-up.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Честная формулировка</h2>
+      <div class="quote">Мы не обещаем вернуть всех клиентов.
+
+Мы обещаем за 48 часов проверить старые заявки, найти где ещё есть шанс, подготовить сообщения и дать понятную очередь действий.</div>
+    </section>
+
+    <section>
+      <h2>Как пользоваться сайтом</h2>
+      <ol>
+        <li>Открой App.</li>
+        <li>Нажми Full Auto.</li>
+        <li>Открой Queue / Очередь.</li>
+        <li>Нажми на бизнес.</li>
+        <li>Открой Gmail draft или форму сайта.</li>
+        <li>Отправь сообщение вручную.</li>
+        <li>Вернись и нажми Mark Sent.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Почему телефон США не нужен</h2>
+      <p>Мы не строим процесс на звонках. Ты находишься в Испании, поэтому главный путь такой:</p>
+      <ul>
+        <li>email;</li>
+        <li>Gmail draft;</li>
+        <li>contact form на сайте;</li>
+        <li>поиск контакта через Google.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Первое сообщение</h2>
+      <pre>Hi, quick idea.
+
+Most contractors have old estimates that never got a clean second follow-up.
+
+I run a 48-hour Quote Recovery Sprint: you send 20-50 old estimates/leads, I sort them by priority, write the follow-up messages, and give you a simple callback board.
+
+If it helps recover even one job, it can pay for itself.
+
+Want me to send the one-page version?</pre>
+    </section>
+
+    <section>
+      <h2>Открыть с телефона</h2>
+      <p>После Railway deploy эти ссылки будут работать на телефоне:</p>
+      <div class="bottom-actions">
+        <a class="btn primary" href="/">App</a>
+        <a class="btn" href="/presentation.html">Presentation</a>
+        <a class="btn" href="/guide.html">Guide</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

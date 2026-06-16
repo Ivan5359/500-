@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#00030a" />
+  <title>RevenueSprint 48 · Объяснение с нуля</title>
+  <style>
+    :root {
+      --bg: #00030a;
+      --panel: rgba(4, 11, 24, .92);
+      --line: rgba(96, 178, 255, .2);
+      --line2: rgba(95, 242, 255, .42);
+      --text: #f6f9ff;
+      --soft: #c6d5e8;
+      --muted: #899bb3;
+      --blue: #4ea4ff;
+      --cyan: #5ff2ff;
+      --green: #69ffbd;
+      --yellow: #ffd166;
+      --r: 12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 78% 12%, rgba(78, 164, 255, .14), transparent 28rem),
+        radial-gradient(circle at 12% 82%, rgba(95, 242, 255, .06), transparent 24rem),
+        linear-gradient(145deg, #000104, #020713 52%, #000104);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(95, 242, 255, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(95, 242, 255, .035) 1px, transparent 1px);
+      background-size: 76px 76px;
+      mask-image: radial-gradient(circle at 58% 42%, black, transparent 78%);
+      z-index: -1;
+    }
+
+    .deck-nav {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      top: 14px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(0, 3, 10, .74);
+      backdrop-filter: blur(18px);
+    }
+
+    .deck-nav b { font-size: 13px; }
+    .deck-nav a {
+      min-height: 32px;
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--soft);
+      text-decoration: none;
+      font-size: 12px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .slide {
+      min-height: 100vh;
+      scroll-snap-align: start;
+      display: grid;
+      place-items: center;
+      padding: 84px 18px 36px;
+    }
+
+    .frame {
+      width: min(1120px, 100%);
+      min-height: min(700px, calc(100vh - 126px));
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(4, 11, 24, .91), rgba(0, 3, 10, .95));
+      box-shadow: 0 34px 120px rgba(0, 0, 0, .58);
+      padding: clamp(22px, 4vw, 52px);
+      display: grid;
+      align-content: center;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 80% 12%, rgba(95, 242, 255, .1), transparent 30%);
+    }
+
+    .frame > * { position: relative; z-index: 1; }
+
+    .eyebrow {
+      width: fit-content;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1, h2 {
+      margin: 0;
+      letter-spacing: 0;
+      line-height: .95;
+    }
+
+    h1 { max-width: 980px; font-size: clamp(44px, 8vw, 98px); }
+    h2 { max-width: 980px; font-size: clamp(34px, 6vw, 72px); }
+
+    .lead {
+      max-width: 900px;
+      margin: 0;
+      color: var(--soft);
+      font-size: clamp(18px, 2vw, 25px);
+      line-height: 1.45;
+    }
+
+    .plain {
+      max-width: 900px;
+      color: var(--soft);
+      font-size: clamp(17px, 1.8vw, 22px);
+      line-height: 1.5;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card {
+      min-height: 152px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .25);
+    }
+
+    .card b {
+      display: block;
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+      counter-reset: item;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--r);
+      background: rgba(0, 0, 0, .22);
+    }
+
+    .step::before {
+      counter-increment: item;
+      content: counter(item);
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line2);
+      border-radius: 50%;
+      color: var(--cyan);
+      font-weight: 900;
+    }
+
+    .step b { display: block; margin-bottom: 4px; }
+    .step span { color: var(--muted); line-height: 1.42; }
+
+    .example {
+      padding: 20px;
+      border-left: 3px solid var(--cyan);
+      border-radius: 0 var(--r) var(--r) 0;
+      background: rgba(95, 242, 255, .06);
+      color: var(--soft);
+      font-size: clamp(18px, 2vw, 23px);
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--soft);
+      background: rgba(255, 255, 255, .035);
+      text-decoration: none;
+    }
+
+    .pill.good {
+      color: #001525;
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--cyan), var(--blue));
+      font-weight: 900;
+    }
+
+    .callout {
+      padding: 16px;
+      border: 1px solid rgba(255, 209, 102, .28);
+      border-radius: var(--r);
+      background: rgba(255, 209, 102, .07);
+      color: var(--soft);
+      font-size: 17px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 760px) {
+      html { scroll-snap-type: none; }
+      .deck-nav { top: auto; bottom: 10px; }
+      .deck-nav a { display: none; }
+      .slide { padding: 26px 12px 72px; }
+      .frame { min-height: auto; padding: 22px; }
+      .grid, .grid.two { grid-template-columns: 1fr; }
+      .card { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="deck-nav">
+    <b>RevenueSprint 48 · объяснение с нуля</b>
+    <span>
+      <a href="/">Открыть сайт</a>
+      <a href="/guide.html">Guide</a>
+      <a href="#slide-1">Начало</a>
+    </span>
+  </nav>
+
+  <section class="slide" id="slide-1">
+    <div class="frame">
+      <span class="eyebrow">Самое простое объяснение</span>
+      <h1>Мы помогаем бизнесу не терять старых клиентов</h1>
+      <p class="lead">Представь: человек спросил цену, бизнес отправил смету, а потом все забыли продолжить разговор. Мы находим такие старые возможности и делаем понятный план: кому написать, что написать и когда напомнить.</p>
+      <div class="pill-row">
+        <span class="pill good">Услуга за $500</span>
+        <span class="pill">готово за 48 часов</span>
+        <span class="pill">для подрядчиков</span>
+        <span class="pill">без звонков из США</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-2">
+    <div class="frame">
+      <span class="eyebrow">Мини-словарь</span>
+      <h2>3 слова, которые нужно понять</h2>
+      <div class="grid">
+        <div class="card">
+          <b>Лид</b>
+          <p>Это человек, который уже интересовался услугой. Например: “Сколько стоит заменить крышу?”</p>
+        </div>
+        <div class="card">
+          <b>Смета</b>
+          <p>Это примерная цена работы. Например: “Крыша будет стоить $7,500”.</p>
+        </div>
+        <div class="card">
+          <b>Follow-up</b>
+          <p>Это повторное сообщение. Например: “Вы ещё планируете делать ремонт или закрыть заявку?”</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-3">
+    <div class="frame">
+      <span class="eyebrow">Проблема бизнеса</span>
+      <h2>Деньги часто теряются не потому что нет клиентов</h2>
+      <p class="plain">У маленьких подрядчиков часто хаос. Владелец едет на объект, отвечает на звонки, считает сметы, пишет в почте, забывает перезвонить. Часть людей не покупает сразу, но их можно было бы аккуратно дожать.</p>
+      <div class="grid">
+        <div class="card"><b>Клиент спросил цену</b><p>Значит интерес уже был. Это лучше, чем холодный человек с улицы.</p></div>
+        <div class="card"><b>Бизнес отправил смету</b><p>Он уже потратил время и, возможно, деньги на рекламу.</p></div>
+        <div class="card"><b>Потом разговор умер</b><p>Никто не понял: клиент купил, отложил или просто забыл.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-4">
+    <div class="frame">
+      <span class="eyebrow">Что мы продаём</span>
+      <h2>Мы продаём “разбор старых заявок”</h2>
+      <p class="lead">Название услуги: <b>Quote Recovery Sprint</b>. По-русски: быстрый проект, где мы берём старые сметы/заявки и превращаем их в понятную очередь действий.</p>
+      <div class="steps">
+        <div class="step"><div><b>Клиент даёт старые заявки</b><span>Например: таблицу, email, список из CRM, скриншоты, контакты.</span></div></div>
+        <div class="step"><div><b>Мы сортируем</b><span>Кто горячий, кто тёплый, кто уже почти мусор.</span></div></div>
+        <div class="step"><div><b>Мы пишем сообщения</b><span>Готовые тексты, которые бизнес может отправить старым клиентам.</span></div></div>
+        <div class="step"><div><b>Мы делаем доску</b><span>Кому писать сегодня, кому через 3 дня, кого закрыть.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-5">
+    <div class="frame">
+      <span class="eyebrow">Почему купят</span>
+      <h2>Потому что один заказ может стоить дороже нашей услуги</h2>
+      <p class="plain">Мы берём $500. У подрядчика один заказ может быть на $2,000, $5,000, $10,000+. Если из старых заявок оживёт хотя бы один нормальный клиент, идея становится понятной.</p>
+      <div class="callout">Важно: мы не обещаем “вернуть всех”. Мы говорим честно: “Давайте проверим старые заявки и найдём, где ещё есть шанс”.</div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-6">
+    <div class="frame">
+      <span class="eyebrow">Пример из жизни</span>
+      <h2>Как это выглядит</h2>
+      <div class="example">Кровельщик отправил 40 смет за последние 3 месяца.
+
+20 человек не ответили.
+10 сказали “подумаем”.
+5 сказали “дорого”.
+5 просто пропали.
+
+Мы берём этот список, пишем нормальные follow-up сообщения и делаем порядок: кому писать сначала, кому потом, кого закрыть.</div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-7">
+    <div class="frame">
+      <span class="eyebrow">Кому мы это предлагаем</span>
+      <h2>Не всем бизнесам. Только тем, где это реально может болеть</h2>
+      <div class="grid two">
+        <div class="card">
+          <b>Хорошие ниши</b>
+          <p>Крыши, HVAC, ремонт, покраска, полы, заборы, ландшафт, сантехника.</p>
+        </div>
+        <div class="card">
+          <b>Почему именно они</b>
+          <p>У них дорогие работы. Даже один возвращённый заказ может быть очень ценным.</p>
+        </div>
+        <div class="card">
+          <b>Кого не берём</b>
+          <p>Крупные компании с сильным отделом продаж. Там уже может быть система.</p>
+        </div>
+        <div class="card">
+          <b>Кого ищем</b>
+          <p>Маленькие/средние компании, где владелец сам всё тянет и follow-up хаотичный.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-8">
+    <div class="frame">
+      <span class="eyebrow">Что делает сайт</span>
+      <h2>Сайт нужен, чтобы тебе не искать всё вручную</h2>
+      <div class="steps">
+        <div class="step"><div><b>Full Auto</b><span>Ищет бизнесы по городу и нише.</span></div></div>
+        <div class="step"><div><b>Очередь</b><span>Показывает список бизнесов и кто выглядит лучше.</span></div></div>
+        <div class="step"><div><b>Карточка бизнеса</b><span>Показывает сайт, email, форму, готовое сообщение и кнопки.</span></div></div>
+        <div class="step"><div><b>История</b><span>Помнит, кому ты уже написал и кому нужен follow-up.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-9">
+    <div class="frame">
+      <span class="eyebrow">Как пользоваться интерфейсом</span>
+      <h2>Твои действия по кнопкам</h2>
+      <div class="steps">
+        <div class="step"><div><b>Нажми Full Auto</b><span>Сайт начнёт искать бизнесы и контакты.</span></div></div>
+        <div class="step"><div><b>Открой Queue / Очередь</b><span>Там появятся найденные бизнесы.</span></div></div>
+        <div class="step"><div><b>Нажми на бизнес</b><span>Откроется профиль: сайт, форма, email, текст сообщения.</span></div></div>
+        <div class="step"><div><b>Нажми Open Gmail draft или Open form</b><span>Отправь сообщение вручную.</span></div></div>
+        <div class="step"><div><b>Нажми Mark Sent</b><span>Сайт запомнит, что ты уже написал.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-10">
+    <div class="frame">
+      <span class="eyebrow">Почему не нужен американский номер</span>
+      <h2>Мы не строим процесс на звонках</h2>
+      <p class="lead">Ты находишься в Испании, поэтому основной канал: email, Gmail draft и формы на сайте. Это нормально для первого касания. Звонки не обязательны.</p>
+      <div class="grid">
+        <div class="card"><b>Email</b><p>Если сайт нашёл email, открываем готовое письмо.</p></div>
+        <div class="card"><b>Contact form</b><p>Если email нет, открываем форму на сайте бизнеса.</p></div>
+        <div class="card"><b>Find contact</b><p>Если контакта нет, сайт даёт поисковую ссылку.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-11">
+    <div class="frame">
+      <span class="eyebrow">Первое сообщение</span>
+      <h2>Мы не давим. Мы предлагаем короткую идею</h2>
+      <div class="example">Hi, quick idea.
+
+Most contractors have old estimates that never got a clean second follow-up.
+
+I run a 48-hour Quote Recovery Sprint: you send 20-50 old estimates/leads, I sort them by priority, write the follow-up messages, and give you a simple callback board.
+
+If it helps recover even one job, it can pay for itself.
+
+Want me to send the one-page version?</div>
+      <p class="plain">Смысл сообщения: не “купи срочно”, а “хочешь, покажу коротко?”.</p>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-12">
+    <div class="frame">
+      <span class="eyebrow">Если человек ответил</span>
+      <h2>Что делать дальше</h2>
+      <div class="grid">
+        <div class="card">
+          <b>Ответил “интересно”</b>
+          <p>Отправляем короткое описание услуги: что входит, цена $500, что нужно от него.</p>
+        </div>
+        <div class="card">
+          <b>Сказал “у нас есть sales”</b>
+          <p>Отвечаем: “Отлично, это не замена sales, а разбор старых смет, которые могли зависнуть”.</p>
+        </div>
+        <div class="card">
+          <b>Не интересно</b>
+          <p>Не спорим. Архивируем. Нам нужны только те, у кого реально есть проблема.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" id="slide-13">
+    <div class="frame">
+      <span class="eyebrow">Что продаём в одном предложении</span>
+      <h2>Мы превращаем старые забытые заявки в понятную очередь повторных сообщений</h2>
+      <div class="callout">Клиент платит $500 не за “сообщения”, а за порядок: какие старые лиды ещё живые, что им написать, когда напомнить и кого больше не трогать.</div>
+      <div class="pill-row">
+        <a class="pill good" href="/">Открыть интерфейс</a>
+        <a class="pill" href="/guide.html">Открыть руководство</a>
+        <span class="pill">Full Auto</span>
+        <span class="pill">Queue</span>
+        <span class="pill">Business profile</span>
+        <span class="pill">Mark Sent</span>
+      </div>
+    </div>
+  </section>
+</body>
+</html>

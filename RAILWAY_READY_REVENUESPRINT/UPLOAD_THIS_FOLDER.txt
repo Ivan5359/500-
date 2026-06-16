@@ -9,9 +9,12 @@ RAILWAY_READY_REVENUESPRINT
 - railway.json
 - Procfile
 - public/index.html
+- public/presentation.html
+- public/guide.html
 - public/manifest.webmanifest
 - public/service-worker.js
 - public/icon.svg
+- PRODUCT_AND_INTERFACE_GUIDE.md
 
 Railway:
 
@@ -30,6 +33,14 @@ Railway:
 После деплоя открывай:
 
 https://твоя-ссылка.up.railway.app/?v=clean-20260616
+
+Презентация:
+
+https://твоя-ссылка.up.railway.app/presentation.html
+
+Руководство для телефона:
+
+https://твоя-ссылка.up.railway.app/guide.html
 
 Если на iPhone старая версия:
 
