@@ -1,0 +1,13 @@
+{
+  "name": "lead-desk-final",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Final Railway upload package for Lead Desk.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
