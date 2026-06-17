@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
-  <title>RevenueSprint 48</title>
+  <title>Lead Desk</title>
   <link rel="manifest" href="/manifest.webmanifest" />
   <style>
     :root {
@@ -122,8 +122,8 @@
     .panel > * { position: relative; z-index: 1; }
     .hero { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(340px,.9fr); gap: 16px; margin-bottom: 16px; }
     .eyebrow { display:inline-flex; padding:7px 10px; border:1px solid var(--line); border-radius:999px; color:var(--muted); font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
-    h1 { margin: 22px 0 14px; font-size: clamp(48px, 8vw, 108px); line-height:.86; letter-spacing:0; }
-    .lead { max-width: 760px; color: var(--soft); font-size: clamp(16px, 2vw, 21px); line-height:1.5; margin:0; }
+    h1 { margin: 18px 0 12px; font-size: clamp(34px, 6vw, 58px); line-height:.96; letter-spacing:0; }
+    .lead { max-width: 760px; color: var(--soft); font-size: clamp(15px, 1.7vw, 18px); line-height:1.5; margin:0; }
     .intro-note {
       margin-top: 28px;
       padding: 14px;
@@ -264,7 +264,7 @@
   <canvas id="stars"></canvas>
   <div class="app">
     <aside class="rail">
-      <div class="brand"><div class="mark"></div><div><b>RevenueSprint</b><span>48 Command</span></div></div>
+        <div class="brand"><div class="mark"></div><div><b>Scanner</b><span>Command</span></div></div>
       <nav class="nav">
         <a href="#auto" class="active" data-n="01">Автопилот</a>
         <a href="#queue" data-n="02">Очередь</a>
@@ -279,8 +279,11 @@
       <header class="top">
         <div class="system"><span class="dot"></span><span id="system">Local command center ready</span></div>
         <div class="actions">
-          <a class="btn" href="/presentation.html">Presentation</a>
-          <a class="btn" href="/guide.html">Guide</a>
+          <a class="btn" href="./presentation.html">Presentation</a>
+          <a class="btn" href="./guide.html">Guide</a>
+          <button class="btn" id="clearDataBtn">Clear</button>
+          <button class="btn" id="updateAppBtn">Update</button>
+          <button class="btn" id="testScanBtn">Test</button>
           <button class="btn" id="installBtn">Install</button>
           <button class="btn" id="backupBtn">Backup</button>
           <button class="btn" id="importBtn">Import</button>
@@ -290,26 +293,16 @@
 
       <section class="hero" id="auto">
         <div class="panel pad">
-          <span class="eyebrow">Quote Recovery Sprint</span>
-          <h1>RevenueSprint</h1>
-          <p class="lead">Спокойная рабочая панель: находит бизнесы, проверяет контакты, открывает Gmail/формы, готовит сообщение и сохраняет историю.</p>
+          <span class="eyebrow">Рабочий режим</span>
+          <h1>Сканер</h1>
+          <p class="lead">Выбери город, радиус и ниши. Потом нажми Full Auto или Scan. Всё лишнее убрано.</p>
           <div class="intro-note">
-            <b>Идея простая:</b> система помогает найти компании, которым можно предложить разбор старых заявок. Она не отправляет спам сама, а готовит список, контакты и текст.
-          </div>
-          <div class="doc-links">
-            <a class="doc-link" href="/presentation.html">
-              <b>Presentation</b>
-              <span>Объяснение проекта для друга.</span>
-            </a>
-            <a class="doc-link" href="/guide.html">
-              <b>Guide</b>
-              <span>Пошаговое руководство для телефона.</span>
-            </a>
+            <b>Важно:</b> если на телефоне видишь старые 4 demo-бизнеса, нажми Clear. Demo only нужен только для проверки кнопок.
           </div>
         </div>
 
         <div class="panel pad control">
-          <div class="section-head"><div><h2>Автопилот</h2><p>Один запуск: найти, проверить, собрать план.</p></div><button class="btn" id="demoBtn">Demo</button></div>
+          <div class="section-head"><div><h2>Автопилот</h2><p>Один запуск: найти бизнесы, проверить контакты, собрать план.</p></div><button class="btn" id="demoBtn">Demo only</button></div>
           <div class="hero-action">
             <div><b id="jobTitle">Запустить весь процесс</b><span id="jobText">Если телефон закроет сайт, сессия и история останутся.</span></div>
             <button class="btn primary" id="fullHero">Full Auto</button>
@@ -395,6 +388,8 @@
     const STORE = 'revenuesprint.clean.v1';
     const $ = (id) => document.getElementById(id);
     const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+    const REMOTE_API = 'https://500-production-c0e10.up.railway.app';
+    const API_BASE = location.protocol === 'file:' ? REMOTE_API : '';
     const nicheDefs = [
       ['roofing','Roofing',['roof','roofing','roofer']],
       ['hvac','HVAC',['hvac','air conditioning','heating','cooling']],
@@ -469,11 +464,66 @@
       }
       throw last || new Error('Overpass unavailable');
     }
+    async function serverScan(city) {
+      const params = new URLSearchParams({
+        city,
+        radius: $('radius').value,
+        limit: $('limit').value,
+        niches: state.selected.join(',')
+      });
+      if (location.protocol === 'file:') {
+        log('Local file mode: using Railway API for real scan');
+      }
+      const res = await fetch(API_BASE + '/api/scan?' + params.toString(), { cache: 'no-store' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) throw new Error(data.error || 'server scan failed');
+      return data;
+    }
     function fromOsm(el, city) {
       const t = el.tags || {}; const name=t.name || t.brand || ''; if (!name) return null;
       const txt = norm(Object.values(t).join(' '));
       const found = nicheDefs.find(n=>n[2].some(k=>txt.includes(norm(k))));
       return { name, city, niche: found ? found[1] : 'Contractor', website: t.website || t['contact:website'] || t.url || '', phone: t.phone || t['contact:phone'] || '', email: t.email || t['contact:email'] || '', address: [t['addr:housenumber'],t['addr:street'],t['addr:city'],t['addr:state']].filter(Boolean).join(' '), source:'OSM' };
+    }
+    function fromNominatim(item, city, label) {
+      const tags = item.extratags || {};
+      const address = item.address || {};
+      const name = item.namedetails?.name || item.namedetails?.['name:en'] || (item.display_name || '').split(',')[0] || 'Unknown business';
+      return {
+        name,
+        city,
+        niche: label || 'Contractor',
+        website: tags.website || tags['contact:website'] || tags.url || '',
+        phone: tags.phone || tags['contact:phone'] || '',
+        email: tags.email || tags['contact:email'] || '',
+        address: [address.house_number, address.road, address.city || address.town || address.village, address.state].filter(Boolean).join(' ') || item.display_name || '',
+        source: 'Browser Nominatim'
+      };
+    }
+    async function browserNominatimFallback(city) {
+      const chosen = nicheDefs.filter((n) => state.selected.includes(n[0]));
+      const active = chosen.length ? chosen : nicheDefs.slice(0, 4);
+      const leads = [];
+      const seen = new Set();
+      for (const niche of active) {
+        if (leads.length >= +$('limit').value) break;
+        const queries = [`${niche[1]} contractor ${city}`, `${niche[1]} company ${city}`];
+        for (const query of queries) {
+          if (leads.length >= +$('limit').value) break;
+          try {
+            const res = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=10&addressdetails=1&extratags=1&namedetails=1&q=' + encodeURIComponent(query), { headers: { Accept: 'application/json' } });
+            if (!res.ok) continue;
+            const data = await res.json();
+            data.map((item) => fromNominatim(item, city, niche[1])).forEach((lead) => {
+              const key = norm(lead.name + lead.address + lead.website);
+              if (!lead.name || seen.has(key)) return;
+              seen.add(key);
+              leads.push(lead);
+            });
+          } catch {}
+        }
+      }
+      return leads.slice(0, +$('limit').value);
     }
     function timeout(p, ms) { return Promise.race([p, new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),ms))]); }
     async function scan(nested=false) {
@@ -481,13 +531,32 @@
       const city = $('city').value.trim(); if (!city) { toast('Введи город'); return false; }
       setBusy(true,'Scanning businesses...'); progress(4); updateJob('scan','search city');
       try {
-        const geo = await geocode(city); progress(18); log('City: ' + geo.label);
-        const data = await overpass(overpassQuery(geo.lat, geo.lon, +$('radius').value)); progress(58);
+        if (state.leads.length && state.leads.every((lead) => lead.source === 'Demo')) {
+          state.leads = [];
+          log('Demo leads cleared before real scan');
+        }
         const before = state.leads.length;
-        (data.elements || []).map(x=>fromOsm(x, city)).filter(Boolean).slice(0, +$('limit').value).forEach(merge);
+        try {
+          updateJob('scan','server scan');
+          const result = await serverScan(city);
+          progress(68);
+          log('Server scan: ' + result.cityLabel);
+          (result.leads || []).forEach(merge);
+        } catch (serverError) {
+          log('Server scan failed, trying browser fallback: ' + serverError.message);
+          try {
+            const geo = await geocode(city); progress(18); log('City: ' + geo.label);
+            const data = await overpass(overpassQuery(geo.lat, geo.lon, +$('radius').value)); progress(58);
+            (data.elements || []).map(x=>fromOsm(x, city)).filter(Boolean).slice(0, +$('limit').value).forEach(merge);
+          } catch (overpassError) {
+            log('Overpass failed, trying browser Nominatim fallback: ' + overpassError.message);
+            const fallback = await browserNominatimFallback(city);
+            fallback.forEach(merge);
+          }
+        }
         const added = state.leads.length - before;
-        progress(100); log('Scan done: +' + added); if (!nested) finish('Scan', '+' + added + ' leads'); save(); render(); toast('Сканер готов: +' + added); return true;
-      } catch(e) { log('Scan failed: ' + e.message); if(!nested) finish('Scan needs attention', e.message); toast('Сканер не прошел. Нажми Demo или измени город.'); return false; }
+        progress(100); log('Scan done: +' + added); if (!nested) finish('Scan', '+' + added + ' leads'); save(); render(); toast(added ? 'Сканер готов: +' + added : 'Сканер прошёл, но новых бизнесов не нашёл. Увеличь радиус или смени город.'); return state.leads.length > 0;
+      } catch(e) { log('Scan failed: ' + e.message); if(!nested) finish('Scan needs attention', e.message); toast('Сканер не прошёл. Проверь город, радиус или попробуй позже.'); return false; }
       finally { if(!nested){ setBusy(false); setTimeout(()=>progress(0),900); } }
     }
     function abs(base, href) { if(!href)return''; try{return new URL(href,base).href}catch{return href} }
@@ -573,20 +642,21 @@ ${message(l)}
       $('modalTitle').textContent='Today Pack'; $('detail').innerHTML=''; $('modalText').value=text; $('modalText').classList.remove('hidden'); $('copyModal').classList.remove('hidden'); $('modal').classList.add('open'); return text;
     }
     function delivery() {
-      return `WHAT WE SELL
+      return `PROJECT IDEA
 
-Quote Recovery Sprint for contractors.
+The system helps test a simple service idea:
+small contractors often have old estimates or leads that were never followed up cleanly.
 
-They send old estimates/leads. We sort them into Hot/Warm/Cold, write follow-up messages, and build a callback board in 48 hours.
+What the workflow prepares:
+- a list of suitable businesses;
+- website, email, form, or contact search links;
+- a first message;
+- a status board for Sent, Follow-up, Won, and Archive.
 
-Price: $500 first sprint.
-Upsell: monthly Recovery Autopilot $299-$799/mo.
-
-Why buy:
-- they already paid for those leads;
-- one recovered job can be worth more than $500;
-- small contractors often have chaotic follow-up;
-- we are selling cleanup, structure, and ready-to-send actions, not magic.`;
+Important:
+- the site does not promise money;
+- the site does not send spam automatically;
+- the goal is to test the idea with a small number of careful messages.`;
     }
     function csv() {
       const rows=[['name','niche','city','status','score','email','phone','form','social','website','source'],...state.leads.map(l=>[l.name,l.niche,l.city,l.status,score(l),l.email,l.phone,l.form,l.social,l.website,l.source])];
@@ -594,6 +664,41 @@ Why buy:
     }
     function backup(){ const u=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'})); const a=document.createElement('a'); a.href=u; a.download='revenuesprint-backup.json'; a.click(); URL.revokeObjectURL(u); }
     function restore(){ const i=document.createElement('input'); i.type='file'; i.accept='application/json'; i.onchange=async()=>{ const f=i.files[0]; if(!f)return; try{ state={...defaults,...JSON.parse(await f.text())}; save(); render(); toast('Backup imported'); }catch{toast('Backup failed')} }; i.click(); }
+    function clearData(){ if(!confirm('Очистить лиды, историю и demo-данные на этом устройстве?'))return; state={...defaults, selected: state.selected || defaults.selected}; save(); render(); toast('Данные очищены'); }
+    async function updateApp(){
+      try {
+        if ('caches' in window) {
+          const keys = await caches.keys();
+          await Promise.all(keys.map((key) => caches.delete(key)));
+        }
+        if ('serviceWorker' in navigator) {
+          const regs = await navigator.serviceWorker.getRegistrations();
+          await Promise.all(regs.map((reg) => reg.unregister()));
+        }
+      } catch {}
+      toast('Кэш очищен. Загружаю актуальную версию.');
+      setTimeout(() => {
+        location.href = location.pathname + '?v=20260617-swiss-' + Date.now();
+      }, 450);
+    }
+    async function testScan(){
+      const city = $('city').value.trim();
+      if (!city) { toast('Введи город'); return; }
+      setBusy(true, 'Testing scanner API...');
+      log('Test scan started: ' + city);
+      try {
+        const result = await serverScan(city);
+        const names = (result.leads || []).slice(0, 5).map((lead) => lead.name).join(', ');
+        log('Test scan OK: ' + (result.leads || []).length + ' leads via ' + (result.endpoint || 'api'));
+        if (names) log('Sample: ' + names);
+        toast('Test OK: ' + (result.leads || []).length + ' бизнесов');
+      } catch (error) {
+        log('Test scan failed: ' + error.message);
+        toast('Test failed: API ещё не обновлён или источник недоступен');
+      } finally {
+        setBusy(false);
+      }
+    }
 
     function matches(l){ if(state.filter==='all')return true; if(state.filter==='ready')return l.status==='Ready'||l.email||l.form||l.phone; if(state.filter==='contact')return !l.email&&!l.form&&!l.phone&&l.status!=='Archived'; if(state.filter==='follow')return due(l); if(state.filter==='won')return l.status==='Won'; return l.status===state.filter; }
     function renderNiches(){ $('niches').innerHTML=nicheDefs.map(n=>`<button class="chip ${state.selected.includes(n[0])?'active':''}" data-id="${n[0]}">${n[1]}</button>`).join(''); $$('#niches .chip').forEach(b=>b.onclick=()=>{ const id=b.dataset.id; state.selected=state.selected.includes(id)?state.selected.filter(x=>x!==id):state.selected.concat(id); if(!state.selected.length)state.selected=[id]; save(); renderNiches(); }); }
@@ -606,7 +711,7 @@ Why buy:
     function renderJob(){ if(state.job){ $('jobTitle').textContent = state.job.status==='running' ? 'Работает: ' + state.job.stage : 'Последний запуск: ' + state.job.status; $('jobText').textContent = state.job.detail || 'Сессия сохранена.'; } }
     function renderScript(){ const l=state.leads.find(x=>x.id===state.selectedLead)||state.leads.find(x=>x.status==='Ready')||state.leads[0]; $('scriptBox').value=l?message(l):'Сначала найди лидов через Full Auto.'; }
     function render(){ renderNiches(); renderFilters(); renderMetrics(); renderLeads(); renderLog(); renderHistory(); renderJob(); renderScript(); $('delivery').value=delivery(); progress(state.progress||0); save(); }
-    function bind(){ $('fullTop').onclick=fullAuto; $('fullHero').onclick=fullAuto; $('scanBtn').onclick=()=>scan(false); $('checkBtn').onclick=()=>checkAll(false); $('packBtn').onclick=todayPack; $('demoBtn').onclick=demo; $('csvBtn').onclick=csv; $('backupBtn').onclick=backup; $('importBtn').onclick=restore; $('clearLog').onclick=()=>{state.log=[];save();renderLog()}; $('clearHistory').onclick=()=>{state.history=[];save();renderHistory()}; $('copyScript').onclick=()=>copy($('scriptBox').value,'Скрипт скопирован'); $('copyPack').onclick=()=>copy($('delivery').value,'Delivery скопирован'); $('closeModal').onclick=()=>$('modal').classList.remove('open'); $('copyModal').onclick=()=>copy($('modalText').value,'Pack скопирован'); $('installBtn').onclick=async()=>{ if(installPrompt){ installPrompt.prompt(); installPrompt=null; } else toast('iPhone: Share -> Add to Home Screen после Railway HTTPS.'); }; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e}); window.addEventListener('pagehide',save); window.addEventListener('beforeunload',save); document.addEventListener('visibilitychange',()=>{ if(document.hidden){ state.hiddenAt=new Date().toISOString(); save(); } else render(); }); setupNav(); }
+    function bind(){ $('fullTop').onclick=fullAuto; $('fullHero').onclick=fullAuto; $('scanBtn').onclick=()=>scan(false); $('checkBtn').onclick=()=>checkAll(false); $('packBtn').onclick=todayPack; $('demoBtn').onclick=demo; $('csvBtn').onclick=csv; $('backupBtn').onclick=backup; $('importBtn').onclick=restore; $('clearDataBtn').onclick=clearData; $('updateAppBtn').onclick=updateApp; $('testScanBtn').onclick=testScan; $('clearLog').onclick=()=>{state.log=[];save();renderLog()}; $('clearHistory').onclick=()=>{state.history=[];save();renderHistory()}; $('copyScript').onclick=()=>copy($('scriptBox').value,'Скрипт скопирован'); $('copyPack').onclick=()=>copy($('delivery').value,'Delivery скопирован'); $('closeModal').onclick=()=>$('modal').classList.remove('open'); $('copyModal').onclick=()=>copy($('modalText').value,'Pack скопирован'); $('installBtn').onclick=async()=>{ if(installPrompt){ installPrompt.prompt(); installPrompt=null; } else toast('iPhone: Share -> Add to Home Screen после Railway HTTPS.'); }; window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e}); window.addEventListener('pagehide',save); window.addEventListener('beforeunload',save); document.addEventListener('visibilitychange',()=>{ if(document.hidden){ state.hiddenAt=new Date().toISOString(); save(); } else render(); }); setupNav(); }
     function setupNav(){ const links=$$('.nav a,.dock a'); const obs=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id)); }),{rootMargin:'-35% 0px -55% 0px'}); ['auto','queue','crm','script','pack'].forEach(id=>obs.observe($(id))); }
     function stars(){ const c=$('stars'), ctx=c.getContext('2d'); let pts=[]; function resize(){ const d=Math.min(devicePixelRatio||1,2); c.width=innerWidth*d;c.height=innerHeight*d;c.style.width=innerWidth+'px';c.style.height=innerHeight+'px';ctx.setTransform(d,0,0,d,0,0); pts=Array.from({length:Math.min(170,Math.floor(innerWidth*innerHeight/9000))},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,z:Math.random()*.8+.2,vx:(Math.random()-.5)*.12,vy:(Math.random()-.5)*.08})); } function frame(){ ctx.clearRect(0,0,innerWidth,innerHeight); ctx.fillStyle='rgba(125,185,255,.58)'; pts.forEach(p=>{p.x+=p.vx*p.z;p.y+=p.vy*p.z;if(p.x<0)p.x=innerWidth;if(p.x>innerWidth)p.x=0;if(p.y<0)p.y=innerHeight;if(p.y>innerHeight)p.y=0;ctx.globalAlpha=.25+p.z*.55;ctx.beginPath();ctx.arc(p.x,p.y,1.1*p.z,0,Math.PI*2);ctx.fill();}); ctx.globalAlpha=.11;ctx.strokeStyle='#5ff2ff'; for(let i=0;i<pts.length;i+=10){const a=pts[i],b=pts[(i+7)%pts.length],dx=a.x-b.x,dy=a.y-b.y;if(dx*dx+dy*dy<18000){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();}} ctx.globalAlpha=1; requestAnimationFrame(frame); } addEventListener('resize',resize); resize(); frame(); }
     if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('/service-worker.js').catch(()=>{});

@@ -1,4 +1,4 @@
-const CACHE = 'revenuesprint-clean-20260616';
+const CACHE = 'lead-desk-clean-20260617';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();

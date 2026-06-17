@@ -1,7 +1,7 @@
 {
-  "name": "RevenueSprint 48",
-  "short_name": "RevenueSprint",
-  "description": "Quote recovery command center for finding businesses, preparing outreach, and tracking follow-ups.",
+  "name": "Lead Desk",
+  "short_name": "Lead Desk",
+  "description": "Minimal command center for finding businesses, opening contacts, preparing messages, and tracking follow-ups.",
   "start_url": "/?v=clean-20260616",
   "scope": "/",
   "display": "standalone",

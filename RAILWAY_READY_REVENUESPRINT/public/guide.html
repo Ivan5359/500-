@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#00030a" />
-  <title>RevenueSprint 48 · Guide</title>
+  <title>Lead Desk · Guide</title>
   <style>
     :root {
       --bg: #00030a;
@@ -51,7 +51,7 @@
       align-items: center;
       padding: 10px 12px;
       border-bottom: 1px solid var(--line);
-      background: rgba(0, 3, 10, .82);
+      background: rgba(0, 3, 10, .86);
       backdrop-filter: blur(18px);
     }
     .top b { font-size: 14px; }
@@ -65,7 +65,7 @@
       border: 1px solid var(--line);
       border-radius: 999px;
       color: var(--soft);
-      background: rgba(255,255,255,.035);
+      background: rgba(255, 255, 255, .035);
       text-decoration: none;
       font-size: 12px;
       white-space: nowrap;
@@ -105,8 +105,8 @@
       line-height: .98;
       letter-spacing: 0;
     }
-    h1 { font-size: clamp(40px, 10vw, 78px); }
-    h2 { font-size: clamp(26px, 6vw, 44px); }
+    h1 { font-size: clamp(38px, 10vw, 74px); }
+    h2 { font-size: clamp(25px, 6vw, 42px); }
     p, li {
       color: var(--soft);
       font-size: 17px;
@@ -134,7 +134,7 @@
       color: var(--muted);
       font-size: 15px;
     }
-    .quote, pre {
+    .note, pre {
       white-space: pre-wrap;
       overflow-wrap: anywhere;
       padding: 14px;
@@ -142,11 +142,15 @@
       border-radius: 0 var(--r) var(--r) 0;
       background: rgba(95, 242, 255, .06);
       color: var(--soft);
-      font: 15px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+    pre {
+      font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
     .bottom-actions {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
       margin-top: 14px;
     }
@@ -160,62 +164,49 @@
 </head>
 <body>
   <header class="top">
-    <b>RevenueSprint 48 · Guide</b>
+    <b>Lead Desk · Guide</b>
     <div class="links">
-      <a class="btn primary" href="/">App</a>
-      <a class="btn" href="/presentation.html">Presentation</a>
-      <a class="btn" href="/guide.html">Guide</a>
+      <a class="btn primary" href="./index.html">App</a>
+      <a class="btn" href="./presentation.html">Presentation</a>
     </div>
   </header>
 
   <main>
     <div class="hero">
-      <span class="eyebrow">Объяснение с нуля</span>
-      <h1>Что мы продаём</h1>
-      <p>Мы продаём услугу для маленьких подрядчиков: помогаем им разобрать старые заявки и сметы, написать людям ещё раз и понять, где ещё может быть заказ.</p>
-      <p>Простыми словами: бизнес уже общался с клиентами, но часть разговоров умерла. Мы наводим порядок и даём готовые действия.</p>
+      <span class="eyebrow">Не продажная страница</span>
+      <h1>Что это за проект</h1>
+      <p>Это рабочая панель, которая помогает аккуратно искать бизнесы, находить их контакты, готовить первое сообщение и помнить, кому уже написал.</p>
+      <p>Это не “кнопка денег” и не автоматический спам. Это инструмент, чтобы тестировать идею спокойно и по шагам.</p>
     </div>
+
+    <section>
+      <h2>Какая идея внутри</h2>
+      <p>У маленьких подрядчиков часто теряются старые заявки. Например, человек спросил цену, бизнес отправил смету, а потом разговор умер.</p>
+      <div class="note">Иногда там уже ничего нет. Но иногда человеку можно аккуратно написать ещё раз и понять, актуально ли это.</div>
+    </section>
 
     <section>
       <h2>Мини-словарь</h2>
       <div class="cards">
         <div class="card"><b>Лид</b><p>Человек, который уже интересовался услугой.</p></div>
-        <div class="card"><b>Смета</b><p>Примерная цена работы, которую бизнес отправил клиенту.</p></div>
-        <div class="card"><b>Follow-up</b><p>Повторное сообщение: “Вы ещё планируете это делать?”</p></div>
-        <div class="card"><b>CRM</b><p>Список, где видно кому написали, кто ответил, кому напомнить.</p></div>
+        <div class="card"><b>Смета</b><p>Примерная цена работы.</p></div>
+        <div class="card"><b>Follow-up</b><p>Повторное сообщение человеку, который не ответил.</p></div>
+        <div class="card"><b>CRM</b><p>Список действий: кому написали, кто ответил, кому напомнить.</p></div>
       </div>
     </section>
 
     <section>
-      <h2>Какая идея</h2>
-      <p>Название идеи: Quote Recovery Sprint.</p>
+      <h2>Что делает сайт</h2>
       <ol>
-        <li>Клиент даёт старые заявки или сметы.</li>
-        <li>Мы делим их на Hot, Warm, Cold.</li>
-        <li>Пишем готовые follow-up сообщения.</li>
-        <li>Делаем доску: кому писать сегодня, кому потом, кого закрыть.</li>
+        <li>Ищет бизнесы по городу и нише.</li>
+        <li>Показывает сайт, email, форму или ссылку для поиска контакта.</li>
+        <li>Готовит первое сообщение.</li>
+        <li>Сохраняет историю: кому написали, кому нужен follow-up.</li>
       </ol>
     </section>
 
     <section>
-      <h2>Почему это может быть полезно</h2>
-      <ul>
-        <li>Бизнес уже потратил деньги и время на эти заявки.</li>
-        <li>У подрядчиков один заказ может быть дорогим.</li>
-        <li>Если старый разговор снова станет актуальным, это может быть ценно.</li>
-        <li>Маленькие бизнесы часто забывают нормально делать follow-up.</li>
-      </ul>
-    </section>
-
-    <section>
-      <h2>Честная формулировка</h2>
-      <div class="quote">Мы не обещаем вернуть всех клиентов.
-
-Мы обещаем за 48 часов проверить старые заявки, найти где ещё есть шанс, подготовить сообщения и дать понятную очередь действий.</div>
-    </section>
-
-    <section>
-      <h2>Как пользоваться сайтом</h2>
+      <h2>Как пользоваться</h2>
       <ol>
         <li>Открой App.</li>
         <li>Нажми Full Auto.</li>
@@ -228,8 +219,8 @@
     </section>
 
     <section>
-      <h2>Почему телефон США не нужен</h2>
-      <p>Мы не строим процесс на звонках. Ты находишься в Испании, поэтому главный путь такой:</p>
+      <h2>Почему не нужны звонки</h2>
+      <p>Если человек находится не в США, звонить неудобно. Поэтому основной путь такой:</p>
       <ul>
         <li>email;</li>
         <li>Gmail draft;</li>
@@ -239,25 +230,22 @@
     </section>
 
     <section>
-      <h2>Первое сообщение</h2>
+      <h2>Пример первого сообщения</h2>
       <pre>Hi, quick idea.
 
 Most contractors have old estimates that never got a clean second follow-up.
 
-I run a 48-hour Quote Recovery Sprint: you send 20-50 old estimates/leads, I sort them by priority, write the follow-up messages, and give you a simple callback board.
+I help turn those old estimates into a simple follow-up list: who to contact, what to say, and when to follow up.
 
-If it helps recover even one job, it can pay for itself.
-
-Want me to send the one-page version?</pre>
+Want me to send the short version?</pre>
     </section>
 
     <section>
-      <h2>Открыть с телефона</h2>
-      <p>После Railway deploy эти ссылки будут работать на телефоне:</p>
+      <h2>Главное понимание</h2>
+      <div class="note">Это не гарантия денег. Это панель для аккуратного теста: найти бизнес, открыть контакт, отправить понятное сообщение и сохранить историю.</div>
       <div class="bottom-actions">
-        <a class="btn primary" href="/">App</a>
-        <a class="btn" href="/presentation.html">Presentation</a>
-        <a class="btn" href="/guide.html">Guide</a>
+        <a class="btn primary" href="./index.html">Открыть App</a>
+        <a class="btn" href="./presentation.html">Открыть Presentation</a>
       </div>
     </section>
   </main>
